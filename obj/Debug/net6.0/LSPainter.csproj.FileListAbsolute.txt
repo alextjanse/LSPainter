@@ -28,3 +28,4 @@
 /home/alex/Documents/3.Repos/LSPainter/obj/Debug/net6.0/ref/LSPainter.dll
 /home/alex/Documents/3.Repos/LSPainter/obj/Debug/net6.0/LSPainter.pdb
 /home/alex/Documents/3.Repos/LSPainter/obj/Debug/net6.0/LSPainter.genruntimeconfig.cache
+/home/alex/Documents/3.Repos/LSPainter/bin/Debug/net6.0/SixLabors.ImageSharp.dll

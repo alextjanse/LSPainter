@@ -1,28 +1,22 @@
-﻿using OpenTK.Mathematics;
+﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 
-namespace LearnOpenTK
+namespace LSPainter
 {
     public static class Program
     {
         private static void Main()
         {
-            var nativeWindowSettings = new NativeWindowSettings()
-            {
-                Size = new Vector2i(800, 600),
-                Title = "LearnOpenTK - Creating a Window",
-                // This is needed to run on macos
-                Flags = ContextFlags.ForwardCompatible,
-            };
+            string file_path = "./Images/mona_lisa.jpeg";
 
-            // To create a new window, create a class that extends GameWindow, then call Run() on it.
-            using (var window = new Window(GameWindowSettings.Default, nativeWindowSettings))
+            ImageHandler image = new ImageHandler("Mona Lisa", file_path);
+
+            using (WindowManager window = new WindowManager(image))
             {
                 window.Run();
             }
-
-            // And that's it! That's all it takes to create a window with OpenTK.
         }
     }
 }
