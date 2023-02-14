@@ -22,13 +22,7 @@ namespace LSPainter
 
         public int Width { get; private set; }
         public int Height { get; private set; }
-        public (int, int) Size
-        {
-            get
-            {
-                return (Width, Height);
-            }
-        }
+        public (int, int) Size => (Width, Height);
         public string Title { get; private set; }
 
         public ImageHandler(string title, string path)
@@ -41,8 +35,6 @@ namespace LSPainter
 
             Width = image.Width;
             Height = image.Height;
-
-            image.Mutate(x => x.Flip(FlipMode.Vertical));
 
             Data = new byte[4 * Width * Height];
 

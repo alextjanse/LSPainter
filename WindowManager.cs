@@ -12,22 +12,12 @@ namespace LSPainter
         int vertexArrayObject;
         int elementBufferObject;
 
-        readonly float[] vertices =
-        {
-            //Position          Texture coordinates
-            1.0f,  1.0f, 0.0f, 1.0f, 1.0f, // top right
-            1.0f, -1.0f, 0.0f, 1.0f, 0.0f, // bottom right
-            -1.0f, -1.0f, 0.0f, 0.0f, 0.0f, // bottom left
-            -1.0f,  1.0f, 0.0f, 0.0f, 1.0f  // top left
-        };
-
-        readonly uint[] indices =
-        {
-            0, 1, 3,
-            1, 2, 3
-        };
+        Frame frame;
 
         ImageHandler image;
+
+        float[] vertices;
+        uint[] indices;
 
         public WindowManager(ImageHandler image)
             : base(
@@ -41,6 +31,13 @@ namespace LSPainter
             )
         {
             this.image = image;
+
+            frame = new Frame(image, -1.0f, -1.0f, 2.0f, 2.0f);
+
+            shader = new Shader("./Shaders/shader.vert", "./Shaders/shader.frag");
+
+            vertices = frame.Vertices;
+            indices = frame.Indices;
         }
 
         protected override void OnLoad()
@@ -60,7 +57,7 @@ namespace LSPainter
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, elementBufferObject);
             GL.BufferData(BufferTarget.ElementArrayBuffer, indices.Length * sizeof(uint), indices, BufferUsageHint.StaticDraw);
 
-            shader = new Shader("./Shaders/shader.vert", "./Shaders/shader.frag");
+            shader.Load();
             shader.Use();
 
             int vertexLocation = shader.GetAttribLocation("aPosition");
@@ -98,11 +95,6 @@ namespace LSPainter
             base.OnRenderFrame(args);
 
             GL.Clear(ClearBufferMask.ColorBufferBit);
-
-            GL.BindVertexArray(vertexArrayObject);
-
-            image.Use();
-            shader.Use();
             
             GL.DrawElements(PrimitiveType.Triangles, indices.Length, DrawElementsType.UnsignedInt, 0);
 

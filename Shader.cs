@@ -10,15 +10,25 @@ namespace LSPainter
     // A simple class meant to help create shaders.
     public class Shader
     {
-        public readonly int Handle;
+        public int Handle { get; private set; }
 
         private readonly Dictionary<string, int> uniformLocations;
+        private string vertPath, fragPath;
 
         // This is how you create a simple shader.
         // Shaders are written in GLSL, which is a language very similar to C in its semantics.
         // The GLSL source is compiled *at runtime*, so it can optimize itself for the graphics card it's currently being used on.
         // A commented example of GLSL can be found in shader.vert.
         public Shader(string vertPath, string fragPath)
+        {
+            this.vertPath = vertPath;
+            this.fragPath = fragPath;
+            
+            // Next, allocate the dictionary to hold the locations.
+            uniformLocations = new Dictionary<string, int>();
+        }
+
+        public void Load()
         {
             // There are several different types of shaders, but the only two you need for basic rendering are the vertex and fragment shaders.
             // The vertex shader is responsible for moving around vertices, and uploading that data to the fragment shader.
@@ -68,9 +78,6 @@ namespace LSPainter
 
             // First, we have to get the number of active uniforms in the shader.
             GL.GetProgram(Handle, GetProgramParameterName.ActiveUniforms, out var numberOfUniforms);
-
-            // Next, allocate the dictionary to hold the locations.
-            uniformLocations = new Dictionary<string, int>();
 
             // Loop over all the uniforms,
             for (var i = 0; i < numberOfUniforms; i++)

@@ -20,8 +20,8 @@ namespace LSPainter
             R = r;
             G = g;
             B = b;
-            Rgba32 = new Rgba32(r, g, b);
-            ABGR = (255 << 24) | (b << 16) | (g << 8) | (r << 0);
+            Rgba32 = new Rgba32(R, G, B);
+            ABGR = (255 << 24) | (B << 16) | (G << 8) | (R << 0);
         }
 
         public Color(Rgba32 color)
