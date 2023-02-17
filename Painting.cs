@@ -5,18 +5,26 @@ using SixLabors.ImageSharp.Drawing.Processing;
 
 namespace LSPainter
 {
-    public class Painting
+    public class Painting : Texture
     {
-        public Image<Rgba32> Image { get; }
-
-        public int Width { get; }
-        public int Height { get; }
+        Image<Rgba32> image;
+        private byte[] data;
+        public override byte[] Data => data;
 
         public Painting(int width, int height)
         {
             Width = width;
             Height = height;
-            Image = new Image<Rgba32>(Width, Height, Color.Black);
+            image = new Image<Rgba32>(Width, Height, Color.Red);
+
+            data = new byte[4 * width * height];
+
+            image.CopyPixelDataTo(data);
+        }
+
+        public void Update()
+        {
+            image.CopyPixelDataTo(data);
         }
     }
 }

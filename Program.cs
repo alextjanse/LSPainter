@@ -13,7 +13,9 @@ namespace LSPainter
 
             ImageHandler image = new ImageHandler("Mona Lisa", file_path);
 
-            using (WindowManager window = new WindowManager(image))
+            WindowLayout windowLayout = new WindowLayout(1, 2, true, 1);
+
+            using (WindowManager window = new WindowManager(windowLayout, image))
             {
                 window.Run();
             }
