@@ -29,14 +29,12 @@ namespace LSPainter
             textureUnit = Texture.NextTextureUnit();
         }
 
-        public void Load()
+        public void Load(Shader shader)
         {
             Handle = GL.GenTexture();
 
             GL.ActiveTexture(textureUnit);
             GL.BindTexture(TextureTarget.Texture2D, Handle);
-
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, Width, Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, Data);
 
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
@@ -44,7 +42,12 @@ namespace LSPainter
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
 
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, Width, Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, Data);
+
             GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+
+            int iTextureUnit = (int)textureUnit - (int)TextureUnit.Texture0;
+            shader.SetInt($"texture{iTextureUnit}", iTextureUnit);
         }
 
         public void Use()

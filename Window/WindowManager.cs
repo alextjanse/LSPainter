@@ -76,15 +76,21 @@ namespace LSPainter
             shader.Load();
             shader.Use();
 
+            var vertexSize = 6 * sizeof(float);
+
             int vertexLocation = shader.GetAttribLocation("aPosition");
             GL.EnableVertexAttribArray(vertexLocation);
-            GL.VertexAttribPointer(vertexLocation, 3, VertexAttribPointerType.Float, false, 5 * sizeof(float), 0);
+            GL.VertexAttribPointer(vertexLocation, 3, VertexAttribPointerType.Float, false, vertexSize, 0);
 
             int texCoordLocation = shader.GetAttribLocation("aTexCoord");
             GL.EnableVertexAttribArray(texCoordLocation);
-            GL.VertexAttribPointer(texCoordLocation, 2, VertexAttribPointerType.Float, false, 5 * sizeof(float), 3 * sizeof(float));
+            GL.VertexAttribPointer(texCoordLocation, 2, VertexAttribPointerType.Float, false, vertexSize, 3 * sizeof(float));
 
-            frameManager.Load();
+            int texSelectorLocation = shader.GetAttribLocation("aTexID");
+            GL.EnableVertexAttribArray(texSelectorLocation);
+            GL.VertexAttribPointer(texSelectorLocation, 1, VertexAttribPointerType.Int, false, vertexSize, 5 * sizeof(float));
+
+            frameManager.Load(shader);
         }
 
         protected override void OnUnload()

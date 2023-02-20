@@ -47,10 +47,10 @@ namespace LSPainter
                 float z = 0.0f;
 
                 float[] frameVertices = new float[] {
-                    xCoords[0], yCoords[0], z, 0.0f, 0.0f,
-                    xCoords[1], yCoords[0], z, 1.0f, 0.0f,
-                    xCoords[0], yCoords[1], z, 0.0f, 1.0f,
-                    xCoords[1], yCoords[1], z, 1.0f, 1.0f
+                    xCoords[0], yCoords[0], z, 0.0f, 0.0f, 0,
+                    xCoords[1], yCoords[0], z, 1.0f, 0.0f, 0,
+                    xCoords[0], yCoords[1], z, 0.0f, 1.0f, 0,
+                    xCoords[1], yCoords[1], z, 1.0f, 1.0f, 0,
                 };
 
                 uint[] frameIndices = new uint[] {
@@ -76,10 +76,10 @@ namespace LSPainter
                 float z = 0.0f;
 
                 float[] frameVertices = new float[] {
-                    xCoords[xI],     yCoords[yI],     z, 0.0f, 0.0f,
-                    xCoords[xI + 1], yCoords[yI],     z, 1.0f, 0.0f,
-                    xCoords[xI],     yCoords[yI + 1], z, 0.0f, 1.0f,
-                    xCoords[xI + 1], yCoords[yI + 1], z, 1.0f, 1.0f
+                    xCoords[xI],     yCoords[yI],     z, 0.0f, 0.0f, 1,
+                    xCoords[xI + 1], yCoords[yI],     z, 1.0f, 0.0f, 1,
+                    xCoords[xI],     yCoords[yI + 1], z, 0.0f, 1.0f, 1,
+                    xCoords[xI + 1], yCoords[yI + 1], z, 1.0f, 1.0f, 1
                 };
 
                 uint[] frameIndices = new uint[] {
@@ -99,11 +99,11 @@ namespace LSPainter
             Indices = indicesList.ToArray();
         }
 
-        public void Load()
+        public void Load(Shader shader)
         {
             foreach (Frame frame in frames)
             {
-                frame.Load();
+                frame.Load(shader);
             }
         }
 

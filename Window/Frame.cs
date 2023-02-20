@@ -21,9 +21,9 @@ namespace LSPainter
             this.indexOffset = indexOffset;
         }
 
-        public void Load()
+        public void Load(Shader shader)
         {
-            texture.Load();
+            texture.Load(shader);
         }
 
         public void Update()
