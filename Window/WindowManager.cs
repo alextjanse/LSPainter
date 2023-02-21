@@ -67,16 +67,16 @@ namespace LSPainter
 
             vertexBufferObject = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBufferObject);
-            GL.BufferData(BufferTarget.ArrayBuffer, frameManager.Vertices.Length * sizeof(float), frameManager.Vertices, BufferUsageHint.StaticDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, frameManager.Vertices.Length * sizeof(float), frameManager.Vertices, BufferUsageHint.StreamDraw);
 
             elementBufferObject = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, elementBufferObject);
-            GL.BufferData(BufferTarget.ElementArrayBuffer, frameManager.Indices.Length * sizeof(uint), frameManager.Indices, BufferUsageHint.StaticDraw);
+            GL.BufferData(BufferTarget.ElementArrayBuffer, frameManager.Indices.Length * sizeof(uint), frameManager.Indices, BufferUsageHint.StreamDraw);
 
             shader.Load();
             shader.Use();
 
-            var vertexSize = 6 * sizeof(float);
+            var vertexSize = 5 * sizeof(float);
 
             int vertexLocation = shader.GetAttribLocation("aPosition");
             GL.EnableVertexAttribArray(vertexLocation);
@@ -85,10 +85,6 @@ namespace LSPainter
             int texCoordLocation = shader.GetAttribLocation("aTexCoord");
             GL.EnableVertexAttribArray(texCoordLocation);
             GL.VertexAttribPointer(texCoordLocation, 2, VertexAttribPointerType.Float, false, vertexSize, 3 * sizeof(float));
-
-            int texSelectorLocation = shader.GetAttribLocation("aTexID");
-            GL.EnableVertexAttribArray(texSelectorLocation);
-            GL.VertexAttribPointer(texSelectorLocation, 1, VertexAttribPointerType.Int, false, vertexSize, 5 * sizeof(float));
 
             frameManager.Load(shader);
         }

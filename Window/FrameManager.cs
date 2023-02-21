@@ -16,7 +16,7 @@ namespace LSPainter
 
         Frame[,] frames;
 
-        public FrameManager(WindowLayout windowLayout, Texture originalImage, Texture painting)
+        public FrameManager(WindowLayout windowLayout, ImageHandler originalImage, Texture painting)
         {
             frames = new Frame[windowLayout.Columns, windowLayout.Rows];
 
@@ -44,13 +44,14 @@ namespace LSPainter
 
             if (windowLayout.ShowOriginal)
             {
+                /*
                 float z = 0.0f;
 
                 float[] frameVertices = new float[] {
-                    xCoords[0], yCoords[0], z, 0.0f, 0.0f, 0,
-                    xCoords[1], yCoords[0], z, 1.0f, 0.0f, 0,
-                    xCoords[0], yCoords[1], z, 0.0f, 1.0f, 0,
-                    xCoords[1], yCoords[1], z, 1.0f, 1.0f, 0,
+                    xCoords[0], yCoords[0], z, 0.0f, 0.0f,
+                    xCoords[1], yCoords[0], z, 1.0f, 0.0f,
+                    xCoords[0], yCoords[1], z, 0.0f, 1.0f,
+                    xCoords[1], yCoords[1], z, 1.0f, 1.0f,
                 };
 
                 uint[] frameIndices = new uint[] {
@@ -64,6 +65,7 @@ namespace LSPainter
                 indicesList.AddRange(frameIndices);
 
                 frames[0, 0] = new Frame(originalImage, frameVertices, frameIndices, frameIndices.Length * frameIndex++);
+                */
             }
 
             int remainingFrames = Math.Min(windowLayout.NCanvases, windowLayout.Columns * windowLayout.Rows + frameIndex);
@@ -76,10 +78,10 @@ namespace LSPainter
                 float z = 0.0f;
 
                 float[] frameVertices = new float[] {
-                    xCoords[xI],     yCoords[yI],     z, 0.0f, 0.0f, 1,
-                    xCoords[xI + 1], yCoords[yI],     z, 1.0f, 0.0f, 1,
-                    xCoords[xI],     yCoords[yI + 1], z, 0.0f, 1.0f, 1,
-                    xCoords[xI + 1], yCoords[yI + 1], z, 1.0f, 1.0f, 1
+                    xCoords[xI],     yCoords[yI],     z, 0.0f, 0.0f,
+                    xCoords[xI + 1], yCoords[yI],     z, 1.0f, 0.0f,
+                    xCoords[xI],     yCoords[yI + 1], z, 0.0f, 1.0f,
+                    xCoords[xI + 1], yCoords[yI + 1], z, 1.0f, 1.0f,
                 };
 
                 uint[] frameIndices = new uint[] {

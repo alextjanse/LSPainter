@@ -28,7 +28,7 @@ namespace LSPainter
 
         public void Update()
         {
-            
+            texture.Update();
         }
 
         public void Draw()

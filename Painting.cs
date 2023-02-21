@@ -15,16 +15,19 @@ namespace LSPainter
         {
             Width = width;
             Height = height;
-            image = new Image<Rgba32>(Width, Height, Color.Red);
+            image = new Image<Rgba32>(Width, Height, Color.Black);
 
             data = new byte[4 * width * height];
 
             image.CopyPixelDataTo(data);
         }
 
-        public void Update()
+        public override void Update()
         {
-            image.CopyPixelDataTo(data);
+            
+
+            // Upload Data
+            base.Update();
         }
     }
 }

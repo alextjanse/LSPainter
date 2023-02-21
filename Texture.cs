@@ -47,7 +47,13 @@ namespace LSPainter
             GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
 
             int iTextureUnit = (int)textureUnit - (int)TextureUnit.Texture0;
-            shader.SetInt($"texture{iTextureUnit}", iTextureUnit);
+            // shader.SetInt($"texture{iTextureUnit}", iTextureUnit);
+        }
+
+        public virtual void Update()
+        {
+            GL.ActiveTexture(textureUnit);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, Width, Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, Data);
         }
 
         public void Use()

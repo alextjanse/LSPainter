@@ -10,14 +10,16 @@ using SixLabors.ImageSharp.Processing;
 
 namespace LSPainter
 {
-    public class ImageHandler : Texture
+    public class ImageHandler // : Texture
     {
+        public int Width { get; }
+        public int Height { get; }
         private string path;
         // TODO: make max file size 4MB (https://docs.sixlabors.com/articles/imagesharp/pixelformats.html)
         private Image<Rgba32> image;
         public string Title { get; private set; }
         private byte[] data;
-        public override byte[] Data => data;
+        public /* override */ byte[] Data => data;
 
         public ImageHandler(string title, string path)
         {
