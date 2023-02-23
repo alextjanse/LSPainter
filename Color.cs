@@ -15,11 +15,12 @@ namespace LSPainter
         public byte B { get; }
         public byte A { get; }
 
-        public Color(byte r, byte g, byte b)
+        public Color(byte r, byte g, byte b, byte a = 255)
         {
             R = r;
             G = g;
             B = b;
+            A = a;
             Rgba32 = new Rgba32(R, G, B);
             ABGR = (255 << 24) | (B << 16) | (G << 8) | (R << 0);
         }
