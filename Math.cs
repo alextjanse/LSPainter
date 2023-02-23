@@ -35,7 +35,8 @@ namespace LSPainter
         public static Vector operator *(Vector v, float f) => f * v;
 
         public static float Dot(Vector u, Vector v) => u.X * v.X + u.Y * v.Y;
-        public static float edgeFunction(Vector a, Vector b, Vector c) => (c.X - a.X) * (b.Y - a.Y) - (c.Y - a.Y) * (b.X - a.X);
+
+        public static float Determinant(Vector u, Vector v, Vector w) => (w.X - u.X) * (v.Y - u.Y) - (w.Y - u.Y) * (v.X - u.X);
     }
 
     public struct Rectangle

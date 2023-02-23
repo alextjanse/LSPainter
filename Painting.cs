@@ -67,8 +67,6 @@ namespace LSPainter
 
         public override void Update()
         {
-
-
             // Upload Data
             base.Update();
         }
