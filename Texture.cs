@@ -61,5 +61,15 @@ namespace LSPainter
             GL.ActiveTexture(textureUnit);
             GL.BindTexture(TextureTarget.Texture2D, Handle);
         }
+
+        public Color GetPixel(int x, int y)
+        {
+            int index = 4 * (y * Width + x);
+            return new Color(
+                Data[index],        // R
+                Data[index + 1],    // G
+                Data[index + 2],    // B
+                Data[index + 3]);   // A
+        }
     }
 }

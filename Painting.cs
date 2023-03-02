@@ -16,40 +16,31 @@ namespace LSPainter
         {
             Width = width;
             Height = height;
-            image = new Image<Rgba32>(Width, Height, Color.Blue);
+            image = new Image<Rgba32>(Width, Height, Color.Black);
 
-            data = new byte[4 * width * height];
+            data = new byte[4 * Width * Height];
 
             image.CopyPixelDataTo(data);
-
-            Point p1 = new Point(10, 10);
-            Point p2 = new Point(Width / 2f, Height - 10);
-            Point p3 = new Point(Width - 10, 10);
-
-            Triangle triangle = new Triangle(p1, p2, p3);
-
-            Color color = Color.Red;
-
-            DrawShape(triangle, color);
         }
 
         public void DrawShape(Shape shape, Color color)
         {
             BoundingBox bbox = shape.BoundingBox;
 
-            int x = bbox.X;
-            int y = bbox.Y;
-            int width = bbox.Width;
-            int height = bbox.Height;
-            for (int j = 0; j < height; j++)
+            int minX = Math.Max(0, bbox.X);
+            int maxX = Math.Min(Width, bbox.X + bbox.Width);
+            int minY = Math.Max(0, bbox.Y);
+            int maxY = Math.Min(Height, bbox.Y + bbox.Height);
+
+            for (int y = minY; y < maxY; y++)
             {
-                for (int i = 0; i < width; i++)
+                for (int x = minX; x < maxX; x++)
                 {
-                    Vector p = new Vector(x + i + 0.5f, y + j + 0.5f);
+                    Vector p = new Vector(x + 0.5f, y + 0.5f);
 
                     if (shape.IsInside(p))
                     {
-                        setPixel(x + i, y + j, color);
+                        setPixel(x, y, color);
                     }
                 }
             }

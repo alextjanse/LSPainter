@@ -35,23 +35,31 @@ namespace LSPainter
         int vertexArrayObject;
         int elementBufferObject;
 
-        Painting painting;
-
-        ImageHandler image;
+        ImageHandler original;
+        SolverManager solverManager;
         FrameManager frameManager;
 
-        public WindowManager(WindowLayout windowLayout, ImageHandler image) :
-            base(GameWindowSettings.Default, new NativeWindowSettings()
-                                            {
-                                                Size = (image.Width * windowLayout.Columns, image.Height * windowLayout.Rows),
-                                                Title = image.Title,
-                                                Flags = ContextFlags.ForwardCompatible
-                                            })
+        public WindowManager(WindowLayout windowLayout, ImageHandler original) :
+            base
+            (
+                new GameWindowSettings()
+                {
+                    UpdateFrequency = 0,
+                    RenderFrequency = 60,
+                },
+                new NativeWindowSettings()
+                {
+                    Size = (original.Width * windowLayout.Columns, original.Height * windowLayout.Rows),
+                    Title = original.Title,
+                    Flags = ContextFlags.ForwardCompatible
+                }
+            )
         {
-            this.image = image;
-            painting = new Painting(image.Width, image.Height);
+            this.original = original;
 
-            frameManager = new FrameManager(windowLayout, image, painting);
+            solverManager = new SolverManager(original, 1);
+
+            frameManager = new FrameManager(windowLayout, original, solverManager.Instances[0].Painting);
 
             shader = new Shader("./Shaders/shader.vert", "./Shaders/shader.frag");
         }
@@ -103,6 +111,8 @@ namespace LSPainter
             {
                 Close();
             }
+
+            solverManager.Iterate();
 
             frameManager.Update();
 
