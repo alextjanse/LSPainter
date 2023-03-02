@@ -9,21 +9,45 @@ namespace LSPainter
         public float[] Vertices { get; }
 
         public uint[] Indices { get; }
-        int indexOffset;
+
+        int vertexArrayObject, vertexBufferObject, elementBufferObject;
 
         Texture texture;
 
-        public Frame(Texture texture, float[] vertices, uint[] indices, int indexOffset)
+        public Frame(Texture texture, float[] vertices, uint[] indices)
         {
             this.texture = texture;
             Vertices = vertices;
             Indices = indices;
-            this.indexOffset = indexOffset;
         }
 
         public void Load(Shader shader)
         {
-            texture.Load(shader);
+            vertexArrayObject = GL.GenVertexArray();
+            GL.BindVertexArray(vertexArrayObject);
+
+            vertexBufferObject = GL.GenBuffer();
+            GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBufferObject);
+            GL.BufferData(BufferTarget.ArrayBuffer, Vertices.Length * sizeof(float), Vertices, BufferUsageHint.StreamDraw);
+
+            elementBufferObject = GL.GenBuffer();
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, elementBufferObject);
+            GL.BufferData(BufferTarget.ElementArrayBuffer, Indices.Length * sizeof(uint), Indices, BufferUsageHint.StreamDraw);
+
+            texture.Load();
+
+            var vertexSize = 5 * sizeof(float);
+
+            int vertexLocation = shader.GetAttribLocation("aPosition");
+            GL.EnableVertexAttribArray(vertexLocation);
+            GL.VertexAttribPointer(vertexLocation, 3, VertexAttribPointerType.Float, false, vertexSize, 0);
+
+            int texCoordLocation = shader.GetAttribLocation("aTexCoord");
+            GL.EnableVertexAttribArray(texCoordLocation);
+            GL.VertexAttribPointer(texCoordLocation, 2, VertexAttribPointerType.Float, false, vertexSize, 3 * sizeof(float));
+
+            // Unbind
+            GL.BindVertexArray(0);
         }
 
         public void Update()
@@ -33,12 +57,16 @@ namespace LSPainter
 
         public void Draw()
         {
+            GL.BindVertexArray(vertexArrayObject);
+
             texture.Use();
-            GL.DrawElements(PrimitiveType.Triangles, Indices.Length, DrawElementsType.UnsignedInt, indexOffset);
+            GL.DrawElements(PrimitiveType.Triangles, Indices.Length, DrawElementsType.UnsignedInt, 0);
+
+            GL.BindVertexArray(0);
         }
     }
 
     // TODO: add two subclasses of Frame
-    // public class LiveCanvas : Frame // Update()
     // public class StillFrame : Frame // Static
+    // public class LiveCanvas : Frame // Updating
 }

@@ -11,9 +11,6 @@ namespace LSPainter
 
     public class FrameManager
     {
-        public float[] Vertices { get; }
-        public uint[] Indices { get; }
-
         Frame[,] frames;
 
         public FrameManager(WindowLayout windowLayout, ImageHandler originalImage, Texture painting)
@@ -25,7 +22,7 @@ namespace LSPainter
 
             float frameWidth = 2.0f / windowLayout.Columns;
             float frameHeight = 2.0f / windowLayout.Rows;
-
+ 
             for (int x = 0; x < windowLayout.Columns + 1; x++)
             {
                 xCoords[x] = -1.0f + frameWidth * x;
@@ -36,36 +33,27 @@ namespace LSPainter
                 yCoords[y] = 1.0f - frameHeight * y;
             }
 
-            List<float> verticesList = new List<float>();
-            List<uint> indicesList = new List<uint>();
-
             int frameIndex = 0;
-            uint indexOffset = 0;
 
             if (windowLayout.ShowOriginal)
             {
-                /*
                 float z = 0.0f;
 
                 float[] frameVertices = new float[] {
-                    xCoords[0], yCoords[0], z, 0.0f, 0.0f,
-                    xCoords[1], yCoords[0], z, 1.0f, 0.0f,
-                    xCoords[0], yCoords[1], z, 0.0f, 1.0f,
-                    xCoords[1], yCoords[1], z, 1.0f, 1.0f,
+                    xCoords[0], yCoords[0], z, 0.0f, 0.0f, // top-left
+                    xCoords[1], yCoords[0], z, 1.0f, 0.0f, // top-right
+                    xCoords[0], yCoords[1], z, 0.0f, 1.0f, // bottom-left
+                    xCoords[1], yCoords[1], z, 1.0f, 1.0f, // bottom-right
                 };
 
                 uint[] frameIndices = new uint[] {
-                    0 + indexOffset, 1 + indexOffset, 3 + indexOffset,
-                    0 + indexOffset, 2 + indexOffset, 3 + indexOffset
+                    0, 3, 1,
+                    0, 2, 3
                 };
 
-                indexOffset += (uint)frameVertices.Length;
+                frames[0, 0] = new Frame(originalImage, frameVertices, frameIndices);
 
-                verticesList.AddRange(frameVertices);
-                indicesList.AddRange(frameIndices);
-
-                frames[0, 0] = new Frame(originalImage, frameVertices, frameIndices, frameIndices.Length * frameIndex++);
-                */
+                frameIndex++;
             }
 
             int remainingFrames = Math.Min(windowLayout.NCanvases, windowLayout.Columns * windowLayout.Rows + frameIndex);
@@ -78,27 +66,21 @@ namespace LSPainter
                 float z = 0.0f;
 
                 float[] frameVertices = new float[] {
-                    xCoords[xI],     yCoords[yI],     z, 0.0f, 0.0f,
-                    xCoords[xI + 1], yCoords[yI],     z, 1.0f, 0.0f,
-                    xCoords[xI],     yCoords[yI + 1], z, 0.0f, 1.0f,
-                    xCoords[xI + 1], yCoords[yI + 1], z, 1.0f, 1.0f,
+                    xCoords[xI],     yCoords[yI],     z, 0.0f, 0.0f, // top-left
+                    xCoords[xI + 1], yCoords[yI],     z, 1.0f, 0.0f, // top-right
+                    xCoords[xI],     yCoords[yI + 1], z, 0.0f, 1.0f, // bottom-left
+                    xCoords[xI + 1], yCoords[yI + 1], z, 1.0f, 1.0f, // bottom-right
                 };
 
                 uint[] frameIndices = new uint[] {
-                    0 + indexOffset, 1 + indexOffset, 3 + indexOffset,
-                    0 + indexOffset, 2 + indexOffset, 3 + indexOffset
+                    0, 3, 1,
+                    0, 2, 3
                 };
 
-                indexOffset += (uint)frameVertices.Length;
+                frames[xI, yI] = new Frame(painting, frameVertices, frameIndices);
 
-                verticesList.AddRange(frameVertices);
-                indicesList.AddRange(frameIndices);
-
-                frames[xI, yI] = new Frame(painting, frameVertices, frameIndices, frameIndices.Length * frameIndex++);
+                frameIndex++;
             }
-
-            Vertices = verticesList.ToArray();
-            Indices = indicesList.ToArray();
         }
 
         public void Load(Shader shader)

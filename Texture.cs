@@ -10,30 +10,10 @@ namespace LSPainter
         public (int, int) Size => (Width, Height);
         public abstract byte[] Data { get; }
 
-        static int counter = 0;
-
-        static TextureUnit NextTextureUnit()
-        {
-            if (counter == 32)
-            {
-                throw new Exception("Too many textures!");
-            }
-
-            return (TextureUnit)((int)TextureUnit.Texture0 + counter++);
-        }
-
-        TextureUnit textureUnit;
-
-        public Texture()
-        {
-            textureUnit = Texture.NextTextureUnit();
-        }
-
-        public void Load(Shader shader)
+        public void Load()
         {
             Handle = GL.GenTexture();
 
-            GL.ActiveTexture(textureUnit);
             GL.BindTexture(TextureTarget.Texture2D, Handle);
 
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
@@ -46,19 +26,23 @@ namespace LSPainter
 
             GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
 
-            int iTextureUnit = (int)textureUnit - (int)TextureUnit.Texture0;
-            // shader.SetInt($"texture{iTextureUnit}", iTextureUnit);
+            // Unbind
+            GL.BindTexture(TextureTarget.Texture2D, 0);
         }
 
         public virtual void Update()
         {
-            GL.ActiveTexture(textureUnit);
+            GL.BindTexture(TextureTarget.Texture2D, Handle);
+            
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, Width, Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, Data);
+            
+            GL.BindTexture(TextureTarget.Texture2D, 0);
         }
 
         public void Use()
         {
-            GL.ActiveTexture(textureUnit);
+            GL.ActiveTexture(TextureUnit.Texture0);
+            
             GL.BindTexture(TextureTarget.Texture2D, Handle);
         }
 

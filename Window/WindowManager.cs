@@ -18,13 +18,6 @@ namespace LSPainter
             Columns = columns;
             ShowOriginal = showOriginal;
             NCanvases = nCanvases;
-
-            int nFrames = Rows * Columns;
-
-            if (nFrames > 32)
-            {
-                throw new Exception("Invalid window layout: too many frames to store on Textures!");
-            }
         }
     }
 
@@ -70,29 +63,19 @@ namespace LSPainter
 
             GL.ClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-            vertexArrayObject = GL.GenVertexArray();
-            GL.BindVertexArray(vertexArrayObject);
+            
+            // vertexArrayObject = GL.GenVertexArray();
+            // GL.BindVertexArray(vertexArrayObject);
 
-            vertexBufferObject = GL.GenBuffer();
-            GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBufferObject);
-            GL.BufferData(BufferTarget.ArrayBuffer, frameManager.Vertices.Length * sizeof(float), frameManager.Vertices, BufferUsageHint.StreamDraw);
+            // vertexBufferObject = GL.GenBuffer();
+            // GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBufferObject);
+            // GL.BufferData(BufferTarget.ArrayBuffer, frameManager.Vertices.Length * sizeof(float), frameManager.Vertices, BufferUsageHint.StreamDraw);
 
-            elementBufferObject = GL.GenBuffer();
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, elementBufferObject);
-            GL.BufferData(BufferTarget.ElementArrayBuffer, frameManager.Indices.Length * sizeof(uint), frameManager.Indices, BufferUsageHint.StreamDraw);
-
+            // elementBufferObject = GL.GenBuffer();
+            // GL.BindBuffer(BufferTarget.ElementArrayBuffer, elementBufferObject);
+            // GL.BufferData(BufferTarget.ElementArrayBuffer, frameManager.Indices.Length * sizeof(uint), frameManager.Indices, BufferUsageHint.StreamDraw);
             shader.Load();
             shader.Use();
-
-            var vertexSize = 5 * sizeof(float);
-
-            int vertexLocation = shader.GetAttribLocation("aPosition");
-            GL.EnableVertexAttribArray(vertexLocation);
-            GL.VertexAttribPointer(vertexLocation, 3, VertexAttribPointerType.Float, false, vertexSize, 0);
-
-            int texCoordLocation = shader.GetAttribLocation("aTexCoord");
-            GL.EnableVertexAttribArray(texCoordLocation);
-            GL.VertexAttribPointer(texCoordLocation, 2, VertexAttribPointerType.Float, false, vertexSize, 3 * sizeof(float));
 
             frameManager.Load(shader);
         }
@@ -114,8 +97,6 @@ namespace LSPainter
 
             solverManager.Iterate();
 
-            frameManager.Update();
-
             base.OnUpdateFrame(e);
         }
 
@@ -125,6 +106,7 @@ namespace LSPainter
 
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
+            frameManager.Update();
             frameManager.Draw();
 
             SwapBuffers();
