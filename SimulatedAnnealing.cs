@@ -43,7 +43,7 @@ namespace LSPainter
                 MaxX = original.Width,
                 MinY = 0,
                 MaxY = original.Height,
-                Area = 20,
+                Area = 100,
             };
 
             colorGeneratorSettings = new ColorGeneratorSettings()
@@ -129,13 +129,17 @@ namespace LSPainter
                         Color currentColor = Painting.GetPixel(x, y);
                         Color blendedColor = Color.Blend(currentColor, color);
 
-                        int currentDiff = Color.Diff(originalColor, currentColor);
-                        int newDiff = Color.Diff(originalColor, blendedColor);
+                        int rDiff = Math.Abs(originalColor.R - blendedColor.R) - Math.Abs(originalColor.R - currentColor.R);
+                        int gDiff = Math.Abs(originalColor.G - blendedColor.G) - Math.Abs(originalColor.G - currentColor.G);
+                        int bDiff = Math.Abs(originalColor.B - blendedColor.B) - Math.Abs(originalColor.B - currentColor.B);
 
-                        // We want to minimize our score: try to get the color diff to be 0
-                        int scoreDiff = newDiff - currentDiff;
+                        int penaltyFactor = 10000;
 
-                        totalDiff += scoreDiff;
+                        if (rDiff > 0) rDiff *= penaltyFactor;
+                        if (gDiff > 0) gDiff *= penaltyFactor;
+                        if (bDiff > 0) bDiff *= penaltyFactor;
+
+                        totalDiff += rDiff + gDiff + bDiff;
                     }
                 }
             }
