@@ -5,11 +5,7 @@ namespace LSPainter
 {
     public struct Color
     {
-        public Rgba32 Rgba32 { get; }
-        public int ABGR { get; }
-        public static implicit operator Rgba32(Color color) => color.Rgba32;
-        public static implicit operator int(Color color) => color.ABGR;
-
+        public static implicit operator Rgba32(Color c) => new Rgba32(c.R, c.G, c.B, c.A);
         public byte R { get; }
         public byte G { get; }
         public byte B { get; }
@@ -21,18 +17,14 @@ namespace LSPainter
             G = g;
             B = b;
             A = a;
-            Rgba32 = new Rgba32(R, G, B);
-            ABGR = (255 << 24) | (B << 16) | (G << 8) | (R << 0);
         }
 
         public Color(Rgba32 color)
         {
-            Rgba32 = color;
             R = color.R;
             G = color.G;
             B = color.B;
             A = color.A;
-            ABGR = (color.A << 24) | (color.B << 16) | (color.G << 8) | (color.R << 0);
         }
 
         public static Color Black = new Color(0, 0, 0);
@@ -53,7 +45,7 @@ namespace LSPainter
             float backAlpha = backdrop.A * factor;
             float sourceAlpha = source.A * factor;
 
-            Func<byte, byte, byte> colorBlend = (cB, cS) => (byte)(backAlpha * cS + backAlpha * cB * (1 - sourceAlpha));
+            Func<byte, byte, byte> colorBlend = (cB, cS) => (byte)(sourceAlpha * cS + backAlpha * cB * (1 - sourceAlpha));
 
             byte r = colorBlend(backdrop.R, source.R);
             byte g = colorBlend(backdrop.G, source.G);
@@ -66,6 +58,11 @@ namespace LSPainter
         public static int Diff(Color a, Color b)
         {
             return Math.Abs(a.R - b.R) + Math.Abs(a.G - b.G) + Math.Abs(a.B - b.B);
+        }
+
+        public override string ToString()
+        {
+            return $"rgba({R}, {G}, {B}, {A})";
         }
     }
 }

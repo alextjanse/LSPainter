@@ -60,5 +60,10 @@ namespace LSPainter
 
             return output;
         }
+
+        public static float FloatInRange(float lb, float ub)
+        {
+            return lb + random.NextSingle() * (ub - lb);
+        }
     }
 }

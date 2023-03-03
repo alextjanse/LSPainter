@@ -8,9 +8,9 @@ namespace LSPainter
         public Painting Painting { get; }
         ImageHandler original;
 
-        int score;
+        long score;
         bool scoreUpdateFlag = true;
-        public int Score
+        public long Score
         {
             get
             {
@@ -26,8 +26,8 @@ namespace LSPainter
         ShapeGeneratorSettings shapeGeneratorSettings;
         ColorGeneratorSettings colorGeneratorSettings;
 
-        double temperature = 100;
-        int coolingSteps = 1000;
+        double temperature = 1000000;
+        int coolingSteps = 100000;
         int iteration = 0;
         double alpha = 0.95;
 
@@ -48,13 +48,15 @@ namespace LSPainter
 
             colorGeneratorSettings = new ColorGeneratorSettings()
             {
-                Alpha = 10,
+                Alpha = 255 / 10,
             };
+
+            score = GetScore();
         }
 
-        int GetScore()
+        long GetScore()
         {
-            int totalScore = 0;
+            long totalScore = 0;
 
             for (int y = 0; y < Painting.Width; y++)
             {
@@ -63,7 +65,7 @@ namespace LSPainter
                     Color originalColor = original.GetPixel(x, y);
                     Color currentColor = Painting.GetPixel(x, y);
 
-                    int diff = Color.Diff(originalColor, currentColor);
+                    long diff = Color.Diff(originalColor, currentColor);
                     totalScore += diff;
                 }
             }
@@ -76,7 +78,7 @@ namespace LSPainter
             Shape shape = ShapeGenerator.Generate(shapeGeneratorSettings);
             Color color = ColorGenerator.Generate(colorGeneratorSettings);
 
-            int scoreDiff = TryShape(shape, color);
+            long scoreDiff = TryShape(shape, color);
 
             if (scoreDiff < 0)
             {
@@ -84,11 +86,18 @@ namespace LSPainter
                 Painting.DrawShape(shape, color);
                 score += scoreDiff;
             }
-            else if (random.NextSingle() < Math.Pow(Math.E, -scoreDiff / temperature))
+            else
             {
-                // Apply the change with probablity: https://en.wikipedia.org/wiki/Simulated_annealing#Acceptance_probabilities_2
-                Painting.DrawShape(shape, color);
-                score += scoreDiff;
+                float x = random.NextSingle();
+                double p = Math.Pow(Math.E, -scoreDiff / temperature);
+
+                if (x < p)
+                {
+                    // Console.WriteLine($"Accepted by chance. diff = {scoreDiff}, p = {p}");
+                    // Apply the change with probablity: https://en.wikipedia.org/wiki/Simulated_annealing#Acceptance_probabilities_2
+                    Painting.DrawShape(shape, color);
+                    score += scoreDiff;
+                }
             }
 
             if (iteration++ > coolingSteps)
@@ -98,9 +107,9 @@ namespace LSPainter
             }
         }
 
-        int TryShape(Shape shape, Color color)
+        long TryShape(Shape shape, Color color)
         {
-            int totalDiff = 0;
+            long totalDiff = 0;
 
             BoundingBox bbox = shape.BoundingBox;
 

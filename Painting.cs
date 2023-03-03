@@ -40,7 +40,9 @@ namespace LSPainter
 
                     if (shape.IsInside(p))
                     {
-                        setPixel(x, y, color);
+                        Color currentColor = GetPixel(x, y);
+                        Color blendedColor = Color.Blend(currentColor, color);
+                        setPixel(x, y, blendedColor);
                     }
                 }
             }

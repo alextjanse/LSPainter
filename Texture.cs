@@ -50,7 +50,7 @@ namespace LSPainter
         {
             int index = 4 * (y * Width + x);
             return new Color(
-                Data[index],        // R
+                Data[index + 0],    // R
                 Data[index + 1],    // G
                 Data[index + 2],    // B
                 Data[index + 3]);   // A

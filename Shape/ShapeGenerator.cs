@@ -30,7 +30,7 @@ namespace LSPainter.Shapes
         {
             Point p1 = GeneratePoint(settings);
 
-            float gamma = (float)Math.PI * random.NextSingle();
+            float gamma = Randomizer.FloatInRange(0.1f, 0.9f) * (float)Math.PI;
 
             float remainder = 2 * settings.Area / (float)Math.Sin(gamma);
 
@@ -38,7 +38,7 @@ namespace LSPainter.Shapes
             float[] factors = Randomizer.RandomFactors(remainder, 2);
 
             float angle1 = 2 * (float)Math.PI * random.NextSingle();
-            float angle2 = gamma - angle1;
+            float angle2 = angle1 - gamma;
 
             Point p2 = p1 + factors[0] * GenerateUnitVector(angle1);
             Point p3 = p1 + factors[1] * GenerateUnitVector(angle2);
