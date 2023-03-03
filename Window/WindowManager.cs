@@ -24,10 +24,6 @@ namespace LSPainter
     public class WindowManager : GameWindow
     {
         Shader shader;
-        int vertexBufferObject;
-        int vertexArrayObject;
-        int elementBufferObject;
-
         ImageHandler original;
         SolverManager solverManager;
         FrameManager frameManager;
@@ -63,17 +59,6 @@ namespace LSPainter
 
             GL.ClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-            
-            // vertexArrayObject = GL.GenVertexArray();
-            // GL.BindVertexArray(vertexArrayObject);
-
-            // vertexBufferObject = GL.GenBuffer();
-            // GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBufferObject);
-            // GL.BufferData(BufferTarget.ArrayBuffer, frameManager.Vertices.Length * sizeof(float), frameManager.Vertices, BufferUsageHint.StreamDraw);
-
-            // elementBufferObject = GL.GenBuffer();
-            // GL.BindBuffer(BufferTarget.ElementArrayBuffer, elementBufferObject);
-            // GL.BufferData(BufferTarget.ElementArrayBuffer, frameManager.Indices.Length * sizeof(uint), frameManager.Indices, BufferUsageHint.StreamDraw);
             shader.Load();
             shader.Use();
 
