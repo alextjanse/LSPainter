@@ -43,7 +43,7 @@ namespace LSPainter
                 MaxX = original.Width,
                 MinY = 0,
                 MaxY = original.Height,
-                Area = 100,
+                Area = 20,
             };
 
             colorGeneratorSettings = new ColorGeneratorSettings()
@@ -58,9 +58,9 @@ namespace LSPainter
         {
             long totalScore = 0;
 
-            for (int y = 0; y < Painting.Width; y++)
+            for (int y = 0; y < Painting.Height; y++)
             {
-                for (int x = 0; x < Painting.Height; x++)
+                for (int x = 0; x < Painting.Width; x++)
                 {
                     Color originalColor = original.GetPixel(x, y);
                     Color currentColor = Painting.GetPixel(x, y);

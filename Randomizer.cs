@@ -3,6 +3,33 @@ namespace LSPainter
     public class Randomizer
     {
         static Random random = new Random();
+
+        public static T PickRandomly<T>((T, float)[] items)
+        {
+            float sum = 0;
+
+            foreach ((_, float p) in items)
+            {
+                sum += p;
+            }
+
+            float x = random.NextSingle() * sum;
+
+            int i = -1;
+
+            sum = 0;
+
+            do
+            {
+                (_, float p) = items[++i];
+
+                sum += p;
+            }
+            while (sum < x);
+
+            return items[i].Item1;
+        }
+
         public static float[] RandomFactors(float target, int n)
         {
             float[] output = new float[n];

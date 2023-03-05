@@ -7,10 +7,17 @@ namespace LSPainter.Shapes
 
     public class ShapeGenerator
     {
+        static (Func<ShapeGeneratorSettings, Shape>, float)[] generators = new (Func<ShapeGeneratorSettings, Shape>, float)[]
+        {
+            (GenerateCircle, 0.5f),
+            (GenerateTriangle, 0.5f),
+        };
+
         static Random random = new Random();
         public static Shape Generate(ShapeGeneratorSettings settings)
         {
-            return GenerateTriangle(settings);
+            Func<ShapeGeneratorSettings, Shape> generator = Randomizer.PickRandomly(generators);
+            return generator(settings);
         }
 
         static Point GeneratePoint(ShapeGeneratorSettings settings)
@@ -44,6 +51,15 @@ namespace LSPainter.Shapes
             Point p3 = p1 + factors[1] * GenerateUnitVector(angle2);
 
             return new Triangle(p1, p2, p3);
+        }
+
+        static Circle GenerateCircle(ShapeGeneratorSettings settings)
+        {
+            Point origin = GeneratePoint(settings);
+
+            float radius = (float)Math.Sqrt(settings.Area / (float)Math.PI);
+
+            return new Circle(origin, radius);
         }
     }
 }
