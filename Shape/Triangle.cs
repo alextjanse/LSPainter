@@ -26,12 +26,12 @@ namespace LSPainter.Shapes
         {
             // Source: https://www.scratchapixel.com/lessons/3d-basic-rendering/rasterization-practical-implementation/rasterization-stage.html
             
-            return IsRightOfEdge(P2, P3, p) &&
-                   IsRightOfEdge(P3, P1, p) &&
-                   IsRightOfEdge(P1, P2, p);
+            return IsRightOfHalfEdge(P2, P3, p) &&
+                   IsRightOfHalfEdge(P3, P1, p) &&
+                   IsRightOfHalfEdge(P1, P2, p);
         }
 
-        bool IsRightOfEdge(Vector v1, Vector v2, Vector p)
+        bool IsRightOfHalfEdge(Vector v1, Vector v2, Vector p)
         {
             return Vector.Determinant(v1, v2, p) >= 0;
         }
