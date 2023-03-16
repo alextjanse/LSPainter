@@ -16,22 +16,7 @@ namespace LSPainter.Geometry
             }
         }
 
-        private HalfEdge? _outerComponent;
-        public HalfEdge OuterComponent
-        {
-            get
-            {
-                if (_outerComponent != null)
-                {
-                    return _outerComponent;
-                }
-                throw new NullReferenceException($"Outer component of Face ${id} is null");
-            }
-            set
-            {
-                _outerComponent = value;
-            }
-        }
+        public HalfEdge? OuterComponent { get; set; }
         
         public List<HalfEdge> InnerComponents;
 
@@ -43,6 +28,11 @@ namespace LSPainter.Geometry
         public void AddInnerComponent(HalfEdge innerComponent)
         {
             InnerComponents.Add(innerComponent);
+        }
+
+        public override string ToString()
+        {
+            return $"Face {ID}";
         }
     }
 }

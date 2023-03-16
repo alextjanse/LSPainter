@@ -13,7 +13,7 @@ namespace LSPainter
 
             ImageHandler image = new ImageHandler("Mona Lisa", file_path);
 
-            WindowLayout windowLayout = new WindowLayout(1, 1, false, 1);
+            WindowLayout windowLayout = new WindowLayout(2, 2, false, 4);
 
             using (WindowManager window = new WindowManager(windowLayout, image))
             {
@@ -22,4 +22,3 @@ namespace LSPainter
         }
     }
 }
-

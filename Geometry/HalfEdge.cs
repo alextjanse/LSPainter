@@ -45,30 +45,35 @@ namespace LSPainter.Geometry
 
         public void SetOrigin(Vertex origin)
         {
-            _origin = origin;
+            Origin = origin;
         }
 
         public void SetTwin(HalfEdge twin)
         {
-            _twin = twin;
+            Twin = twin;
             twin.Twin = this;
         }
 
         public void SetIncidentFace(Face incidentFace)
         {
-            _incidentFace = incidentFace;
+            IncidentFace = incidentFace;
         }
 
         public void SetNext(HalfEdge next)
         {
-            _next = next;
+            Next = next;
             next.Prev = this;
         }
 
         public void SetPrev(HalfEdge prev)
         {
-            _prev = prev;
+            Prev = prev;
             prev.Next = this;
+        }
+
+        public override string ToString()
+        {
+            return $"Half-edge {ID}";
         }
     }
 }

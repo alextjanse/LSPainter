@@ -31,5 +31,10 @@ namespace LSPainter.Geometry
         {
             IncidentEdge = incidentEdge;
         }
+
+        public override string ToString()
+        {
+            return $"Vertex {ID}";
+        }
     }
 }
