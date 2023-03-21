@@ -48,7 +48,7 @@ namespace LSPainter.Geometry
             Origin = origin;
         }
 
-        public void SetTwin(HalfEdge twin)
+        public void SetTwinAndItsTwin(HalfEdge twin)
         {
             Twin = twin;
             twin.Twin = this;
@@ -59,13 +59,13 @@ namespace LSPainter.Geometry
             IncidentFace = incidentFace;
         }
 
-        public void SetNext(HalfEdge next)
+        public void SetNextAndItsPrev(HalfEdge next)
         {
             Next = next;
             next.Prev = this;
         }
 
-        public void SetPrev(HalfEdge prev)
+        public void SetPrevAndItsNext(HalfEdge prev)
         {
             Prev = prev;
             prev.Next = this;

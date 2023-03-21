@@ -30,6 +30,11 @@ namespace LSPainter.Geometry
             InnerComponents.Add(innerComponent);
         }
 
+        public void SetOuterComponent(HalfEdge outerComponent)
+        {
+            OuterComponent = outerComponent;
+        }
+
         public override string ToString()
         {
             return $"Face {ID}";
