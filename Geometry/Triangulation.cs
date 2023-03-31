@@ -61,8 +61,7 @@ namespace LSPainter.Geometry
 
                 if (!prevChecked && !nextChecked)
                 {
-                    // Start vertex
-
+                    // Start vertex: insert incident edges CCW
                 }
                 else if (prevChecked && nextChecked)
                 {
@@ -114,13 +113,13 @@ namespace LSPainter.Geometry
             Vector s = m2 - m1;
 
             // Function defined in source
-            Func<Vector, Vector, float> MyCross = (v, w) => v.X * w.Y - v.Y * w.X;
+            Func<Vector, Vector, float> Cross = (v, w) => v.X * w.Y - v.Y * w.X;
 
-            if (MyCross(r, s) == 0)
+            if (Cross(r, s) == 0)
             {
                 // Case 1-2: lines are "parralel" (def: they don't intersect)
 
-                if (MyCross(q - p, r) == 0)
+                if (Cross(q - p, r) == 0)
                 {
                     // Case 1: lines are "collinear" (def: they lay on top of each other)
                     throw new Exception("line segments are collinear");
@@ -147,11 +146,16 @@ namespace LSPainter.Geometry
             else
             {
                 // Case 3-4: lines intersect. Check if segments intersect as well.
-                float t = MyCross(q - p, s) / MyCross(r, s);
-                float u = MyCross(q - p, r) / MyCross(r, s);
+                float t = Cross(q - p, s) / Cross(r, s);
+                float u = Cross(q - p, r) / Cross(r, s);
 
                 if ((0 <= t && t <= 1) && (0 <= u && u <= 1))
                 {
+                    if ((t == 0 || t == 1) && (u == 0 || u == 1))
+                    {
+                        // The line segments intersect at the endpoints. Then 
+                    }
+
                     // Case 3: line segments intersect
                     throw new Exception("line segments intersect");
                 }
@@ -176,10 +180,28 @@ namespace LSPainter.Geometry
                     {
                         return 1;
                     }
-                    else
+                    
+                    /* 
+                    lX = mX, meaning that they share an endpoint at (lX, y0). This means that at
+                    y1 the x-coordinates have to have a different value, otherwise the line segments
+                    are collinear.
+                    */
+
+                    y = Math.Min(Math.Max(l1.Y, l2.Y), Math.Max(m1.Y, m2.Y));
+
+                    lX = l.GetXFromY(y);
+                    mX = m.GetXFromY(y);
+
+                    if (lX < mX)
                     {
-                        throw new Exception("This should never happpen");
+                        return -1;
                     }
+                    else if (lX > mX)
+                    {
+                        return 1;
+                    }
+
+                    throw new Exception("This code should never be reached");
                 }
             }
         }

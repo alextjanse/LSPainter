@@ -19,7 +19,7 @@ namespace LSPainter
             https://www.scratchapixel.com/lessons/3d-basic-rendering/rasterization-practical-implementation/rasterization-stage.html
              */
             
-            float f = Vector.Determinant(l.V1, l.V2, p);
+            float f = Vector.Determinant(l.V1, l.V2, this);
 
             if (f < 0)
             {
@@ -56,7 +56,6 @@ namespace LSPainter
         public static Vector operator *(float f, Vector v) => new Vector(f * v.X, f * v.Y);
         public static Vector operator *(Vector v, float f) => f * v;
         public static float Dot(Vector u, Vector v) => u.X * v.X + u.Y * v.Y;
-        public static float Cross(Vector u, Vector v) => 
         public static float Determinant(Vector u, Vector v, Vector w) => (w.X - u.X) * (v.Y - u.Y) - (w.Y - u.Y) * (v.X - u.X);
 
         public static Vector UnitX = new Vector(1, 0);
