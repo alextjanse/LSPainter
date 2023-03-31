@@ -2,6 +2,7 @@ namespace LSPainter.Geometry
 {
     public class Vertex
     {
+        public static explicit operator Vector(Vertex v) => new Vector(v.X, v.Y);
         static uint idGen = 1;
         private uint id = 0;
         public uint ID
