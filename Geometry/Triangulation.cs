@@ -104,8 +104,25 @@ namespace LSPainter.Geometry
             // Deconstruct line segments for cleaner code
             Vector l1 = l.V1;
             Vector l2 = l.V2;
+
+            if (l2.X < l1.X)
+            {
+                // Make sure that x1 < x2, easier to use x_min
+                Vector temp = l1;
+                l1 = l2;
+                l2 = temp;
+            }
+
             Vector m1 = m.V1;
             Vector m2 = m.V2;
+
+            if (m2.X < m1.X)
+            {
+                // Same goes for m
+                Vector temp = m1;
+                m1 = m2;
+                l2 = temp;
+            }
 
             Vector p = l1;
             Vector r = l2 - l1;
@@ -121,6 +138,21 @@ namespace LSPainter.Geometry
 
                 if (Cross(q - p, r) == 0)
                 {
+                    if (l1.Y == l2.Y)
+                    {
+                        // Special case: lines are both horizontal. Check which is left of the other
+                        if ((l1.X < m1.X && m1.X < l2.X) || (l1.X < m2.X && m2.X < l2.X) ||
+                            (m1.X < l1.X && l1.X < m2.X) || (m1.X < l2.X && l2.X < m2.X))
+                        {
+                            // Check if the line segments are overlapping
+                            throw new Exception("line segments are overlapping");
+                        }
+
+                        if (l1.X < m1.X) return -1;
+                        else if (l1.X > m1.X) return 1;
+                        else throw new Exception("lines are exactly on top of each other");
+                    }
+
                     // Case 1: lines are "collinear" (def: they lay on top of each other)
                     throw new Exception("line segments are collinear");
                 }
@@ -172,14 +204,8 @@ namespace LSPainter.Geometry
                     float lX = l.GetXFromY(y);
                     float mX = m.GetXFromY(y);
 
-                    if (lX < mX)
-                    {
-                        return -1;
-                    }
-                    else if (lX > mX)
-                    {
-                        return 1;
-                    }
+                    if (lX < mX) return -1;
+                    else if (lX > mX) return 1;
                     
                     /* 
                     lX = mX, meaning that they share an endpoint at (lX, y0). This means that at
@@ -192,16 +218,9 @@ namespace LSPainter.Geometry
                     lX = l.GetXFromY(y);
                     mX = m.GetXFromY(y);
 
-                    if (lX < mX)
-                    {
-                        return -1;
-                    }
-                    else if (lX > mX)
-                    {
-                        return 1;
-                    }
-
-                    throw new Exception("This code should never be reached");
+                    if (lX < mX) return -1;
+                    else if (lX > mX) return 1;
+                    else throw new Exception("This code should never be reached");
                 }
             }
         }
