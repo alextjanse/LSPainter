@@ -105,9 +105,9 @@ namespace LSPainter.Geometry
             Vector l1 = l.V1;
             Vector l2 = l.V2;
 
-            if (l2.X < l1.X)
+            if (l1.X > l2.X)
             {
-                // Make sure that x1 < x2, easier to use x_min
+                // Make sure that x1 <= x2, easier to use x_min
                 Vector temp = l1;
                 l1 = l2;
                 l2 = temp;
@@ -116,7 +116,7 @@ namespace LSPainter.Geometry
             Vector m1 = m.V1;
             Vector m2 = m.V2;
 
-            if (m2.X < m1.X)
+            if (m1.X > m2.X)
             {
                 // Same goes for m
                 Vector temp = m1;
@@ -185,7 +185,40 @@ namespace LSPainter.Geometry
                 {
                     if ((t == 0 || t == 1) && (u == 0 || u == 1))
                     {
-                        // The line segments intersect at the endpoints. Then 
+                        /* 
+                        The line segments intersect at an endpoint. Check which is first counterclockwise.
+                        We know that the lines are only between pi rad and 2 pi rad, because the lines above
+                        the sweep line are already deleted from the status.
+
+                        We can use the dot product with the x-axis of the direction vectors to find the angle
+                        with the axis. We know that l1.X <= l2.X, so the dot product will always be positive.
+                        If l1 is the endpoint, this means that the dot product is fine l2 is somewhere in 4th
+                        quarter.
+
+                                        |
+                                       -|-
+                                      |2|1|
+                                    ----+----
+                                      |3|4|
+                                       -|-
+                                        |
+                        
+                        Fig: quarters of the unit circle
+
+                        If l2 is the endpoint, then the l1 is somewhere in the 3th quarter. This means that the
+                        direction of the direction vector r should be reversed. We can easily take the dot product
+                        of this by negating the dot product of r with the x-axis.
+                         */
+
+                        float dotL = r.Normalized().X;
+                        float dotM = s.Normalized().X;
+
+                        if (l2 == m1 || l2 == m2) dotL *= -1;
+                        if (m2 == l1 || m2 == l2) dotM *= -1;
+
+                        if (dotL < dotM) return -1;
+                        else if (dotL > dotM) return 1;
+                        else throw new Exception("somehow the lines are collinear");
                     }
 
                     // Case 3: line segments intersect

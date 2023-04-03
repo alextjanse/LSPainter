@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace LSPainter
 {
     public struct Point : IComparable<LineSegment>
@@ -36,7 +38,7 @@ namespace LSPainter
         }
     }
 
-    public struct Vector : IComparable<LineSegment>
+    public struct Vector : IComparable<LineSegment>, IEquatable<Vector>
     {
         public float X, Y;
         public float Length => (float)Math.Sqrt(X * X + Y * Y);
@@ -60,10 +62,63 @@ namespace LSPainter
 
         public static Vector UnitX = new Vector(1, 0);
         public static Vector UnitY = new Vector(0, 1);
+        
+        public void Normalize()
+        {
+            if (X * X + Y * Y == 1) return; // Already normalized
+            
+            float factor = 1 / Length;
+
+            X *= factor;
+            Y *= factor;
+        }
+
+        public Vector Normalized()
+        {
+            if (X * X + Y * Y == 1) return new Vector(X, Y); // Already normalized
+
+            float factor = 1 / Length;
+
+            return new Vector(X * factor, Y * factor);
+        }
+
+        public static Vector Normalized(Vector v)
+        {
+            return v.Normalized();
+        }
 
         public int CompareTo(LineSegment l)
         {
             return ((Point)this).CompareTo(l);
+        }
+
+        public static bool operator ==(Vector u, Vector v)
+        {
+            if (u == null)
+            {
+                if (v == null)
+                {
+                    // Both null
+                    return true;
+                }
+
+                return false;
+            }
+
+            return u.Equals(v);
+        }
+
+        public static bool operator !=(Vector u, Vector v) => !(u == v);
+        
+        public override bool Equals(object? obj) => this.Equals(obj as Vector?);
+
+        public override int GetHashCode() => (X, Y).GetHashCode();
+
+        public bool Equals(Vector other)
+        {
+            if (other == null) return false;
+
+            return X == other.X && Y == other.Y;
         }
     }
 
