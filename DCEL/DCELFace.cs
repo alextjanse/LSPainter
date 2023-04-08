@@ -1,6 +1,6 @@
-namespace LSPainter.Geometry
+namespace LSPainter.DCEL
 {
-    public class Face
+    public class DCELFace
     {
         static uint idGen = 1;
         private uint id = 0;
@@ -16,21 +16,21 @@ namespace LSPainter.Geometry
             }
         }
 
-        public HalfEdge? OuterComponent { get; set; }
+        public DCELHalfEdge? OuterComponent { get; set; }
         
-        public List<HalfEdge> InnerComponents;
+        public List<DCELHalfEdge> InnerComponents;
 
-        public Face()
+        public DCELFace()
         {
-            InnerComponents = new List<HalfEdge>();
+            InnerComponents = new List<DCELHalfEdge>();
         }
 
-        public void AddInnerComponent(HalfEdge innerComponent)
+        public void AddInnerComponent(DCELHalfEdge innerComponent)
         {
             InnerComponents.Add(innerComponent);
         }
 
-        public void SetOuterComponent(HalfEdge outerComponent)
+        public void SetOuterComponent(DCELHalfEdge outerComponent)
         {
             OuterComponent = outerComponent;
         }

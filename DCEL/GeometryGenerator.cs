@@ -1,4 +1,4 @@
-namespace LSPainter.Geometry
+namespace LSPainter.DCEL
 {
     public class GeometryGenerator
     {

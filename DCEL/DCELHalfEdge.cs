@@ -1,6 +1,6 @@
-namespace LSPainter.Geometry
+namespace LSPainter.DCEL
 {
-    public class HalfEdge
+    public class DCELHalfEdge
     {
         static uint idGen = 1;
         private uint id = 0;
@@ -16,25 +16,25 @@ namespace LSPainter.Geometry
             }
         }
 
-        public Vertex? Origin { get; set; }
-        public HalfEdge? Twin { get; set; }        
-        public Face? IncidentFace { get; set; }
-        public HalfEdge? Next { get; set; }
-        public HalfEdge? Prev { get; set; }
+        public DCELVertex? Origin { get; set; }
+        public DCELHalfEdge? Twin { get; set; }        
+        public DCELFace? IncidentFace { get; set; }
+        public DCELHalfEdge? Next { get; set; }
+        public DCELHalfEdge? Prev { get; set; }
 
-        public HalfEdge()
+        public DCELHalfEdge()
         {
 
         }
 
-        public HalfEdge(HalfEdge prev, Vertex origin, HalfEdge next)
+        public DCELHalfEdge(DCELHalfEdge prev, DCELVertex origin, DCELHalfEdge next)
         {
             Prev = prev;
             Origin = Origin;
             Next = next;
         }
 
-        public HalfEdge(Vertex origin, HalfEdge twin, Face incidentFace, HalfEdge next, HalfEdge prev)
+        public DCELHalfEdge(DCELVertex origin, DCELHalfEdge twin, DCELFace incidentFace, DCELHalfEdge next, DCELHalfEdge prev)
         {
             Origin = origin;
             Twin = twin;
@@ -43,29 +43,29 @@ namespace LSPainter.Geometry
             Prev = prev;
         }
 
-        public void SetOrigin(Vertex origin)
+        public void SetOrigin(DCELVertex origin)
         {
             Origin = origin;
         }
 
-        public void SetTwinAndItsTwin(HalfEdge twin)
+        public void SetTwinAndItsTwin(DCELHalfEdge twin)
         {
             Twin = twin;
             twin.Twin = this;
         }
 
-        public void SetIncidentFace(Face incidentFace)
+        public void SetIncidentFace(DCELFace incidentFace)
         {
             IncidentFace = incidentFace;
         }
 
-        public void SetNextAndItsPrev(HalfEdge next)
+        public void SetNextAndItsPrev(DCELHalfEdge next)
         {
             Next = next;
             next.Prev = this;
         }
 
-        public void SetPrevAndItsNext(HalfEdge prev)
+        public void SetPrevAndItsNext(DCELHalfEdge prev)
         {
             Prev = prev;
             prev.Next = this;

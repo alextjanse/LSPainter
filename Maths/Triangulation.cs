@@ -1,18 +1,19 @@
 using LSPainter;
 using LSPainter.Shapes;
+using LSPainter.DCEL;
 
-namespace LSPainter.Geometry
+namespace LSPainter.Maths
 {
-    public class Triangulation : IComparer<HalfEdge>, IComparer<LineSegment>
+    public class Triangulation : IComparer<LineSegment>
     {
-        public static Triangulation FromFace(Face face)
+        public static Triangulation FromFace(DCELFace face)
         {
-            List<HalfEdge> edges = new List<HalfEdge>();
-            List<Vertex> vertices = new List<Vertex>();
+            List<DCELHalfEdge> edges = new List<DCELHalfEdge>();
+            List<DCELVertex> vertices = new List<DCELVertex>();
 
-            HalfEdge startEdge = face.OuterComponent ?? throw new NullReferenceException();
-            HalfEdge currentEdge = startEdge;
-            Vertex vertex;
+            DCELHalfEdge startEdge = face.OuterComponent ?? throw new NullReferenceException();
+            DCELHalfEdge currentEdge = startEdge;
+            DCELVertex vertex;
 
             // bool isConvex = true;
             int nEdges = 0;
@@ -44,24 +45,26 @@ namespace LSPainter.Geometry
             while (currentEdge.ID != startEdge.ID);
 
             // https://www.cs.uu.nl/docs/vakken/ga/2022/slides/slides3.pdf
-            Queue<Vertex> eventQueue = new Queue<Vertex>(vertices.OrderBy(v => v.Y));
-            SortedList<HalfEdge, Vertex> status = new SortedList<HalfEdge, Vertex>();
+            Queue<DCELVertex> eventQueue = new Queue<DCELVertex>(vertices.OrderBy(v => v.Y));
+            SortedList<DCELHalfEdge, DCELVertex> status = new SortedList<DCELHalfEdge, DCELVertex>();
+
+            HashSet<DCELHalfEdge> checkedEdges = new HashSet<DCELHalfEdge>();
 
             float height = 0;
 
             while (eventQueue.Count != 0)
             {
                 vertex = eventQueue.Dequeue();
+                DCELHalfEdge next = vertex.IncidentEdge ?? throw new NullReferenceException();
+                DCELHalfEdge prev = next.Prev ?? throw new NullReferenceException();
 
-                HalfEdge edge = vertex.IncidentEdge ?? throw new NullReferenceException();
-
-                // Height hasn't been updated yet
-                bool prevChecked = (edge.Prev?.Origin?.Y < height) || (edge.Prev?.Origin?.Y == height && edge.Prev?.Origin?.X < vertex.X);
-                bool nextChecked = (edge.Next?.Origin?.Y < height) || (edge.Next?.Origin?.Y == height && edge.Next?.Origin?.X < vertex.X);
+                bool prevChecked = checkedEdges.Contains(prev);
+                bool nextChecked = checkedEdges.Contains(next);
 
                 if (!prevChecked && !nextChecked)
                 {
                     // Start vertex: insert incident edges CCW
+                        
                 }
                 else if (prevChecked && nextChecked)
                 {
@@ -74,21 +77,72 @@ namespace LSPainter.Geometry
             }
         }
 
-        public int Compare(HalfEdge? l, HalfEdge? m)
-        {
-            // Transform the half-edges into line-segments, and compare those
-            Vector l1 = (Vector)(l?.Origin ?? throw new NullReferenceException());
-            Vector l2 = (Vector)(l?.Next?.Origin ?? throw new NullReferenceException());
-
-            Vector m1 = (Vector)(m?.Origin ?? throw new NullReferenceException());
-            Vector m2 = (Vector)(m?.Next?.Origin ?? throw new NullReferenceException());
-
-            return Compare(new LineSegment(l1, l2), new LineSegment(m1, m2));
-        }
-
         public int Compare(LineSegment l, LineSegment m)
         {
             /* 
+            Given two non-intersecting line segments l: (l1, l2) and m: (m1, m2),
+            determine which line segment lies left of the other. We can use this
+            to order the half-edges from left to right in our status.
+
+            The comparison is called when the line-segments share a same height,
+            so we know they share a y-range [yMin, yMax]. We can then take 4 points
+            of interest: lMin: (l[yMin], yMin) and lMax: (l[yMax], yMax). These points
+            should both be on either side of m, otherwise the line segments intersect.
+
+            
+            For 
+             */
+            Vector l1 = l.V1;
+            Vector l2 = l.V2;
+
+            Vector m1 = m.V1;
+            Vector m2 = m.V2;
+
+            float yMin = Math.Max(Math.Min(l1.Y, l2.Y), Math.Min(m1.Y, m2.Y));
+            float yMax = Math.Min(Math.Max(l1.Y, l2.Y), Math.Max(m1.Y, m2.Y));
+
+            if (yMax - yMin == 0)
+            {
+                // The lines are both horizontal
+                if ((l1.X == m1.X && l2.X == m2.X) ||
+                    (l1.X == m2.X && l2.X == m1.X))
+                {
+                    throw new Exception("the line segments are the same");
+                }
+
+                if (l1.X <= m1.X && l1.X <= m2.X && l2.X <= m1.X && l2.X <= m2.X) return -1;
+                else if (l1.X >= m1.X && l1.X >= m2.X && l2.X >= m1.X && l2.X >= m2.X) return 1;
+                else throw new Exception("The line segments overlap");
+            }
+
+            float lxMin = l.GetXFromY(yMin);
+            float lxMax = l.GetXFromY(yMax);
+
+            float mxMin = m.GetXFromY(yMin);
+            float mxMax = m.GetXFromY(yMax);
+
+            Point lMin = new Point(lxMin, yMin);
+            Point lMax = new Point(lxMax, yMax);
+
+            bool lMinLeftOfM = lMin.CompareTo(m) == -1;
+            bool lMaxLeftOfM = lMax.CompareTo(m) == -1;
+
+            if (lMinLeftOfM && lMaxLeftOfM) return -1;
+            else if (!lMinLeftOfM && !lMaxLeftOfM) return 1;
+            else throw new Exception("line segments are intersecting");
+            
+            /*
+
+            --------------------------------------------------------------------------
+
+            This is my old, way too complicated solution that I first wrote.
+            I was trying to do all kinds of fancy Maths™, but the solution was
+            so much simpler. Still, I didn't want to just delete it, so here it lays.
+
+            Rest in Peace.
+
+            --------------------------------------------------------------------------
+
             Given two non-intersecting line segments l: (p, p + r) and m: (q, q + s),
             determine which line segment lies first in order. We can use this
             to order the half-edges from left to right in our status.
@@ -99,7 +153,6 @@ namespace LSPainter.Geometry
 
             I'll be following the following solution to find the intersection point:
             https://stackoverflow.com/a/565282
-             */
 
             // Deconstruct line segments for cleaner code
             Vector l1 = l.V1;
@@ -162,7 +215,6 @@ namespace LSPainter.Geometry
                 Do this by checking if l1 lies left of m.
 
                 First, make sure that line segment m is bottom-to-top orientation
-                 */
                 
                 if (m1.Y < m2.Y)
                 {
@@ -186,29 +238,26 @@ namespace LSPainter.Geometry
                     if ((t == 0 || t == 1) && (u == 0 || u == 1))
                     {
                         /* 
-                        The line segments intersect at an endpoint. Check which is first counterclockwise.
-                        We know that the lines are only between pi rad and 2 pi rad, because the lines above
-                        the sweep line are already deleted from the status.
+                        The line segments share an endpoint. Check which is first counterclockwise. We know
+                        that the lines are only between pi rad and 2 pi rad, because the lines above the sweep
+                        line are already deleted from the status.
 
                         We can use the dot product with the x-axis of the direction vectors to find the angle
                         with the axis. We know that l1.X <= l2.X, so the dot product will always be positive.
                         If l1 is the endpoint, this means that the dot product is fine l2 is somewhere in 4th
                         quarter.
 
-                                        |
-                                       -|-
-                                      |2|1|
-                                    ----+----
-                                      |3|4|
-                                       -|-
-                                        |
+                              |
+                             2|1
+                            --+--
+                             3|4
+                              |
                         
-                        Fig: quarters of the unit circle
+                        Fig: Quarters
 
                         If l2 is the endpoint, then the l1 is somewhere in the 3th quarter. This means that the
                         direction of the direction vector r should be reversed. We can easily take the dot product
                         of this by negating the dot product of r with the x-axis.
-                         */
 
                         float dotL = r.Normalized().X;
                         float dotM = s.Normalized().X;
@@ -230,7 +279,6 @@ namespace LSPainter.Geometry
                     Case 4: Line segments don't intersect. Now, this means that they share a y-range,
                     otherwise the comparison wouldn't have been called. This means that in in their
                     intersecting y-range [y0, y1], one line segment lies in total left of the other.
-                     */
 
                     float y = Math.Max(Math.Min(l1.Y, l2.Y), Math.Min(m1.Y, m2.Y));
 
@@ -244,7 +292,6 @@ namespace LSPainter.Geometry
                     lX = mX, meaning that they share an endpoint at (lX, y0). This means that at
                     y1 the x-coordinates have to have a different value, otherwise the line segments
                     are collinear.
-                    */
 
                     y = Math.Min(Math.Max(l1.Y, l2.Y), Math.Max(m1.Y, m2.Y));
 
@@ -255,7 +302,7 @@ namespace LSPainter.Geometry
                     else if (lX > mX) return 1;
                     else throw new Exception("This code should never be reached");
                 }
-            }
+            } */
         }
     }
 }

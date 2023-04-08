@@ -1,3 +1,5 @@
+using LSPainter.Maths;
+
 namespace LSPainter.Shapes
 {
     public class Circle : Shape
