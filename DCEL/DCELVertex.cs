@@ -19,12 +19,12 @@ namespace LSPainter.DCEL
             }
         }
         
-        public float X { get; }
-        public float Y { get; }
+        public double X { get; }
+        public double Y { get; }
 
         public DCELHalfEdge? IncidentEdge { get; set; }
 
-        public DCELVertex(float x, float y)
+        public DCELVertex(double x, double y)
         {
             X = x;
             Y = y;

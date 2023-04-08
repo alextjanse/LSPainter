@@ -119,7 +119,7 @@ namespace LSPainter.DCEL
             faces.Add(face.ID, face);
         }
 
-        void AddVertex(float x, float y)
+        void AddVertex(double x, double y)
         {
             DCELVertex vertex = new DCELVertex(x, y);
             vertices.Add(vertex.ID, vertex);
@@ -142,14 +142,12 @@ namespace LSPainter.DCEL
                 return;
             }
 
-            float pi = (float)Math.PI;
-
             // There is already an incident edge. Determine the order of next/prev edges
-            float angle = GetEdgeAngleWithXAxis(e);
+            double angle = GetEdgeAngleWithXAxis(e);
 
             DCELHalfEdge? current = v.IncidentEdge;
-            float angleCurrent = GetEdgeAngleWithXAxis(current);
-            float angleNext;
+            double angleCurrent = GetEdgeAngleWithXAxis(current);
+            double angleNext;
 
             do
             {
@@ -171,7 +169,7 @@ namespace LSPainter.DCEL
             e.SetPrevAndItsNext(current?.Twin ?? throw new NullReferenceException());
         }
 
-        bool AngleInRange(float angle, float lb, float ub)
+        bool AngleInRange(double angle, double lb, double ub)
         {
             // Normal case: 0 rad is not in the angle range
             if (lb < ub) return lb <= angle && angle <= ub;
@@ -180,7 +178,7 @@ namespace LSPainter.DCEL
             return lb <= angle || angle <= ub;
         }
 
-        float GetEdgeAngleWithXAxis(DCELHalfEdge e)
+        double GetEdgeAngleWithXAxis(DCELHalfEdge e)
         {
             if (e.Origin == null || e.Twin == null || e.Twin.Origin == null)
             {
@@ -190,7 +188,7 @@ namespace LSPainter.DCEL
             DCELVertex origin = e.Origin;
             DCELVertex destination = e.Twin.Origin;
 
-            float length = (float)Math.Sqrt(
+            double length = Math.Sqrt(
                 (origin.X - destination.X) * (origin.X - destination.Y) +
                 (origin.Y - destination.Y) * (origin.Y - destination.Y)
             );
@@ -201,7 +199,7 @@ namespace LSPainter.DCEL
             }
 
             // cos(a) = adjacent / hypotenuse -> a = acos(adjacent / hyptenuse)
-            return (float)Math.Acos((destination.X - origin.X) / length) + ((destination.Y - origin.Y) < 0 ? (float)Math.PI : 0);
+            return Math.Acos((destination.X - origin.X) / length) + ((destination.Y - origin.Y) < 0 ? Math.PI : 0);
         }
     }
 }

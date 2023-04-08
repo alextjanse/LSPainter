@@ -16,10 +16,10 @@ namespace LSPainter.Shapes
 
             Area = Vector.Determinant(P1, P2, P3);
 
-            float minX = Math.Min(Math.Min(P1.X, P2.X), P3.X);
-            float maxX = Math.Max(Math.Max(P1.X, P2.X), P3.X);
-            float minY = Math.Min(Math.Min(P1.Y, P2.Y), P3.Y);
-            float maxY = Math.Max(Math.Max(P1.Y, P2.Y), P3.Y);
+            double minX = Math.Min(Math.Min(P1.X, P2.X), P3.X);
+            double maxX = Math.Max(Math.Max(P1.X, P2.X), P3.X);
+            double minY = Math.Min(Math.Min(P1.Y, P2.Y), P3.Y);
+            double maxY = Math.Max(Math.Max(P1.Y, P2.Y), P3.Y);
 
             BoundingBox = new Rectangle(minX, minY, maxX - minX, maxY - minY);
         }

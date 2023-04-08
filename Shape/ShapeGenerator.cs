@@ -4,7 +4,7 @@ namespace LSPainter.Shapes
 {
     public struct ShapeGeneratorSettings
     {
-        public float MinX, MaxX, MinY, MaxY, Area;
+        public double MinX, MaxX, MinY, MaxY, Area;
     }
 
     public class ShapeGenerator
@@ -24,30 +24,30 @@ namespace LSPainter.Shapes
 
         static Point GeneratePoint(ShapeGeneratorSettings settings)
         {
-            float x = random.NextSingle() * (settings.MaxX - settings.MinX) + settings.MinX;
-            float y = random.NextSingle() * (settings.MaxY - settings.MinY) + settings.MinY;
+            double x = random.NextDouble() * (settings.MaxX - settings.MinX) + settings.MinX;
+            double y = random.NextDouble() * (settings.MaxY - settings.MinY) + settings.MinY;
 
             return new Point(x, y);
         }
 
-        static Vector GenerateUnitVector(float angle)
+        static Vector GenerateUnitVector(double angle)
         {
-            return new Vector((float)Math.Cos(angle), (float)Math.Sin(angle));
+            return new Vector(Math.Cos(angle), Math.Sin(angle));
         }
 
         static Triangle GenerateTriangle(ShapeGeneratorSettings settings)
         {
             Point p1 = GeneratePoint(settings);
 
-            float gamma = Randomizer.FloatInRange(0.1f, 0.9f) * (float)Math.PI;
+            double gamma = Randomizer.Range(0.1f, 0.9f) * Math.PI;
 
-            float remainder = 2 * settings.Area / (float)Math.Sin(gamma);
+            double remainder = 2 * settings.Area / Math.Sin(gamma);
 
             // Lengths a and b of the triangle
-            float[] factors = Randomizer.RandomFactors(remainder, 2);
+            double[] factors = Randomizer.RandomFactors(remainder, 2);
 
-            float angle1 = 2 * (float)Math.PI * random.NextSingle();
-            float angle2 = angle1 - gamma;
+            double angle1 = 2 * Math.PI * random.NextDouble();
+            double angle2 = angle1 - gamma;
 
             Point p2 = p1 + factors[0] * GenerateUnitVector(angle1);
             Point p3 = p1 + factors[1] * GenerateUnitVector(angle2);
@@ -59,7 +59,7 @@ namespace LSPainter.Shapes
         {
             Point origin = GeneratePoint(settings);
 
-            float radius = (float)Math.Sqrt(settings.Area / (float)Math.PI);
+            double radius = Math.Sqrt(settings.Area / Math.PI);
 
             return new Circle(origin, radius);
         }

@@ -5,7 +5,7 @@ namespace LSPainter.Maths
         public Edge? Prev { get; set; }
         public Edge? Next { get; set; }
 
-        public Vertex(float x, float y) : base(x, y)
+        public Vertex(double x, double y) : base(x, y)
         {
             
         }

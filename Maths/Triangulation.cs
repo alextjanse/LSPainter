@@ -50,7 +50,7 @@ namespace LSPainter.Maths
 
             HashSet<DCELHalfEdge> checkedEdges = new HashSet<DCELHalfEdge>();
 
-            float height = 0;
+            double height = 0;
 
             while (eventQueue.Count != 0)
             {
@@ -98,8 +98,8 @@ namespace LSPainter.Maths
             Vector m1 = m.V1;
             Vector m2 = m.V2;
 
-            float yMin = Math.Max(Math.Min(l1.Y, l2.Y), Math.Min(m1.Y, m2.Y));
-            float yMax = Math.Min(Math.Max(l1.Y, l2.Y), Math.Max(m1.Y, m2.Y));
+            double yMin = Math.Max(Math.Min(l1.Y, l2.Y), Math.Min(m1.Y, m2.Y));
+            double yMax = Math.Min(Math.Max(l1.Y, l2.Y), Math.Max(m1.Y, m2.Y));
 
             if (yMax - yMin == 0)
             {
@@ -115,11 +115,11 @@ namespace LSPainter.Maths
                 else throw new Exception("The line segments overlap");
             }
 
-            float lxMin = l.GetXFromY(yMin);
-            float lxMax = l.GetXFromY(yMax);
+            double lxMin = l.GetXFromY(yMin);
+            double lxMax = l.GetXFromY(yMax);
 
-            float mxMin = m.GetXFromY(yMin);
-            float mxMax = m.GetXFromY(yMax);
+            double mxMin = m.GetXFromY(yMin);
+            double mxMax = m.GetXFromY(yMax);
 
             Point lMin = new Point(lxMin, yMin);
             Point lMax = new Point(lxMax, yMax);
@@ -130,179 +130,6 @@ namespace LSPainter.Maths
             if (lMinLeftOfM && lMaxLeftOfM) return -1;
             else if (!lMinLeftOfM && !lMaxLeftOfM) return 1;
             else throw new Exception("line segments are intersecting");
-            
-            /*
-
-            --------------------------------------------------------------------------
-
-            This is my old, way too complicated solution that I first wrote.
-            I was trying to do all kinds of fancy Maths™, but the solution was
-            so much simpler. Still, I didn't want to just delete it, so here it lays.
-
-            Rest in Peace.
-
-            --------------------------------------------------------------------------
-
-            Given two non-intersecting line segments l: (p, p + r) and m: (q, q + s),
-            determine which line segment lies first in order. We can use this
-            to order the half-edges from left to right in our status.
-
-            The comparison is called when the line-segments share a same height,
-            so we know that their y-ranges overlap. From there, we need to
-            figure out which line-segment is left of the other.
-
-            I'll be following the following solution to find the intersection point:
-            https://stackoverflow.com/a/565282
-
-            // Deconstruct line segments for cleaner code
-            Vector l1 = l.V1;
-            Vector l2 = l.V2;
-
-            if (l1.X > l2.X)
-            {
-                // Make sure that x1 <= x2, easier to use x_min
-                Vector temp = l1;
-                l1 = l2;
-                l2 = temp;
-            }
-
-            Vector m1 = m.V1;
-            Vector m2 = m.V2;
-
-            if (m1.X > m2.X)
-            {
-                // Same goes for m
-                Vector temp = m1;
-                m1 = m2;
-                l2 = temp;
-            }
-
-            Vector p = l1;
-            Vector r = l2 - l1;
-            Vector q = m1;
-            Vector s = m2 - m1;
-
-            // Function defined in source
-            Func<Vector, Vector, float> Cross = (v, w) => v.X * w.Y - v.Y * w.X;
-
-            if (Cross(r, s) == 0)
-            {
-                // Case 1-2: lines are "parralel" (def: they don't intersect)
-
-                if (Cross(q - p, r) == 0)
-                {
-                    if (l1.Y == l2.Y)
-                    {
-                        // Special case: lines are both horizontal. Check which is left of the other
-                        if ((l1.X < m1.X && m1.X < l2.X) || (l1.X < m2.X && m2.X < l2.X) ||
-                            (m1.X < l1.X && l1.X < m2.X) || (m1.X < l2.X && l2.X < m2.X))
-                        {
-                            // Check if the line segments are overlapping
-                            throw new Exception("line segments are overlapping");
-                        }
-
-                        if (l1.X < m1.X) return -1;
-                        else if (l1.X > m1.X) return 1;
-                        else throw new Exception("lines are exactly on top of each other");
-                    }
-
-                    // Case 1: lines are "collinear" (def: they lay on top of each other)
-                    throw new Exception("line segments are collinear");
-                }
-
-                /* 
-                Case 2: line segments are not collinear, so l lies in its total to a side of m.
-                Do this by checking if l1 lies left of m.
-
-                First, make sure that line segment m is bottom-to-top orientation
-                
-                if (m1.Y < m2.Y)
-                {
-                    // m1 is bottom endpoint
-                    return p.CompareTo(m);
-                }
-                else
-                {
-                    // m1 is top endpoint, flip m.
-                    return p.CompareTo(-m);
-                }
-            }
-            else
-            {
-                // Case 3-4: lines intersect. Check if segments intersect as well.
-                float t = Cross(q - p, s) / Cross(r, s);
-                float u = Cross(q - p, r) / Cross(r, s);
-
-                if ((0 <= t && t <= 1) && (0 <= u && u <= 1))
-                {
-                    if ((t == 0 || t == 1) && (u == 0 || u == 1))
-                    {
-                        /* 
-                        The line segments share an endpoint. Check which is first counterclockwise. We know
-                        that the lines are only between pi rad and 2 pi rad, because the lines above the sweep
-                        line are already deleted from the status.
-
-                        We can use the dot product with the x-axis of the direction vectors to find the angle
-                        with the axis. We know that l1.X <= l2.X, so the dot product will always be positive.
-                        If l1 is the endpoint, this means that the dot product is fine l2 is somewhere in 4th
-                        quarter.
-
-                              |
-                             2|1
-                            --+--
-                             3|4
-                              |
-                        
-                        Fig: Quarters
-
-                        If l2 is the endpoint, then the l1 is somewhere in the 3th quarter. This means that the
-                        direction of the direction vector r should be reversed. We can easily take the dot product
-                        of this by negating the dot product of r with the x-axis.
-
-                        float dotL = r.Normalized().X;
-                        float dotM = s.Normalized().X;
-
-                        if (l2 == m1 || l2 == m2) dotL *= -1;
-                        if (m2 == l1 || m2 == l2) dotM *= -1;
-
-                        if (dotL < dotM) return -1;
-                        else if (dotL > dotM) return 1;
-                        else throw new Exception("somehow the lines are collinear");
-                    }
-
-                    // Case 3: line segments intersect
-                    throw new Exception("line segments intersect");
-                }
-                else
-                {
-                    /* 
-                    Case 4: Line segments don't intersect. Now, this means that they share a y-range,
-                    otherwise the comparison wouldn't have been called. This means that in in their
-                    intersecting y-range [y0, y1], one line segment lies in total left of the other.
-
-                    float y = Math.Max(Math.Min(l1.Y, l2.Y), Math.Min(m1.Y, m2.Y));
-
-                    float lX = l.GetXFromY(y);
-                    float mX = m.GetXFromY(y);
-
-                    if (lX < mX) return -1;
-                    else if (lX > mX) return 1;
-                    
-                    /* 
-                    lX = mX, meaning that they share an endpoint at (lX, y0). This means that at
-                    y1 the x-coordinates have to have a different value, otherwise the line segments
-                    are collinear.
-
-                    y = Math.Min(Math.Max(l1.Y, l2.Y), Math.Max(m1.Y, m2.Y));
-
-                    lX = l.GetXFromY(y);
-                    mX = m.GetXFromY(y);
-
-                    if (lX < mX) return -1;
-                    else if (lX > mX) return 1;
-                    else throw new Exception("This code should never be reached");
-                }
-            } */
         }
     }
 }

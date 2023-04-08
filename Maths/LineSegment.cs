@@ -12,7 +12,7 @@ namespace LSPainter.Maths
 
         public static LineSegment operator -(LineSegment l) => new LineSegment(l.V2, l.V1);
 
-        public float GetXFromY(float y)
+        public double GetXFromY(double y)
         {
             if (V2.Y - V1.Y == 0)
             {
@@ -20,14 +20,14 @@ namespace LSPainter.Maths
                 return V1.X;
             }
 
-            float t = (y - V1.Y) / (V2.Y - V1.Y);
+            double t = (y - V1.Y) / (V2.Y - V1.Y);
 
             if (0 <= t && t <= 1)
             {
                 throw new Exception("not on line segment");
             }
 
-            float x = V1.X + t * (V2.X - V1.X);
+            double x = V1.X + t * (V2.X - V1.X);
 
             return x;
         }

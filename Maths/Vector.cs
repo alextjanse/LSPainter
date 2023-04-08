@@ -2,10 +2,11 @@ namespace LSPainter.Maths
 {
     public class Vector : IComparable<LineSegment>, IEquatable<Vector>
     {
-        public float X, Y;
-        public float Length => (float)Math.Sqrt(X * X + Y * Y);
+        public double X { get; private set; }
+        public double Y { get; private set; }
+        public double Length => Math.Sqrt(X * X + Y * Y);
 
-        public Vector(float x, float y)
+        public Vector(double x, double y)
         {
             X = x;
             Y = y;
@@ -17,10 +18,10 @@ namespace LSPainter.Maths
         public static Vector operator -(Vector v) => new Vector(-v.X, -v.Y);
         public static Vector operator +(Vector u, Vector v) => new Vector(u.X + v.X, u.Y + v.Y);
         public static Vector operator -(Vector u, Vector v) => new Vector(u.X - v.X, u.Y - v.Y);
-        public static Vector operator *(float f, Vector v) => new Vector(f * v.X, f * v.Y);
-        public static Vector operator *(Vector v, float f) => f * v;
-        public static float Dot(Vector u, Vector v) => u.X * v.X + u.Y * v.Y;
-        public static float Determinant(Vector u, Vector v, Vector w) => (w.X - u.X) * (v.Y - u.Y) - (w.Y - u.Y) * (v.X - u.X);
+        public static Vector operator *(double f, Vector v) => new Vector(f * v.X, f * v.Y);
+        public static Vector operator *(Vector v, double f) => f * v;
+        public static double Dot(Vector u, Vector v) => u.X * v.X + u.Y * v.Y;
+        public static double Determinant(Vector u, Vector v, Vector w) => (w.X - u.X) * (v.Y - u.Y) - (w.Y - u.Y) * (v.X - u.X);
 
         public static Vector UnitX = new Vector(1, 0);
         public static Vector UnitY = new Vector(0, 1);
@@ -29,7 +30,7 @@ namespace LSPainter.Maths
         {
             if (X * X + Y * Y == 1) return; // Already normalized
 
-            float factor = 1 / Length;
+            double factor = 1 / Length;
 
             X *= factor;
             Y *= factor;
@@ -39,7 +40,7 @@ namespace LSPainter.Maths
         {
             if (X * X + Y * Y == 1) return new Vector(X, Y); // Already normalized
 
-            float factor = 1 / Length;
+            double factor = 1 / Length;
 
             return new Vector(X * factor, Y * factor);
         }

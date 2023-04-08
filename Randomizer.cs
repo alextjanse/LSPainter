@@ -30,27 +30,27 @@ namespace LSPainter
             return items[i].Item1;
         }
 
-        public static float[] RandomFactors(float target, int n)
+        public static double[] RandomFactors(double target, int n)
         {
-            float[] output = new float[n];
+            double[] output = new double[n];
 
-            float product = 1;
+            double product = 1;
 
             for (int i = 0; i < n; i++)
             {
-                float f = random.NextSingle();
+                double f = random.NextDouble();
                 output[i] = f;
                 product *= f;
             }
 
-            float factor = (float)Math.Pow(target / product, 1f / n);
+            double factor = Math.Pow(target / product, 1f / n);
 
             for (int i = 0; i < n; i++)
             {
                 output[i] *= factor;
             }
 
-            float check = 1f;
+            double check = 1f;
 
             for (int i = 0; i < n; i++)
             {
@@ -65,11 +65,11 @@ namespace LSPainter
             return output;
         }
 
-        public static float[] SplitRandomly(float amount, int n)
+        public static double[] SplitRandomly(double amount, int n)
         {
-            float[] output = new float[n];
+            double[] output = new double[n];
 
-            float total = 0;
+            double total = 0;
 
             for (int i = 0; i < n; i++)
             {
@@ -78,7 +78,7 @@ namespace LSPainter
                 total += f;
             }
 
-            float factor = 1f / total;
+            double factor = 1 / total;
 
             for (int i = 0; i < n; i++)
             {
@@ -88,9 +88,9 @@ namespace LSPainter
             return output;
         }
 
-        public static float FloatInRange(float lb, float ub)
+        public static double Range(double lb, double ub)
         {
-            return lb + random.NextSingle() * (ub - lb);
+            return lb + random.NextDouble() * (ub - lb);
         }
     }
 }

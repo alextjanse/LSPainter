@@ -2,9 +2,10 @@ namespace LSPainter.Maths
 {
     public struct Point : IComparable<LineSegment>
     {
-        public float X, Y;
+        public double X { get; }
+        public double Y { get; }
 
-        public Point(float x, float y)
+        public Point(double x, double y)
         {
             X = x;
             Y = y;
@@ -19,7 +20,7 @@ namespace LSPainter.Maths
             https://www.scratchapixel.com/lessons/3d-basic-rendering/rasterization-practical-implementation/rasterization-stage.html
              */
 
-            float f = Vector.Determinant(l.V1, l.V2, this);
+            double f = Vector.Determinant(l.V1, l.V2, this);
 
             if (f < 0)
             {

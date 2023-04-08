@@ -2,7 +2,11 @@ namespace LSPainter.Maths
 {
     public struct Rectangle
     {
-        public float X, Y, Width, Height;
+        public double X { get; }
+        public double Y { get; }
+        public double Width { get; }
+        public double Height { get; }
+        
         public static implicit operator BoundingBox(Rectangle r) => new BoundingBox(
                                                                         (int)Math.Floor(r.X),
                                                                         (int)Math.Floor(r.Y),
@@ -10,7 +14,7 @@ namespace LSPainter.Maths
                                                                         (int)Math.Ceiling(r.Height)
                                                                     );
 
-        public Rectangle(float x, float y, float width, float height)
+        public Rectangle(double x, double y, double width, double height)
         {
             X = x;
             Y = y;
