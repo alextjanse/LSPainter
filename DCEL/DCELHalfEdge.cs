@@ -1,7 +1,13 @@
+using LSPainter.Maths;
+
 namespace LSPainter.DCEL
 {
     public class DCELHalfEdge
     {
+        public static explicit operator LineSegment(DCELHalfEdge? e) => new LineSegment(
+            (Vector)(e?.Origin ?? throw new NullReferenceException()),
+            (Vector)(e?.Next?.Origin ?? throw new NullReferenceException())
+        );
         static uint idGen = 1;
         private uint id = 0;
         public uint ID
