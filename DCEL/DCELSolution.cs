@@ -1,7 +1,7 @@
 namespace LSPainter.DCEL
 {
     // Doubly connected edge list: https://en.wikipedia.org/wiki/Doubly_connected_edge_list
-    public class DCEL
+    public class DCELSolution
     {
         Dictionary<uint, Vertex> vertices;
         Dictionary<uint, HalfEdge> halfEdges;
@@ -11,7 +11,7 @@ namespace LSPainter.DCEL
         HalfEdge top, topT, bottom, bottomT, left, leftT, right, rightT;
         Face face;
 
-        public DCEL(int width, int height)
+        public DCELSolution(int width, int height)
         {
             topLeft = new Vertex(0, 0);
             topRight = new Vertex(width, 0);
@@ -36,44 +36,29 @@ namespace LSPainter.DCEL
             bottomRight.SetIncidentEdge(bottom);
             bottomLeft.SetIncidentEdge(left);
 
-            // Set Half-edges, first inwards half-edges
-            top.SetIncidentFace(face);
-            right.SetIncidentFace(face);
-            bottom.SetIncidentFace(face);
-            left.SetIncidentFace(face);
-
-            top.AppendHalfEdge(right);
-            right.AppendHalfEdge(bottom);
-            bottom.AppendHalfEdge(left);
-            left.AppendHalfEdge(top);
-
+            // Set the origins
             top.SetOrigin(topLeft);
             right.SetOrigin(topRight);
             bottom.SetOrigin(bottomRight);
             left.SetOrigin(bottomLeft);
 
-            // Set outward half-edges
-            topT.SetIncidentFace(face);
-            rightT.SetIncidentFace(face);
-            bottomT.SetIncidentFace(face);
-            leftT.SetIncidentFace(face);
-
-            // Note: counter-clockwise
-            topT.AppendHalfEdge(leftT);
-            rightT.AppendHalfEdge(bottomT);
-            bottomT.AppendHalfEdge(rightT);
-            leftT.AppendHalfEdge(topT);
-
-            topT.SetOrigin(topLeft);
-            rightT.SetOrigin(topRight);
-            bottomT.SetOrigin(bottomRight);
-            leftT.SetOrigin(bottomLeft);
+            // Set incident face of inner cycle
+            top.SetIncidentFace(face);
+            right.SetIncidentFace(face);
+            bottom.SetIncidentFace(face);
+            left.SetIncidentFace(face);
 
             // Set twins
             top.SetTwinAndItsTwin(topT);
             right.SetTwinAndItsTwin(rightT);
             bottom.SetTwinAndItsTwin(bottomT);
             left.SetTwinAndItsTwin(leftT);
+
+            // Make the cycle
+            top.AppendHalfEdge(right);
+            right.AppendHalfEdge(bottom);
+            bottom.AppendHalfEdge(left);
+            left.AppendHalfEdge(top);
 
             // Set face
             face.SetOuterComponent(top);
@@ -102,6 +87,8 @@ namespace LSPainter.DCEL
             {
                 { face.ID, face }
             };
+
+            Triangulation triangulation = new Triangulation(face);
         }
 
         void AddVertex(Vertex vertex)

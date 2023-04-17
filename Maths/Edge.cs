@@ -12,10 +12,7 @@ namespace LSPainter.Maths
 
         public static bool operator ==(Edge? e1, Edge? e2)
         {
-            if (e1 is null)
-            {
-                return e2 is null;
-            }
+            if (e1 is null) return e2 is null;
 
             return e1.Equals(e2);
         }

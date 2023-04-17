@@ -6,7 +6,7 @@ namespace LSPainter.DCEL
     {
         public static bool operator ==(Face? f, Face? g)
         {
-            if (f == null) return g == null;
+            if (f is null) return g is null;
             return f.Equals(g);
         }
 

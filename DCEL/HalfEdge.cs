@@ -11,7 +11,7 @@ namespace LSPainter.DCEL
 
         public static bool operator ==(HalfEdge? i, HalfEdge? j)
         {
-            if (i == null) return j == null;
+            if (i is null) return j is null;
 
             return i.Equals(j);
         }
@@ -111,10 +111,9 @@ namespace LSPainter.DCEL
 
         public void PrependHalfEdge(HalfEdge? prev)
         {
-            SetPrev(prev);
-            prev?.SetNext(this);
+            SetPrevAndItsNext(prev);
 
-            if (prev?.IncidentFace == null) prev?.SetIncidentFace(IncidentFace);
+            if (IncidentFace != null && prev?.IncidentFace == null) prev?.SetIncidentFace(IncidentFace);
 
             if (Twin?.Next == null)
             {
@@ -138,22 +137,21 @@ namespace LSPainter.DCEL
             origin was already this value or not, the value at the end will be set to
             the correct origin.
              */
-            prev?.Twin?.SetOrigin(Origin);
+            if (Origin != null) prev?.Twin?.SetOrigin(Origin);
         }
 
         public void AppendHalfEdge(HalfEdge? next)
         {
-            SetNext(next);
-            next?.SetPrev(this);
-            
-            if (next?.IncidentFace == null) next?.SetIncidentFace(IncidentFace);
+            SetNextAndItsPrev(next);
+
+            if (IncidentFace != null && next?.IncidentFace == null) next?.SetIncidentFace(IncidentFace);
 
             if (Twin?.Prev == null)
             {
                 Twin?.PrependHalfEdge(next?.Twin ?? throw new NullReferenceException());
             }
 
-            Twin?.SetOrigin(next?.Origin);
+            if (next?.Origin != null) Twin?.SetOrigin(next?.Origin);
         }
 
         public override string ToString()

@@ -2,6 +2,7 @@ using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
+using LSPainter.DCEL;
 
 namespace LSPainter
 {
@@ -51,6 +52,8 @@ namespace LSPainter
             frameManager = new FrameManager(windowLayout, original, solverManager.Instances[0].Painting);
 
             shader = new Shader("./Shaders/shader.vert", "./Shaders/shader.frag");
+
+            DCELSolution dcel = new DCELSolution(original.Width, original.Height);
         }
 
         protected override void OnLoad()

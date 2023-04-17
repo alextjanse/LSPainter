@@ -7,7 +7,7 @@ namespace LSPainter.DCEL
         public static explicit operator Vector(Vertex v) => new Vector(v.X, v.Y);
         public static bool operator ==(Vertex? u, Vertex? v)
         {
-            if (u == null) return v == null;
+            if (u is null) return v is null;
             return u.Equals(v);
         }
 

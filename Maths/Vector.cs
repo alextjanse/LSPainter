@@ -57,10 +57,7 @@ namespace LSPainter.Maths
 
         public static bool operator ==(Vector? u, Vector? v)
         {
-            if (u == null)
-            {
-                return v == null; // null == null = true
-            }
+            if (u is null) return v is null;
             
             return u.Equals(v);
         }
