@@ -2,11 +2,11 @@ namespace LSPainter.Maths
 {
     public class Triangle
     {
-        public Vertex P1 { get; }
-        public Vertex P2 { get; }
-        public Vertex P3 { get; }
+        public Vector P1 { get; }
+        public Vector P2 { get; }
+        public Vector P3 { get; }
 
-        public Triangle(Vertex p1, Vertex p2, Vertex p3)
+        public Triangle(Vector p1, Vector p2, Vector p3)
         {
             P1 = p1;
             P2 = p2;

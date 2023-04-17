@@ -3,31 +3,31 @@ namespace LSPainter.DCEL
     // Doubly connected edge list: https://en.wikipedia.org/wiki/Doubly_connected_edge_list
     public class DCEL
     {
-        Dictionary<uint, DCELVertex> vertices;
-        Dictionary<uint, DCELHalfEdge> halfEdges;
-        Dictionary<uint, DCELFace> faces;
+        Dictionary<uint, Vertex> vertices;
+        Dictionary<uint, HalfEdge> halfEdges;
+        Dictionary<uint, Face> faces;
 
-        DCELVertex topLeft, topRight, bottomLeft, bottomRight;
-        DCELHalfEdge top, topT, bottom, bottomT, left, leftT, right, rightT;
-        DCELFace face;
+        Vertex topLeft, topRight, bottomLeft, bottomRight;
+        HalfEdge top, topT, bottom, bottomT, left, leftT, right, rightT;
+        Face face;
 
         public DCEL(int width, int height)
         {
-            topLeft = new DCELVertex(0, 0);
-            topRight = new DCELVertex(width, 0);
-            bottomLeft = new DCELVertex(0, height);
-            bottomRight = new DCELVertex(width, height);
+            topLeft = new Vertex(0, 0);
+            topRight = new Vertex(width, 0);
+            bottomLeft = new Vertex(0, height);
+            bottomRight = new Vertex(width, height);
 
-            top = new DCELHalfEdge();
-            topT = new DCELHalfEdge();
-            right = new DCELHalfEdge();
-            rightT = new DCELHalfEdge();
-            bottom = new DCELHalfEdge();
-            bottomT = new DCELHalfEdge();
-            left = new DCELHalfEdge();
-            leftT = new DCELHalfEdge();
+            top = new HalfEdge();
+            topT = new HalfEdge();
+            right = new HalfEdge();
+            rightT = new HalfEdge();
+            bottom = new HalfEdge();
+            bottomT = new HalfEdge();
+            left = new HalfEdge();
+            leftT = new HalfEdge();
 
-            face = new DCELFace();
+            face = new Face();
 
             // Set vertices
             // Clockwise rotation
@@ -42,10 +42,10 @@ namespace LSPainter.DCEL
             bottom.SetIncidentFace(face);
             left.SetIncidentFace(face);
 
-            top.SetNextAndItsPrev(right);
-            right.SetNextAndItsPrev(bottom);
-            bottom.SetNextAndItsPrev(left);
-            left.SetNextAndItsPrev(top);
+            top.AppendHalfEdge(right);
+            right.AppendHalfEdge(bottom);
+            bottom.AppendHalfEdge(left);
+            left.AppendHalfEdge(top);
 
             top.SetOrigin(topLeft);
             right.SetOrigin(topRight);
@@ -59,10 +59,10 @@ namespace LSPainter.DCEL
             leftT.SetIncidentFace(face);
 
             // Note: counter-clockwise
-            topT.SetNextAndItsPrev(leftT);
-            rightT.SetNextAndItsPrev(bottomT);
-            bottomT.SetNextAndItsPrev(rightT);
-            leftT.SetNextAndItsPrev(topT);
+            topT.AppendHalfEdge(leftT);
+            rightT.AppendHalfEdge(bottomT);
+            bottomT.AppendHalfEdge(rightT);
+            leftT.AppendHalfEdge(topT);
 
             topT.SetOrigin(topLeft);
             rightT.SetOrigin(topRight);
@@ -78,7 +78,7 @@ namespace LSPainter.DCEL
             // Set face
             face.SetOuterComponent(top);
 
-            vertices = new Dictionary<uint, DCELVertex>
+            vertices = new Dictionary<uint, Vertex>
             {
                 { topLeft.ID, topLeft  },
                 { topRight.ID, topRight  },
@@ -86,7 +86,7 @@ namespace LSPainter.DCEL
                 { bottomRight.ID, bottomRight  },
             };
 
-            halfEdges = new Dictionary<uint, DCELHalfEdge>
+            halfEdges = new Dictionary<uint, HalfEdge>
             {
                 { top.ID, top },
                 { topT.ID, topT },
@@ -98,43 +98,43 @@ namespace LSPainter.DCEL
                 { leftT.ID, leftT },
             };
 
-            faces = new Dictionary<uint, DCELFace>
+            faces = new Dictionary<uint, Face>
             {
                 { face.ID, face }
             };
         }
 
-        void AddVertex(DCELVertex vertex)
+        void AddVertex(Vertex vertex)
         {
             vertices.Add(vertex.ID, vertex);
         }
 
-        void AddHalfEdge(DCELHalfEdge halfEdge)
+        void AddHalfEdge(HalfEdge halfEdge)
         {
             halfEdges.Add(halfEdge.ID, halfEdge);
         }
 
-        void AddFace(DCELFace face)
+        void AddFace(Face face)
         {
             faces.Add(face.ID, face);
         }
 
         void AddVertex(double x, double y)
         {
-            DCELVertex vertex = new DCELVertex(x, y);
+            Vertex vertex = new Vertex(x, y);
             vertices.Add(vertex.ID, vertex);
         }
 
-        void AddEdge(DCELVertex u, DCELVertex v)
+        void AddEdge(Vertex u, Vertex v)
         {
-            DCELHalfEdge edge = new DCELHalfEdge();
+            HalfEdge edge = new HalfEdge();
 
             edge.Origin = u;
 
 
         }
 
-        void InsertIncidentEdge(DCELVertex v, DCELHalfEdge e)
+        void InsertIncidentEdge(Vertex v, HalfEdge e)
         {
             if (v.IncidentEdge == null)
             {
@@ -145,7 +145,7 @@ namespace LSPainter.DCEL
             // There is already an incident edge. Determine the order of next/prev edges
             double angle = GetEdgeAngleWithXAxis(e);
 
-            DCELHalfEdge? current = v.IncidentEdge;
+            HalfEdge? current = v.IncidentEdge;
             double angleCurrent = GetEdgeAngleWithXAxis(current);
             double angleNext;
 
@@ -165,8 +165,8 @@ namespace LSPainter.DCEL
             while (current.ID != v.IncidentEdge.ID);
 
             // Insert the new edge after the current edge
-            e.SetNextAndItsPrev(current?.Next ?? throw new NullReferenceException());
-            e.SetPrevAndItsNext(current?.Twin ?? throw new NullReferenceException());
+            e.AppendHalfEdge(current?.Next ?? throw new NullReferenceException());
+            e.PrependHalfEdge(current?.Twin ?? throw new NullReferenceException());
         }
 
         bool AngleInRange(double angle, double lb, double ub)
@@ -178,15 +178,15 @@ namespace LSPainter.DCEL
             return lb <= angle || angle <= ub;
         }
 
-        double GetEdgeAngleWithXAxis(DCELHalfEdge e)
+        double GetEdgeAngleWithXAxis(HalfEdge e)
         {
             if (e.Origin == null || e.Twin == null || e.Twin.Origin == null)
             {
                 throw new NullReferenceException();
             }
 
-            DCELVertex origin = e.Origin;
-            DCELVertex destination = e.Twin.Origin;
+            Vertex origin = e.Origin;
+            Vertex destination = e.Twin.Origin;
 
             double length = Math.Sqrt(
                 (origin.X - destination.X) * (origin.X - destination.Y) +

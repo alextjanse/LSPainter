@@ -2,16 +2,16 @@ using LSPainter.Maths;
 
 namespace LSPainter.DCEL
 {
-    public class DCELVertex : IEquatable<DCELVertex>
+    public class Vertex : IEquatable<Vertex>
     {
-        public static explicit operator Vector(DCELVertex v) => new Vector(v.X, v.Y);
-        public static bool operator ==(DCELVertex? u, DCELVertex? v)
+        public static explicit operator Vector(Vertex v) => new Vector(v.X, v.Y);
+        public static bool operator ==(Vertex? u, Vertex? v)
         {
             if (u == null) return v == null;
             return u.Equals(v);
         }
 
-        public static bool operator !=(DCELVertex? u, DCELVertex? v) => !(u == v);
+        public static bool operator !=(Vertex? u, Vertex? v) => !(u == v);
 
         static uint idGen = 1;
         private uint id = 0;
@@ -27,19 +27,26 @@ namespace LSPainter.DCEL
             }
         }
         
-        public double X { get; }
-        public double Y { get; }
+        public double X { get; set; }
+        public double Y { get; set; }
 
-        public DCELHalfEdge? IncidentEdge { get; set; }
+        public HalfEdge? IncidentEdge { get; set; }
 
-        public DCELVertex(double x, double y)
+        public Vertex(double x, double y)
         {
             X = x;
             Y = y;
         }
 
-        public void SetIncidentEdge(DCELHalfEdge incidentEdge)
+        public void SetXY(double x, double y)
         {
+            X = x;
+            Y = y;
+        }
+
+        public void SetIncidentEdge(HalfEdge? incidentEdge)
+        {
+            if (incidentEdge == null) throw new NullReferenceException();
             IncidentEdge = incidentEdge;
         }
 
@@ -48,12 +55,12 @@ namespace LSPainter.DCEL
             return $"Vertex {ID}";
         }
 
-        public DCELVertex Clone()
+        public Vertex Clone()
         {
-            return new DCELVertex(X, Y);
+            return new Vertex(X, Y);
         }
 
-        public bool Equals(DCELVertex? other)
+        public bool Equals(Vertex? other)
         {
             if (other == null) return false;
 
@@ -72,12 +79,12 @@ namespace LSPainter.DCEL
                 return false;
             }
 
-            return this.Equals(obj as DCELVertex);
+            return this.Equals(obj as Vertex);
         }
 
         public override int GetHashCode()
         {
-            return (X, Y).GetHashCode();
+            return (ID, X, Y).GetHashCode();
         }
     }
 }

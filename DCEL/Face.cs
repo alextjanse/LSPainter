@@ -2,15 +2,15 @@ using System.Collections;
 
 namespace LSPainter.DCEL
 {
-    public class DCELFace : IEnumerable<DCELHalfEdge>, IEquatable<DCELFace>
+    public class Face : IEnumerable<HalfEdge>, IEquatable<Face>
     {
-        public static bool operator ==(DCELFace? f, DCELFace? g)
+        public static bool operator ==(Face? f, Face? g)
         {
             if (f == null) return g == null;
             return f.Equals(g);
         }
 
-        public static bool operator !=(DCELFace? f, DCELFace? g) => !(f == g);
+        public static bool operator !=(Face? f, Face? g) => !(f == g);
 
         static uint idGen = 1;
         private uint id = 0;
@@ -26,21 +26,21 @@ namespace LSPainter.DCEL
             }
         }
 
-        public DCELHalfEdge? OuterComponent { get; set; }
+        public HalfEdge? OuterComponent { get; set; }
         
-        public List<DCELHalfEdge> InnerComponents;
+        public List<HalfEdge> InnerComponents;
 
-        public DCELFace()
+        public Face()
         {
-            InnerComponents = new List<DCELHalfEdge>();
+            InnerComponents = new List<HalfEdge>();
         }
 
-        public void AddInnerComponent(DCELHalfEdge innerComponent)
+        public void AddInnerComponent(HalfEdge innerComponent)
         {
             InnerComponents.Add(innerComponent);
         }
 
-        public void SetOuterComponent(DCELHalfEdge outerComponent)
+        public void SetOuterComponent(HalfEdge? outerComponent)
         {
             OuterComponent = outerComponent;
         }
@@ -50,41 +50,41 @@ namespace LSPainter.DCEL
             return $"Face {ID}";
         }
 
-        public DCELFace Clone()
+        public Face Clone()
         {
             /* 
-            Make a new DCELFace with all it's incident edges and vertices, but
+            Make a new Face with all it's incident edges and vertices, but
             without the adjacent faces. We can use this to copy a DCEL for
             triangulation and what not.
 
-            Loop over all edges around the face, and copy their data in new half-
-            edges and vertices. Set all pointer data correct and so, and we're done.
+            Loop over all edges around the face, and copy their data in new
+            half-edges and vertices. Set all pointer data correct and so,
+            and we're done.
              */
-            DCELFace faceClone = new DCELFace();
+            Face faceClone = new Face();
 
-            DCELHalfEdge startEdge = OuterComponent ?? throw new NullReferenceException();
+            HalfEdge startEdge = OuterComponent ?? throw new NullReferenceException();
             
             // Clone the start edge, so we can link off of that
-            DCELHalfEdge headEdgesClone = startEdge.Clone();
+            HalfEdge headEdgesClone = startEdge.Clone();
             headEdgesClone.SetIncidentFace(faceClone);
 
             faceClone.SetOuterComponent(headEdgesClone);
 
             // Keep track of the tail of the tail of the edge chain
-            DCELHalfEdge tailEdgesClone = headEdgesClone;
+            HalfEdge tailEdgesClone = headEdgesClone;
             
             // Because we did the first one seperate, start with the next edge
-            DCELHalfEdge currentEdge = startEdge.Next ?? throw new NullReferenceException();
+            HalfEdge currentEdge = startEdge.Next ?? throw new NullReferenceException();
 
             do
             {
                 // Make a clone of the current edge
-                DCELHalfEdge edgeClone = currentEdge.Clone();
+                HalfEdge edgeClone = currentEdge.Clone();
                 edgeClone.SetIncidentFace(faceClone);
-                edgeClone.Twin?.SetNextAndItsPrev(tailEdgesClone.Twin ?? throw new NullReferenceException());
 
                 // Chain it to the tail of the edge chain and set as tail
-                tailEdgesClone.SetNextAndItsPrev(edgeClone);
+                tailEdgesClone.AppendHalfEdge(edgeClone);
 
                 tailEdgesClone = edgeClone;
 
@@ -93,13 +93,12 @@ namespace LSPainter.DCEL
             while (currentEdge != startEdge);
 
             // Tie the head and tail together
-            tailEdgesClone.SetNextAndItsPrev(headEdgesClone);
-            headEdgesClone.Twin?.SetNextAndItsPrev(tailEdgesClone.Twin ?? throw new NullReferenceException());
+            tailEdgesClone.AppendHalfEdge(headEdgesClone);
 
             return faceClone;
         }
 
-        public IEnumerator<DCELHalfEdge> GetEnumerator()
+        public IEnumerator<HalfEdge> GetEnumerator()
         {
             return new EdgeEnumerator(OuterComponent ?? throw new NullReferenceException());
         }
@@ -109,13 +108,11 @@ namespace LSPainter.DCEL
             return this.GetEnumerator();
         }
 
-        public bool Equals(DCELFace? other)
+        public bool Equals(Face? other)
         {
             if (other == null) return false;
 
-            if (this.Count() != other.Count()) return false;
-
-            foreach ((DCELHalfEdge edge, DCELHalfEdge otherEdge) in Enumerable.Zip<DCELHalfEdge, DCELHalfEdge>(this, other))
+            foreach ((HalfEdge edge, HalfEdge otherEdge) in Enumerable.Zip<HalfEdge, HalfEdge>(this, other))
             {
                 if (edge != otherEdge) return false;
             }
@@ -135,44 +132,24 @@ namespace LSPainter.DCEL
                 return false;
             }
 
-            return this.Equals(obj as DCELFace);
+            return this.Equals(obj as Face);
         }
 
         public override int GetHashCode()
         {
-            return (this.Select(edge => edge.GetHashCode())).GetHashCode();
+            return (ID, this.Select(edge => edge.GetHashCode())).GetHashCode();
         }
     }
 
-    public class FaceEnumerable : IEnumerable<DCELHalfEdge>
+    class EdgeEnumerator : IEnumerator<HalfEdge>
     {
-        DCELFace face;
+        private HalfEdge currentEdge, startEdge;
 
-        public FaceEnumerable(DCELFace face)
-        {
-            this.face = face;
-        }
-
-        public IEnumerator<DCELHalfEdge> GetEnumerator()
-        {
-            return new EdgeEnumerator(face.OuterComponent ?? throw new NullReferenceException());
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return this.GetEnumerator();
-        }
-    }
-
-    public class EdgeEnumerator : IEnumerator<DCELHalfEdge>
-    {
-        private DCELHalfEdge currentEdge, startEdge;
-
-        public DCELHalfEdge Current => currentEdge;
+        public HalfEdge Current => currentEdge;
 
         object IEnumerator.Current => currentEdge;
 
-        public EdgeEnumerator(DCELHalfEdge startEdge)
+        public EdgeEnumerator(HalfEdge startEdge)
         {
             this.startEdge = startEdge;
             currentEdge = startEdge;
@@ -182,7 +159,39 @@ namespace LSPainter.DCEL
         {
             currentEdge = currentEdge.Next ?? throw new NullReferenceException();
 
-            return currentEdge.ID != startEdge.ID;
+            return currentEdge != startEdge;
+        }
+
+        public void Reset()
+        {
+            currentEdge = startEdge;
+        }
+
+        public void Dispose()
+        {
+            // Nothing
+        }
+    }
+
+    class VertexEnumerator : IEnumerator<Vertex>
+    {
+        private HalfEdge currentEdge, startEdge;
+
+        public Vertex Current => currentEdge.Origin ?? throw new NullReferenceException();
+
+        object IEnumerator.Current => currentEdge;
+
+        public VertexEnumerator(HalfEdge startEdge)
+        {
+            currentEdge = startEdge;
+            this.startEdge = startEdge;
+        }
+
+        public bool MoveNext()
+        {
+            currentEdge = currentEdge.Next ?? throw new NullReferenceException();
+
+            return currentEdge != startEdge;
         }
 
         public void Reset()
