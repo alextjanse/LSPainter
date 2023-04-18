@@ -118,9 +118,7 @@ namespace LSPainter.DCEL
         /// <returns>List of cuts of the polygon</returns>
         List<Face> LineSweep(Face face, bool goingDown = true)
         {
-            /* 
-            Source: https://www.cs.uu.nl/docs/vakken/ga/2022/slides/slides3.pdf
-             */
+            // Source: https://www.cs.uu.nl/docs/vakken/ga/2022/slides/slides3.pdf
             
             IEnumerable<Vertex> vertices = face.Select(e => e.Origin ?? throw new NullReferenceException());
 

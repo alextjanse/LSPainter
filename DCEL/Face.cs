@@ -100,7 +100,16 @@ namespace LSPainter.DCEL
 
         public IEnumerator<HalfEdge> GetEnumerator()
         {
-            return new EdgeEnumerator(OuterComponent ?? throw new NullReferenceException());
+            HalfEdge current = OuterComponent ?? throw new NullReferenceException();
+
+            do
+            {
+                yield return current;
+                current = current.Next ?? throw new NullReferenceException();
+            }
+            while (current != OuterComponent);
+            
+            // return new EdgeEnumerator(OuterComponent ?? throw new NullReferenceException());
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -153,38 +162,6 @@ namespace LSPainter.DCEL
         {
             this.startEdge = startEdge;
             currentEdge = startEdge;
-        }
-
-        public bool MoveNext()
-        {
-            currentEdge = currentEdge.Next ?? throw new NullReferenceException();
-
-            return currentEdge != startEdge;
-        }
-
-        public void Reset()
-        {
-            currentEdge = startEdge;
-        }
-
-        public void Dispose()
-        {
-            // Nothing
-        }
-    }
-
-    class VertexEnumerator : IEnumerator<Vertex>
-    {
-        private HalfEdge currentEdge, startEdge;
-
-        public Vertex Current => currentEdge.Origin ?? throw new NullReferenceException();
-
-        object IEnumerator.Current => currentEdge;
-
-        public VertexEnumerator(HalfEdge startEdge)
-        {
-            currentEdge = startEdge;
-            this.startEdge = startEdge;
         }
 
         public bool MoveNext()
