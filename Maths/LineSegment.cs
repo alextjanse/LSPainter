@@ -22,7 +22,7 @@ namespace LSPainter.Maths
 
             double t = (y - V1.Y) / (V2.Y - V1.Y);
 
-            if (0 <= t && t <= 1)
+            if (!(0 <= t && t <= 1))
             {
                 throw new Exception("not on line segment");
             }

@@ -36,6 +36,8 @@ namespace LSPainter.DCEL
         {
             X = x;
             Y = y;
+
+            id = idGen++;
         }
 
         public void SetXY(double x, double y)
@@ -48,6 +50,15 @@ namespace LSPainter.DCEL
         {
             if (incidentEdge == null) throw new NullReferenceException();
             IncidentEdge = incidentEdge;
+        }
+
+        public bool IsSetCorrectly()
+        {
+            if (IncidentEdge == null) return false;
+
+            if (IncidentEdge.Origin != this) return false;
+
+            return true;
         }
 
         public override string ToString()

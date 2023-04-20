@@ -7,88 +7,88 @@ namespace LSPainter.DCEL
         Dictionary<uint, HalfEdge> halfEdges;
         Dictionary<uint, Face> faces;
 
-        Vertex topLeft, topRight, bottomLeft, bottomRight;
-        HalfEdge top, topT, bottom, bottomT, left, leftT, right, rightT;
-        Face face;
+        Vertex v4, v3, v1, v2;
+        HalfEdge e3, e7, e1, e5, e4, e8, e2, e6;
+        Face f;
 
         public DCELSolution(int width, int height)
         {
-            topLeft = new Vertex(0, 0);
-            topRight = new Vertex(width, 0);
-            bottomLeft = new Vertex(0, height);
-            bottomRight = new Vertex(width, height);
+            v1 = new Vertex(0, 0);
+            v2 = new Vertex(width, 0);
+            v3 = new Vertex(width, height);
+            v4 = new Vertex(0, height);
 
-            top = new HalfEdge();
-            topT = new HalfEdge();
-            right = new HalfEdge();
-            rightT = new HalfEdge();
-            bottom = new HalfEdge();
-            bottomT = new HalfEdge();
-            left = new HalfEdge();
-            leftT = new HalfEdge();
+            e1 = new HalfEdge();
+            e2 = new HalfEdge();
+            e3 = new HalfEdge();
+            e4 = new HalfEdge();
+            e5 = new HalfEdge();
+            e6 = new HalfEdge();
+            e7 = new HalfEdge();
+            e8 = new HalfEdge();
 
-            face = new Face();
+            f = new Face();
 
             // Set vertices
             // Clockwise rotation
-            topLeft.SetIncidentEdge(top);
-            topRight.SetIncidentEdge(right);
-            bottomRight.SetIncidentEdge(bottom);
-            bottomLeft.SetIncidentEdge(left);
+            v1.SetIncidentEdge(e1);
+            v2.SetIncidentEdge(e2);
+            v3.SetIncidentEdge(e3);
+            v4.SetIncidentEdge(e4);
 
             // Set the origins
-            top.SetOrigin(topLeft);
-            right.SetOrigin(topRight);
-            bottom.SetOrigin(bottomRight);
-            left.SetOrigin(bottomLeft);
+            e1.SetOrigin(v1);
+            e2.SetOrigin(v2);
+            e3.SetOrigin(v3);
+            e4.SetOrigin(v4);
 
             // Set incident face of inner cycle
-            top.SetIncidentFace(face);
-            right.SetIncidentFace(face);
-            bottom.SetIncidentFace(face);
-            left.SetIncidentFace(face);
+            e1.SetIncidentFace(f);
+            e2.SetIncidentFace(f);
+            e3.SetIncidentFace(f);
+            e4.SetIncidentFace(f);
 
             // Set twins
-            top.SetTwinAndItsTwin(topT);
-            right.SetTwinAndItsTwin(rightT);
-            bottom.SetTwinAndItsTwin(bottomT);
-            left.SetTwinAndItsTwin(leftT);
+            e1.SetTwinAndItsTwin(e5);
+            e2.SetTwinAndItsTwin(e6);
+            e3.SetTwinAndItsTwin(e7);
+            e4.SetTwinAndItsTwin(e8);
 
             // Make the cycle
-            top.AppendHalfEdge(right);
-            right.AppendHalfEdge(bottom);
-            bottom.AppendHalfEdge(left);
-            left.AppendHalfEdge(top);
+            e1.AppendHalfEdge(e2);
+            e2.AppendHalfEdge(e3);
+            e3.AppendHalfEdge(e4);
+            e4.AppendHalfEdge(e1);
 
             // Set face
-            face.SetOuterComponent(top);
+            f.SetOuterComponent(e1);
 
             vertices = new Dictionary<uint, Vertex>
             {
-                { topLeft.ID, topLeft  },
-                { topRight.ID, topRight  },
-                { bottomLeft.ID, bottomLeft  },
-                { bottomRight.ID, bottomRight  },
+                { v1.ID, v1  },
+                { v2.ID, v2  },
+                { v3.ID, v3  },
+                { v4.ID, v4  },
             };
 
             halfEdges = new Dictionary<uint, HalfEdge>
             {
-                { top.ID, top },
-                { topT.ID, topT },
-                { right.ID, right },
-                { rightT.ID, rightT },
-                { bottom.ID, bottom },
-                { bottomT.ID, bottomT },
-                { left.ID, left },
-                { leftT.ID, leftT },
+                { e1.ID, e1 },
+                { e2.ID, e2 },
+                { e3.ID, e3 },
+                { e4.ID, e4 },
+                { e5.ID, e5 },
+                { e6.ID, e6 },
+                { e7.ID, e7 },
+                { e8.ID, e8 },
             };
 
             faces = new Dictionary<uint, Face>
             {
-                { face.ID, face }
+                { f.ID, f }
             };
 
-            Triangulation triangulation = new Triangulation(face);
+            Triangulation triangulation = new Triangulation(f);
         }
 
         void AddVertex(Vertex vertex)

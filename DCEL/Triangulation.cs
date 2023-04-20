@@ -13,7 +13,7 @@ namespace LSPainter.DCEL
         /// accordingly.
         /// </summary>
         Dictionary<uint, Vertex> vertices;
-        
+
         HalfEdge outsideEdge;
 
         public Triangulation(Face face)
@@ -34,7 +34,7 @@ namespace LSPainter.DCEL
                 vertices.Add(edge.Origin?.ID ?? throw new NullReferenceException(), vertexClone);
             }
 
-            Triangulate();
+            Triangulate(faceClone);
         }
 
         public void UpdateVertex(Vertex vertex)
@@ -42,21 +42,26 @@ namespace LSPainter.DCEL
             vertices[vertex.ID].SetXY(vertex.X, vertex.Y);
 
             //TODO: Check if triangulation needs to be updated. For now, just recompute the triangulation.
-            
-            Triangulate();
+
+            // Triangulate();
         }
 
         /// <summary>
-        /// Compute the triangulation of the face. Resets the old triangulation.
+        /// Remove all references to the triangles, to be collected by the GC.
         /// </summary>
-        void Triangulate()
+        void Reset()
         {
-            // Reset. Remove all references to the triangles, to be collected by the GC.
             triangles.Clear();
-            Face polygon = ResetPolygon();
+            ResetPolygon();
+        }
 
+        /// <summary>
+        /// Compute the triangulation of the given face
+        /// </summary>
+        void Triangulate(Face face)
+        {
             // Recompute the triangulation
-            List<Face> yMonotones = LineSweep(polygon);
+            List<Face> yMonotones = LineSweep(face);
 
             foreach (Face yMonotone in yMonotones)
             {
@@ -119,13 +124,19 @@ namespace LSPainter.DCEL
         List<Face> LineSweep(Face face, bool goingDown = true)
         {
             // Source: https://www.cs.uu.nl/docs/vakken/ga/2022/slides/slides3.pdf
-            
-            IEnumerable<Vertex> vertices = face.Select(e => e.Origin ?? throw new NullReferenceException());
 
-            Queue<Vertex> eventQueue = new Queue<Vertex>(vertices.OrderBy(v => (goingDown ? 1 : -1) * v.Y));
+            IEnumerable<Vertex> vertices = face.Select(e =>
+            {
+                // Set the incident edge, so the half-edge and vertex are coupled
+                e.Origin?.SetIncidentEdge(e);
+                return e.Origin ?? throw new NullReferenceException();
+            });
 
-            StatusComparer comparer = new StatusComparer();
-            SortedList<HalfEdge, Vertex> status = new SortedList<HalfEdge, Vertex>(comparer);
+            EventComparer eventComparer = new EventComparer(goingDown);
+            Queue<Vertex> eventQueue = new Queue<Vertex>(vertices.Order(eventComparer));
+
+            StatusComparer statusComparer = new StatusComparer();
+            SortedList<HalfEdge, Vertex> status = new SortedList<HalfEdge, Vertex>(statusComparer);
 
             HashSet<Vertex> checkedVertices = new HashSet<Vertex>();
 
@@ -134,13 +145,13 @@ namespace LSPainter.DCEL
             that should be added, and do it after all the vertices have been checked.
              */
             List<(Vertex, Vertex)> newEdges = new List<(Vertex, Vertex)>();
-            
+
             while (eventQueue.Count != 0)
             {
                 /* 
                 Find what type of vertex this is by looking if the next and prev vertices have
-                been passed by the sweep line or not.Because the polygon is a face, the next
-                vertex will always be the CW next vertex. This combination makes it very easy
+                been passed by the sweep line or not. Because the polygon is a face, the next
+                vertex will always be the CCW next vertex. This combination makes it very easy
                 to check the type of the vertex.
 
                 This technique works for both directions, because we check if the vertex has
@@ -153,57 +164,80 @@ namespace LSPainter.DCEL
                  */
                 Vertex vertex = eventQueue.Dequeue();
 
-                HalfEdge nextEdge = vertex.IncidentEdge ?? throw new NullReferenceException();
-                HalfEdge prevEdge = nextEdge.Prev ?? throw new NullReferenceException();
 
-                Vertex nextVertex = nextEdge.Next?.Origin ?? throw new NullReferenceException();
-                Vertex prevVertex = prevEdge.Origin ?? throw new NullReferenceException();
+                /* 
+                We are going to compare the next and prev edges for left and right comparison.
+                If we're going up however, left and right are inverted. For ease, let's just
+                swap the next and prev edge, which gives the same result.
+                 */
+
+                HalfEdge nextEdge, prevEdge;
+                Vertex nextVertex, prevVertex;
+
+                if (goingDown)
+                {
+                    nextEdge = vertex.IncidentEdge ?? throw new NullReferenceException();
+                    prevEdge = nextEdge.Prev ?? throw new NullReferenceException();
+                    nextVertex = nextEdge.Twin?.Origin ?? throw new NullReferenceException();
+                    prevVertex = prevEdge.Origin ?? throw new NullReferenceException();
+                }
+                else
+                {
+                    prevEdge = vertex.IncidentEdge ?? throw new NullReferenceException();
+                    nextEdge = prevEdge.Prev ?? throw new NullReferenceException();
+                    prevVertex = prevEdge.Twin?.Origin ?? throw new NullReferenceException();
+                    nextVertex = nextEdge.Origin ?? throw new NullReferenceException();
+                }
 
                 bool nextVertexChecked = checkedVertices.Contains(nextVertex);
                 bool prevVertexChecked = checkedVertices.Contains(prevVertex);
+
+                checkedVertices.Add(vertex);
 
                 if (!nextVertexChecked && !prevVertexChecked)
                 {
                     /* 
                     Start or split vertex. Depends on the order of next and prev.
-                     */
-                    if (comparer.Compare(nextEdge, prevEdge) > 0)
+                    */
+                    if (statusComparer.Compare(nextEdge, prevEdge) > 0)
                     {
-                        // Start vertex. Next is right of prev. Add left edge to status with helper
-                        status.Add(prevEdge, vertex);
-                    }
-                    else
-                    {
-                        // Split vertex. Add an edge from the split vertex to the helper of the edge left of it
+                        // Split vertex. We need to split the polygon.
                         (_, Vertex helper) = SearchInStatus(status, vertex);
 
+                        // Add an edge from the split vertex to the helper
                         newEdges.Add((vertex, helper));
+
+                        // Set the vertex as new helper
+                        SetAsHelperOfLeftEdge(status, vertex);
                     }
+
+                    // Add the next edge to the status in both cases
+                    status.Add(nextEdge, vertex);
                 }
                 else if (nextVertexChecked && prevVertexChecked)
                 {
                     // Merge or end vertex. Remove next from status in both cases
-                    status.Remove(nextEdge);
+                    status.Remove(prevEdge);
 
-                    if (comparer.Compare(nextEdge, prevEdge) > 0)
+                    if (statusComparer.Compare(nextEdge, prevEdge) < 0)
                     {
                         /* 
-                        Merge vector. Next is right of prev. Set this vertex as new helper
+                        Merge vector. Next is left of prev. Set this vertex as new helper
                         of the first edge to the left of the vertex.
-                         */
-                        UpdateHelpers(status, vertex);
+                        */
+                        SetAsHelperOfLeftEdge(status, vertex);
                     }
                 }
-                else if (nextVertexChecked && !prevVertexChecked)
+                else if (!nextVertexChecked && prevVertexChecked)
                 {
                     // Regular vertex, left side of polygon.
-                    status.Remove(nextEdge);
-                    status.Add(prevEdge, vertex);
+                    status.Remove(prevEdge);
+                    status.Add(nextEdge, vertex);
                 }
-                else // if (!nextVertexChecked && prevVertexChecked)
+                else // if (nextVertexChecked && !prevVertexChecked)
                 {
                     // Regular vertex, right side of polygon.
-                    UpdateHelpers(status, vertex);
+                    SetAsHelperOfLeftEdge(status, vertex);
                 }
             }
 
@@ -325,9 +359,10 @@ namespace LSPainter.DCEL
         /// <summary>
         /// Set the helper of the edge left of the new helper.
         /// </summary>
-        void UpdateHelpers(SortedList<HalfEdge, Vertex> status, Vertex newHelper)
+        void SetAsHelperOfLeftEdge(SortedList<HalfEdge, Vertex> status, Vertex newHelper)
         {
             (HalfEdge halfEdge, _) = SearchInStatus(status, newHelper);
+            status.Remove(halfEdge);
             status[halfEdge] = newHelper;
         }
 
@@ -419,7 +454,7 @@ namespace LSPainter.DCEL
                 (Face newTriangle, yMonotone) = AddEdge(u, v);
                 triangles.Add(newTriangle);
             }
-            
+
             // What's left of the y-monotone is the last triangle
             triangles.Add(yMonotone);
         }
@@ -444,7 +479,7 @@ namespace LSPainter.DCEL
             Vector v = (Vector)vertex;
             Vector v1 = (Vector)(vertex.IncidentEdge?.Next?.Origin ?? throw new NullReferenceException());
             Vector v2 = (Vector)(vertex.IncidentEdge?.Prev?.Origin ?? throw new NullReferenceException());
-            
+
             /* 
             A reflex vertex is a vertex whose inner angle (angle in the face) is at least pi.
             To check this, we will check if v2 lies right of the line from v to v1. To picture
@@ -505,12 +540,14 @@ namespace LSPainter.DCEL
             // Find the top vertex
             HalfEdge topMost = yMonotone.OuterComponent ?? throw new NullReferenceException();
 
-            while ((topMost.Prev?.Origin?.Y > topMost.Origin?.Y))
+            EventComparer comparer = new EventComparer(true);
+
+            while (comparer.Compare(topMost.Prev?.Origin, topMost.Origin) < 0)
             {
                 topMost = topMost.Prev ?? throw new NullReferenceException();
             }
 
-            while ((topMost.Next?.Origin?.Y > topMost.Origin?.Y))
+            while (comparer.Compare(topMost.Next?.Origin, topMost.Origin) < 0)
             {
                 topMost = topMost.Next ?? throw new NullReferenceException();
             }
@@ -522,47 +559,73 @@ namespace LSPainter.DCEL
             // Set the incident edges of each vertex to the current loop for ease
             topMost.Origin?.SetIncidentEdge(topMost);
 
-            HalfEdge left = topMost.Prev ?? throw new NullReferenceException();
-            HalfEdge right = topMost.Next ?? throw new NullReferenceException();
+            HalfEdge left = topMost.Next ?? throw new NullReferenceException();
+            HalfEdge right = topMost.Prev ?? throw new NullReferenceException();
 
             do
             {
                 left.Origin?.SetIncidentEdge(left);
                 right.Origin?.SetIncidentEdge(right);
 
-                if (left.Origin?.Y >= right.Origin?.Y)
+                if (comparer.Compare(left.Origin, right.Origin) < 0)
                 {
                     output.Add((left.Origin ?? throw new NullReferenceException(), VertexType.LeftChain));
-                    left = left.Prev ?? throw new NullReferenceException();
+                    left = left.Next ?? throw new NullReferenceException();
                 }
                 else
                 {
                     output.Add((right.Origin ?? throw new NullReferenceException(), VertexType.RightChain));
-                    right = right.Next ?? throw new NullReferenceException();
+                    right = right.Prev ?? throw new NullReferenceException();
                 }
             }
-            while (left != right);
+            while (right != left);
 
-            (Vertex bottomVertex, _) = output.Last();
-            output[output.Count] = (bottomVertex, VertexType.Bottom);
+            output.Add((right.Origin ?? throw new NullReferenceException(), VertexType.Bottom));
 
             return output;
         }
     }
 
-    class StatusComparer : IComparer<HalfEdge?>
+    class EventComparer : Comparer<Vertex?>
+    {
+        bool yAscending;
+
+        public EventComparer(bool topToBottom)
+        {
+            yAscending = !topToBottom;
+        }
+
+        public override int Compare(Vertex? u, Vertex? v)
+        {
+            if (u == null || v == null) throw new NullReferenceException();
+
+            if (u.Y < v.Y) return yAscending ? -1 : 1;
+            if (u.Y > v.Y) return yAscending ? 1 : -1;
+
+            // Sort left-to-right
+            if (u.X < v.X) return -1;
+            if (u.X > v.X) return 1;
+
+            // Equals
+            return 0;
+        }
+    }
+
+    class StatusComparer : Comparer<HalfEdge?>
     {
         LineSegmentComparer comparer = new LineSegmentComparer();
 
-        public int Compare(HalfEdge? l, HalfEdge? m)
+        public override int Compare(HalfEdge? l, HalfEdge? m)
         {
+            if (l == null || m == null) throw new NullReferenceException();
+
             return comparer.Compare((LineSegment)l, (LineSegment)m);
         }
     }
 
-    class LineSegmentComparer : IComparer<LineSegment>
+    class LineSegmentComparer : Comparer<LineSegment>
     {
-        public int Compare(LineSegment l, LineSegment m)
+        public override int Compare(LineSegment l, LineSegment m)
         {
             /* 
             Given two non-intersecting line segments l: (l1, l2) and m: (m1, m2),
@@ -603,15 +666,11 @@ namespace LSPainter.DCEL
             double mxMin = m.GetXFromY(yMin);
             double mxMax = m.GetXFromY(yMax);
 
-            Point lMin = new Point(lxMin, yMin);
-            Point lMax = new Point(lxMax, yMax);
+            if (lxMin == mxMin && lxMax == mxMax) return 0;
+            if (lxMin <= mxMin && lxMax <= mxMax) return -1;
+            if (lxMin >= mxMin && lxMax >= mxMax) return 1;
 
-            bool lMinLeftOfM = lMin.CompareTo(m) == -1;
-            bool lMaxLeftOfM = lMax.CompareTo(m) == -1;
-
-            if (lMinLeftOfM && lMaxLeftOfM) return -1;
-            else if (!lMinLeftOfM && !lMaxLeftOfM) return 1;
-            else throw new Exception("line segments are intersecting");
+            throw new Exception("Line segments are intersecting");
         }
     }
 }

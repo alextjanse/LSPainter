@@ -33,6 +33,8 @@ namespace LSPainter.DCEL
         public Face()
         {
             InnerComponents = new List<HalfEdge>();
+
+            id = idGen++;
         }
 
         public void AddInnerComponent(HalfEdge innerComponent)
@@ -43,6 +45,20 @@ namespace LSPainter.DCEL
         public void SetOuterComponent(HalfEdge? outerComponent)
         {
             OuterComponent = outerComponent;
+        }
+
+        public bool IsSetCorrectly()
+        {
+            if (OuterComponent == null) return false;
+
+            foreach (HalfEdge e in this)
+            {
+                if (!e.IsSetCorrectly()) return false;
+
+                if (e.IncidentFace != this) return false;
+            }
+
+            return true;
         }
 
         public override string ToString()

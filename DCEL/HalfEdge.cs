@@ -40,23 +40,7 @@ namespace LSPainter.DCEL
 
         public HalfEdge()
         {
-
-        }
-
-        public HalfEdge(HalfEdge prev, Vertex origin, HalfEdge next)
-        {
-            Prev = prev;
-            Origin = Origin;
-            Next = next;
-        }
-
-        public HalfEdge(Vertex origin, HalfEdge twin, Face incidentFace, HalfEdge next, HalfEdge prev)
-        {
-            Origin = origin;
-            Twin = twin;
-            IncidentFace = incidentFace;
-            Next = next;
-            Prev = prev;
+            id = idGen++;
         }
 
         public void SetOrigin(Vertex? origin)
@@ -152,6 +136,21 @@ namespace LSPainter.DCEL
             }
 
             if (next?.Origin != null) Twin?.SetOrigin(next?.Origin);
+        }
+
+        public bool IsSetCorrectly()
+        {
+            if (Origin == null || Twin  == null || Next == null || Prev == null || IncidentFace == null) return false;
+
+            if (!Origin.IsSetCorrectly()) return false;
+
+            if (Next.Prev != this) return false;
+            if (Prev.Next != this) return false;
+            
+            if (Twin.Twin != this) return false;
+            if (Twin.Origin != Next.Origin) return false;
+
+            return true;
         }
 
         public override string ToString()
