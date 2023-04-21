@@ -63,7 +63,7 @@ namespace LSPainter.DCEL
 
         public override string ToString()
         {
-            return $"Vertex {ID}";
+            return $"Vertex {ID}: ({X}, {Y})";
         }
 
         public Vertex Clone()

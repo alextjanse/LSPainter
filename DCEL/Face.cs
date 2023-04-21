@@ -61,6 +61,11 @@ namespace LSPainter.DCEL
             return true;
         }
 
+        public IEnumerable<Vertex> IncidentVertices()
+        {
+            return this.Select(e => e.Origin ?? throw new NullReferenceException());
+        }
+
         public override string ToString()
         {
             return $"Face {ID}";

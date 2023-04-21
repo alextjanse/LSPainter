@@ -21,6 +21,7 @@ namespace LSPainter.Maths
         public static Vector operator *(double f, Vector v) => new Vector(f * v.X, f * v.Y);
         public static Vector operator *(Vector v, double f) => f * v;
         public static double Dot(Vector u, Vector v) => u.X * v.X + u.Y * v.Y;
+        public static double Cross(Vector u, Vector v) => (u.X * v.Y) - (u.Y * v.X);
         public static double Determinant(Vector u, Vector v, Vector w) => (w.X - u.X) * (v.Y - u.Y) - (w.Y - u.Y) * (v.X - u.X);
 
         public static Vector UnitX = new Vector(1, 0);

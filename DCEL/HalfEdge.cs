@@ -93,6 +93,11 @@ namespace LSPainter.DCEL
             IncidentFace = incidentFace;
         }
 
+        public void SetAsIncidentEdgeOfOrigin()
+        {
+            Origin?.SetIncidentEdge(this);
+        }
+
         public void PrependHalfEdge(HalfEdge? prev)
         {
             SetPrevAndItsNext(prev);
@@ -153,9 +158,14 @@ namespace LSPainter.DCEL
             return true;
         }
 
+        public Vertex Destination()
+        {
+            return Twin?.Origin ?? throw new NullReferenceException();
+        }
+
         public override string ToString()
         {
-            return $"Half-edge {ID}";
+            return $"Half-edge {ID}: ({Origin}, {Destination()})";
         }
 
         public HalfEdge Clone()

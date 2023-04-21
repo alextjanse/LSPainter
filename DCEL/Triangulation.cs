@@ -271,57 +271,62 @@ namespace LSPainter.DCEL
         }
 
         /// <summary>
-        /// Add an edge between u and v, and set all references correctly.
+        /// Add an edge between v1 and v2, and set all references correctly.
         /// </summary>
         /// <returns>
         /// A tuple with the two faces that have been created by adding the
         /// edge. The first face is new, the second face is the old face. 
         /// </returns>
-        (Face, Face) AddEdge(Vertex u, Vertex v)
+        (Face, Face) AddEdge(Vertex v1, Vertex v2)
         {
-            /* 
-            I'm picturing that u is the bottom vertex and v the upper vertex.
-            That is, u.Y < v.Y. From there, the half-edge is from u to v, and
-            its twin from v to u.
-             */
+            // See drawing in notes for names, or make the drawing yourself
 
-            HalfEdge halfEdge = new HalfEdge();
-            HalfEdge twin = new HalfEdge();
+            HalfEdge e2 = v1.IncidentEdge ?? throw new NullReferenceException();
+            HalfEdge e1 = e2.Prev ?? throw new NullReferenceException();
+            
+            HalfEdge e4 = v2.IncidentEdge ?? throw new NullReferenceException();
+            HalfEdge e3 = e4.Prev ?? throw new NullReferenceException();
 
-            HalfEdge uNext = u.IncidentEdge ?? throw new NullReferenceException();
-            HalfEdge uPrev = uNext.Prev ?? throw new NullReferenceException();
+            HalfEdge e5 = new HalfEdge();
+            HalfEdge e6 = new HalfEdge();
 
-            HalfEdge vNext = v.IncidentEdge ?? throw new NullReferenceException();
-            HalfEdge vPrev = vNext.Prev ?? throw new NullReferenceException();
+            Face f1 = new Face();
+            Face f2 = e1.IncidentFace ?? throw new NullReferenceException();
 
-            Face leftFace = new Face();
-            // We can reuse the current face in the DCEL as the right face
-            Face rightFace = uPrev.IncidentFace ?? throw new NullReferenceException();
+            e5.SetOrigin(v1);
+            e5.SetNextAndItsPrev(e4);
+            e5.SetPrevAndItsNext(e1);
 
-            halfEdge.SetOrigin(u);
-            halfEdge.SetNextAndItsPrev(vNext);
-            halfEdge.SetPrevAndItsNext(uPrev);
+            e6.SetOrigin(v2);
+            e6.SetNextAndItsPrev(e2);
+            e6.SetPrevAndItsNext(e3);
 
-            twin.SetOrigin(v);
-            twin.SetNextAndItsPrev(uNext);
-            twin.SetPrevAndItsNext(vPrev);
+            e5.SetTwinAndItsTwin(e6);
 
-            halfEdge.SetTwinAndItsTwin(twin);
+            e5.SetIncidentFace(f1);
+            f1.SetOuterComponent(e5);
 
-            halfEdge.SetIncidentFace(rightFace);
-            rightFace.SetOuterComponent(halfEdge);
+            e6.SetIncidentFace(f2);
+            f2.SetOuterComponent(e6);
 
-            twin.SetIncidentFace(leftFace);
-            leftFace.SetOuterComponent(twin);
-
-            foreach (HalfEdge e in leftFace)
+            foreach (HalfEdge e in f1)
             {
-                e.SetIncidentFace(leftFace);
+                e.SetIncidentFace(f1);
             }
 
-            // We don't need to do it for the rightFace, since that was the old face
+            /* 
+            Set the newly created half-edge as the incident edge of its origin.
+            This way, all the vertices in the remaining polygon have the polygon
+            half-edge as their incident edges.
+            */
+            e6.SetAsIncidentEdgeOfOrigin();
 
-            return (leftFace, rightFace);
+            /* 
+            We don't need to do the same for f2, because that was the old face,
+            so all half-edges should have it as incident face already.
+             */
+
+            return (f1, f2);
         }
 
         /// <summary>
@@ -379,8 +384,8 @@ namespace LSPainter.DCEL
         {
             /* 
             Sources:
-            - http://homepages.math.uic.edu/~jan/mcs481/triangulating.pdf
-            - https://www.cs.umd.edu/class/spring2020/cmsc754/Lects/lect05-triangulate.pdf
+            1. http://homepages.math.uic.edu/~jan/mcs481/triangulating.pdf
+            2. https://www.cs.umd.edu/class/spring2020/cmsc754/Lects/lect05-triangulate.pdf
              */
 
             List<(Vertex, VertexType)> sortedVertices = SortVerticesInYMonotone(yMonotone);
@@ -393,47 +398,69 @@ namespace LSPainter.DCEL
 
             for (int i = 2; i < sortedVertices.Count - 1; i++)
             {
-                (Vertex vertex, VertexType type) = sortedVertices[i];
+                (Vertex v, VertexType type) = sortedVertices[i];
 
-                (Vertex topVertex, VertexType topType) = stack.Peek();
+                (Vertex vPrev, VertexType prevType) = stack.Peek();
 
-                if (type != topType)
+                if (type != prevType)
                 {
                     // Vertices are in opposite chains
                     while (stack.Count > 1)
                     {
-                        (Vertex previousVertex, _) = stack.Pop();
-                        newEdges.Add((vertex, previousVertex));
+                        (Vertex vChain, _) = stack.Pop();
+                        
+                        /* 
+                        We need to make the edge already, so the prev and next of the
+                        vertices get updated along the way. One problem: we swap with
+                        the left-right order of u and v, so the right output isn't
+                        always the remaining face. We could maybe do something smart
+                        here to check the order of u and v, but what we will do is take
+                        both faces and just check which has the most edges. That's the
+                        remaining polygon.
+                         */
+                        
+                        (Face triangle, yMonotone) = type == VertexType.LeftChain ?
+                            AddEdge(v, vChain) :
+                            AddEdge(vChain, v);
+                        
+                        triangles.Add(triangle);
                     }
 
-                    stack.Pop();
-                    stack.Push(sortedVertices[i - 1]);
-                    stack.Push((vertex, type));
+                    stack.Clear();
+
+                    stack.Push((vPrev, prevType)); // new u
+                    stack.Push((v, type)); // new vPrev
                 }
                 else
                 {
-                    if (!IsReflexVertex(topVertex)) // This is u_{i - 1}
+                    if (IsNonreflexVertex(vPrev))
                     {
-                        // u_{i - 1} is a nonreflex vertex. Triangulate as much as possible
+                        stack.Pop(); // Throw away vPrev from the stack
 
-                        stack.Pop(); // Throw away u_{i - 1} from the stack
+                        (Vertex, VertexType) v_i_j = stack.Pop();
 
-                        (Vertex, VertexType) last = stack.Pop();
-                        (Vertex currentVertex, VertexType currentType) = last;
+                        (Vertex currentVertex, _) = v_i_j;
 
-                        while (DiagonalLiesInPolygon(vertex, currentVertex, currentType))
+                        while (DiagonalLiesInPolygon(v, currentVertex))
                         {
-                            newEdges.Add((vertex, currentVertex));
-                            (currentVertex, currentType) = stack.Pop();
+                            (Face triangle, yMonotone) = type == VertexType.LeftChain ?
+                                AddEdge(v, currentVertex) :
+                                AddEdge(currentVertex, v);
+
+                            triangles.Add(triangle);
+
+                            if (stack.Count == 0) break;
+                            
+                            (currentVertex, _) = stack.Pop();
                         }
 
-                        stack.Push(last);
-                        stack.Push((vertex, type));
+                        stack.Push(v_i_j); // new u
+                        stack.Push((v, type)); // new vPrev
                     }
                     else
                     {
                         // Vertex is a reflex vertex. Add it to the stack
-                        stack.Push((vertex, type));
+                        stack.Push((v, type));
                     }
                 }
             }
@@ -444,15 +471,10 @@ namespace LSPainter.DCEL
             while (stack.Count > 1)
             {
                 (Vertex v, _) = stack.Pop();
-                newEdges.Add((v, bottomVertex));
-            }
+                (Face triangle, yMonotone) = AddEdge(bottomVertex, v);
+                triangles.Add(triangle);
 
-            // Write directly into the class list, saves some concatenations
-            foreach ((Vertex u, Vertex v) in newEdges)
-            {
-                // Use the y-monotone as rest of the polygon
-                (Face newTriangle, yMonotone) = AddEdge(u, v);
-                triangles.Add(newTriangle);
+                yMonotone.OuterComponent?.SetAsIncidentEdgeOfOrigin();
             }
 
             // What's left of the y-monotone is the last triangle
@@ -469,6 +491,11 @@ namespace LSPainter.DCEL
             Vertex prevVertex = vertex.IncidentEdge?.Prev?.Origin ?? throw new NullReferenceException();
 
             return prevVertex.Y <= vertex.Y && vertex.Y <= nextVertex.Y;
+        }
+
+        bool IsNonreflexVertex(Vertex vertex)
+        {
+            return !IsReflexVertex(vertex);
         }
 
         /// <summary>
@@ -495,32 +522,31 @@ namespace LSPainter.DCEL
         /// <summary>
         /// Check whether the diagonal between vertices u and v lies in the polygon or not.
         /// </summary>
-        /// <param name="type">The vertex type of v.</param>
-        bool DiagonalLiesInPolygon(Vertex u, Vertex v, VertexType type)
+        /// <param name="prevType">The vertex type of v.</param>
+        bool DiagonalLiesInPolygon(Vertex u, Vertex v)
         {
             /* 
-            Take the down going half-edge that is incident to the previous vertex, and make
-            a line out of it. Because the face always lays right of a half-edge, we can check
-            if the vertex lies right of the line segment, and we're done!
-            */
+            Source:
+            - https://stackoverflow.com/a/695847
+            - https://stackoverflow.com/a/693969
+            p[i] = u
+            p[i + 1] = uNext
+            p[i - 1] = uPrev
+            p[j] = v
+             */
+            Vertex uNext = u.IncidentEdge?.Destination() ?? throw new NullReferenceException();
+            Vertex uPrev = u.IncidentEdge?.Prev?.Origin ?? throw new NullReferenceException();
 
-            LineSegment incidentEdgeGoingDown;
+            Vector v1 = (Vector)uNext - (Vector)u,
+                   v2 = (Vector)uPrev - (Vector)u,
+                   v3 = (Vector)v     - (Vector)u;
 
-            switch (type)
-            {
-                case VertexType.LeftChain:
-                    incidentEdgeGoingDown = (LineSegment)(v.IncidentEdge?.Prev ?? throw new NullReferenceException());
-                    break;
+            double crossv1v2 = Vector.Cross(v1, v2);
+            double crossv1v3 = Vector.Cross(v1, v3);
+            double crossv3v2 = Vector.Cross(v3, v2);
 
-                case VertexType.RightChain:
-                    incidentEdgeGoingDown = (LineSegment)(v.IncidentEdge ?? throw new NullReferenceException());
-                    break;
-
-                default:
-                    throw new Exception("Somehow, the vertex is a top or bottom vertex");
-            }
-
-            return ((Point)(Vector)u).CompareTo(incidentEdgeGoingDown) > 0;
+            return ((crossv1v2 >= 0 && crossv1v3 >= 0 && crossv3v2 >= 0) ||
+                (crossv1v2 < 0 && !(crossv1v3 < 0 && crossv3v2 < 0)));
         }
 
         /// <summary>
@@ -652,7 +678,7 @@ namespace LSPainter.DCEL
                 if ((l1.X == m1.X && l2.X == m2.X) ||
                     (l1.X == m2.X && l2.X == m1.X))
                 {
-                    throw new Exception("the line segments are the same");
+                    return 0;
                 }
 
                 if (l1.X <= m1.X && l1.X <= m2.X && l2.X <= m1.X && l2.X <= m2.X) return -1;
