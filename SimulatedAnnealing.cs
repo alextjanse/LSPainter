@@ -1,4 +1,5 @@
 using LSPainter.Shapes;
+using LSPainter.Maths;
 
 namespace LSPainter
 {
