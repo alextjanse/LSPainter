@@ -1,4 +1,4 @@
-namespace LSPainter
+namespace LSPainter.Solver
 {
     public class SolverManager
     {

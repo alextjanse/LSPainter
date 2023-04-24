@@ -55,9 +55,9 @@ namespace LSPainter
             return new Color(r, g, b, a);
         }
 
-        public static int Diff(Color a, Color b)
+        public static uint Diff(Color a, Color b)
         {
-            return Math.Abs(a.R - b.R) + Math.Abs(a.G - b.G) + Math.Abs(a.B - b.B);
+            return (uint)(Math.Abs(a.R - b.R) + Math.Abs(a.G - b.G) + Math.Abs(a.B - b.B));
         }
 
         public override string ToString()

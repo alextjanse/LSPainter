@@ -3,6 +3,7 @@ using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using LSPainter.DCEL;
+using LSPainter.Solver;
 
 namespace LSPainter
 {
