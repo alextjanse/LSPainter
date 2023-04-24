@@ -1,6 +1,6 @@
 using LSPainter.Maths;
 
-namespace LSPainter.DCEL
+namespace LSPainter.Maths.DCEL
 {
     public class HalfEdge : IEquatable<HalfEdge>
     {

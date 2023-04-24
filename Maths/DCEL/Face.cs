@@ -1,6 +1,6 @@
 using System.Collections;
 
-namespace LSPainter.DCEL
+namespace LSPainter.Maths.DCEL
 {
     public class Face : IEnumerable<HalfEdge>, IEquatable<Face>
     {
@@ -61,10 +61,17 @@ namespace LSPainter.DCEL
             return true;
         }
 
-        public IEnumerable<Vertex> IncidentVertices()
+        public IEnumerable<Vertex> Vertices => this.Select(e => e.Origin ?? throw new NullReferenceException());
+        public IEnumerable<HalfEdge> Edges => this;
+        public IEnumerable<Face> AdjacentFaces
         {
-            return this.Select(e => e.Origin ?? throw new NullReferenceException());
-        }
+            get
+            {
+                // Return all adjacent faces, distinct by ID
+                return this.Select(e => e.Twin?.IncidentFace ?? throw new NullReferenceException())
+                    .DistinctBy(f => f.ID);
+            }
+        } 
 
         public override string ToString()
         {

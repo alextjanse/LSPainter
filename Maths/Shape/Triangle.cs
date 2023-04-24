@@ -2,7 +2,7 @@ using LSPainter.Maths;
 
 namespace LSPainter.Maths.Shapes
 {
-    public class Triangle : Shape
+    public class Triangle : Shape, ITriangle
     {
         public Vector P1 { get; }
         public Vector P2 { get; }

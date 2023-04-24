@@ -1,5 +1,7 @@
 using System.Collections;
 
+using LSPainter.Maths.DCEL;
+
 namespace LSPainter.Maths
 {
     public struct BoundingBox : IEnumerable<(int x, int y)>
@@ -46,6 +48,30 @@ namespace LSPainter.Maths
                     yield return (x, y);
                 }
             }
+        }
+
+        public static BoundingBox FromFace(Face face)
+        {
+            int minX = int.MaxValue;
+            int maxX = int.MinValue;
+            int minY = int.MaxValue;
+            int maxY = int.MinValue;
+
+            foreach (Vertex vertex in face.Vertices)
+            {
+                double x = vertex.X;
+                double y = vertex.Y;
+
+                minX = Math.Min(minX, (int)Math.Floor(x));
+                maxX = Math.Max(maxX, (int)Math.Ceiling(x));
+                minY = Math.Min(minY, (int)Math.Floor(y));
+                maxY = Math.Max(maxY, (int)Math.Ceiling(y));
+            }
+
+            int width = maxX - minX;
+            int height = maxY - minY;
+
+            return new BoundingBox(minX, minY, width, height);
         }
     }
 }

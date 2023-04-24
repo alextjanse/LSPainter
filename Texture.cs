@@ -51,11 +51,22 @@ namespace LSPainter
         public Color GetPixel(int x, int y)
         {
             int index = 4 * (y * Width + x);
+            
             return new Color(
                 Data[index + 0],    // R
                 Data[index + 1],    // G
                 Data[index + 2],    // B
                 Data[index + 3]);   // A
+        }
+
+        protected void setPixel(int x, int y, Color color)
+        {
+            int index = 4 * (y * Width + x);
+
+            Data[index + 0] = color.R;
+            Data[index + 1] = color.G;
+            Data[index + 2] = color.B;
+            Data[index + 3] = color.A;
         }
 
         public IEnumerable<Color> EnumerateSection(BoundingBox bbox)

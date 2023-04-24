@@ -18,7 +18,7 @@ namespace LSPainter.LSSolver
 
             for (int i = 0; i < n; i++)
             {
-                Solvers[i] = SolverFactory.CreateSolver(
+                Solvers[i] = SolverFactory.CreateCanvasSolver(
                     SolverType.ShapePainter,
                     original.Width,
                     original.Height,

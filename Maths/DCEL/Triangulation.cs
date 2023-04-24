@@ -1,10 +1,11 @@
 using LSPainter.Maths;
+using LSPainter.Maths.Shapes;
 
-namespace LSPainter.DCEL
+namespace LSPainter.Maths.DCEL
 {
     public class Triangulation
     {
-        List<Face> triangles;
+        public List<(Face, Triangle)> Triangles;
 
         /// <summary>
         /// Stores the IDs of the vertices of the actual face. If the face changes,
@@ -18,7 +19,7 @@ namespace LSPainter.DCEL
 
         public Triangulation(Face face)
         {
-            triangles = new List<Face>();
+            Triangles = new List<(Face, Triangle)>();
             vertices = new Dictionary<uint, Vertex>();
 
             Face faceClone = face.Clone();
@@ -51,7 +52,7 @@ namespace LSPainter.DCEL
         /// </summary>
         void Reset()
         {
-            triangles.Clear();
+            Triangles.Clear();
             ResetPolygon();
         }
 
@@ -422,8 +423,8 @@ namespace LSPainter.DCEL
                         (Face triangle, yMonotone) = type == VertexType.LeftChain ?
                             AddEdge(v, vChain) :
                             AddEdge(vChain, v);
-                        
-                        triangles.Add(triangle);
+
+                        AddTriangle(triangle);
                     }
 
                     stack.Clear();
@@ -447,7 +448,7 @@ namespace LSPainter.DCEL
                                 AddEdge(v, currentVertex) :
                                 AddEdge(currentVertex, v);
 
-                            triangles.Add(triangle);
+                            AddTriangle(triangle);
 
                             if (stack.Count == 0) break;
                             
@@ -472,13 +473,13 @@ namespace LSPainter.DCEL
             {
                 (Vertex v, _) = stack.Pop();
                 (Face triangle, yMonotone) = AddEdge(bottomVertex, v);
-                triangles.Add(triangle);
+                AddTriangle(triangle);
 
                 yMonotone.OuterComponent?.SetAsIncidentEdgeOfOrigin();
             }
 
             // What's left of the y-monotone is the last triangle
-            triangles.Add(yMonotone);
+            AddTriangle(yMonotone);
         }
 
         /// <summary>
@@ -609,6 +610,24 @@ namespace LSPainter.DCEL
             output.Add((right.Origin ?? throw new NullReferenceException(), VertexType.Bottom));
 
             return output;
+        }
+
+        void AddTriangle(Face face)
+        {
+            Vertex[] vertices = face.Vertices.ToArray();
+
+            if (vertices.Length != 3)
+            {
+                throw new Exception("Face is not a triangle");
+            }
+
+            Triangle triangle = new Triangle(
+                (Vector)vertices[0],
+                (Vector)vertices[1],
+                (Vector)vertices[2]
+            );
+
+            Triangles.Add((face, triangle));
         }
     }
 
