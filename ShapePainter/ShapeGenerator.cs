@@ -1,5 +1,5 @@
 using LSPainter.Maths;
-using LSPainter.Shapes;
+using LSPainter.Maths.Shapes;
 
 namespace LSPainter.ShapePainter
 {
@@ -36,7 +36,7 @@ namespace LSPainter.ShapePainter
             return new Vector(Math.Cos(angle), Math.Sin(angle));
         }
 
-        static LSPainter.Shapes.Triangle GenerateTriangle(ShapeGeneratorSettings settings)
+        static LSPainter.Maths.Shapes.Triangle GenerateTriangle(ShapeGeneratorSettings settings)
         {
             Point p1 = GeneratePoint(settings);
 
@@ -53,7 +53,7 @@ namespace LSPainter.ShapePainter
             Point p2 = p1 + factors[0] * GenerateUnitVector(angle1);
             Point p3 = p1 + factors[1] * GenerateUnitVector(angle2);
 
-            return new LSPainter.Shapes.Triangle(p1, p2, p3);
+            return new LSPainter.Maths.Shapes.Triangle(p1, p2, p3);
         }
 
         static Circle GenerateCircle(ShapeGeneratorSettings settings)

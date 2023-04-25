@@ -92,5 +92,10 @@ namespace LSPainter
         {
             return lb + random.NextDouble() * (ub - lb);
         }
+
+        public static float RandomChance()
+        {
+            return random.NextSingle();
+        }
     }
 }

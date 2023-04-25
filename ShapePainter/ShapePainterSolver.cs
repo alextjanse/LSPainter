@@ -1,9 +1,10 @@
-using LSPainter.Shapes;
+using LSPainter.Solver;
+using LSPainter.Maths.Shapes;
 using LSPainter.Maths;
 
 namespace LSPainter.ShapePainter
 {
-    public class ShapePainterSolver
+    public class ShapePainterSolver : ISolver<CanvasSolution<ShapeChange>>
     {
         static Random random = new Random();
         public Painting Painting { get; }

@@ -1,10 +1,11 @@
 using LSPainter.Maths;
 
-namespace LSPainter.Shapes
+namespace LSPainter.Maths.Shapes
 {
     public abstract class Shape
     {
-        public Rectangle BoundingBox { get; protected set; }
+        public abstract BoundingBox CreateBoundingBox();
+
         public double Area { get; protected set; }
         public abstract bool IsInside(Vector p);
         public bool IsInside(int x, int y)

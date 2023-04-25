@@ -1,6 +1,6 @@
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
-using LSPainter.Shapes;
+using LSPainter.Maths.Shapes;
 using LSPainter.Maths;
 
 namespace LSPainter
@@ -24,7 +24,7 @@ namespace LSPainter
 
         public void DrawShape(Shape shape, Color color)
         {
-            BoundingBox bbox = shape.BoundingBox;
+            BoundingBox bbox = shape.CreateBoundingBox();
 
             int minX = Math.Max(0, bbox.X);
             int maxX = Math.Min(Width, bbox.X + bbox.Width);
