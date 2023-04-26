@@ -1,5 +1,3 @@
-using LSPainter.Maths;
-
 namespace LSPainter.Maths.Shapes
 {
     public abstract class Shape

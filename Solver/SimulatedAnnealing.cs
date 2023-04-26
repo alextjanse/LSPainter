@@ -23,7 +23,10 @@ namespace LSPainter.Solver
 
                 if (x < p)
                 {
-                    // Apply the change with probablity: https://en.wikipedia.org/wiki/Simulated_annealing#Acceptance_probabilities_2
+                    /* 
+                    Apply the change with a probablity
+                    Source: https://en.wikipedia.org/wiki/Simulated_annealing#Acceptance_probabilities_2
+                     */
                     UpdateParameters();
                     return true;
                 }

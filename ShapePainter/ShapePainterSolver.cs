@@ -4,7 +4,7 @@ using LSPainter.Maths;
 
 namespace LSPainter.ShapePainter
 {
-    public class ShapePainterSolver : ISolver<CanvasSolution<ShapeChange>>
+    public class ShapePainterSolver : SimulatedAnnealingSolver<CanvasSolution<ShapePainterChange>, ShapePainterChange>
     {
         static Random random = new Random();
         public Painting Painting { get; }
@@ -25,6 +25,8 @@ namespace LSPainter.ShapePainter
                 return score;
             }
         }
+
+        CanvasSolution<ShapePainterChange> ISolver<CanvasSolution<ShapePainterChange>, ShapePainterChange>.Solution { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         ShapeGeneratorSettings shapeGeneratorSettings;
         ColorGeneratorSettings colorGeneratorSettings;
@@ -148,6 +150,14 @@ namespace LSPainter.ShapePainter
             }
 
             return totalDiff;
+        }
+
+        public ShapePainterChange GenerateNeighbour()
+        {
+            Shape shape = ShapeGenerator.Generate(shapeGeneratorSettings);
+            Color color = ColorGenerator.Generate(colorGeneratorSettings);
+
+            return new ShapePainterChange(shape, color);
         }
     }
 }
