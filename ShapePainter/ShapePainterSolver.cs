@@ -4,43 +4,20 @@ using LSPainter.Maths;
 
 namespace LSPainter.ShapePainter
 {
-    public class ShapePainterSolver : SimulatedAnnealingSolver<CanvasSolution<ShapePainterChange>, ShapePainterChange>
+    public class ShapePainterSolver : SimulatedAnnealingSolver<CanvasSolutionChecker<ShapePainterChange>, CanvasSolution<ShapePainterChange>, ShapePainterChange>
     {
         static Random random = new Random();
-        public Painting Painting { get; }
-        ImageHandler original;
 
-        bool scoreUpdateFlag = true;
-
-        private ulong score;
-        public ulong Score
-        {
-            get
-            {
-                if (scoreUpdateFlag)
-                {
-                    score = GetScore();
-                    scoreUpdateFlag = false;
-                }
-                return score;
-            }
-        }
-
-        CanvasSolution<ShapePainterChange> ISolver<CanvasSolution<ShapePainterChange>, ShapePainterChange>.Solution { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public override CanvasSolution<ShapePainterChange> Solution { get; }
+        public override CanvasSolutionChecker<ShapePainterChange> SolutionChecker { get; }
 
         ShapeGeneratorSettings shapeGeneratorSettings;
         ColorGeneratorSettings colorGeneratorSettings;
 
-        double temperature = 1000000;
-        int coolingSteps = 100000;
-        int iteration = 0;
-        double alpha = 0.95;
-
         public ShapePainterSolver(ImageHandler original)
         {
-            this.original = original;
-
-            Painting = new Painting(original.Width, original.Height);
+            Solution = new ShapePainterSolution(original.Width, original.Height);
+            SolutionChecker = new CanvasSolutionChecker<ShapePainterChange>(original);
 
             shapeGeneratorSettings = new ShapeGeneratorSettings()
             {
@@ -55,73 +32,21 @@ namespace LSPainter.ShapePainter
             {
                 Alpha = 255 / 10,
             };
-
-            score = GetScore();
         }
 
-        ulong GetScore()
+        protected override long TryChange(ShapePainterChange change)
         {
-            ulong totalScore = 0;
+            Shape shape = change.Shape;
+            Color color = change.Color;
 
-            for (int y = 0; y < Painting.Height; y++)
-            {
-                for (int x = 0; x < Painting.Width; x++)
-                {
-                    Color originalColor = original.GetPixel(x, y);
-                    Color currentColor = Painting.GetPixel(x, y);
-
-                    uint diff = Color.Diff(originalColor, currentColor);
-                    totalScore += diff;
-                }
-            }
-
-            return totalScore;
-        }
-
-        public void Iterate()
-        {
-            Shape shape = ShapeGenerator.Generate(shapeGeneratorSettings);
-            Color color = ColorGenerator.Generate(colorGeneratorSettings);
-
-            long scoreDiff = TryShape(shape, color);
-
-            if (scoreDiff < 0)
-            {
-                // If we improve our score, apply the shape
-                Painting.DrawShape(shape, color);
-                score = (ulong)((long)score + scoreDiff);
-            }
-            else
-            {
-                float x = random.NextSingle();
-                double p = Math.Pow(Math.E, -scoreDiff / temperature);
-
-                if (x < p)
-                {
-                    // Console.WriteLine($"Accepted by chance. diff = {scoreDiff}, p = {p}");
-                    // Apply the change with probablity: https://en.wikipedia.org/wiki/Simulated_annealing#Acceptance_probabilities_2
-                    Painting.DrawShape(shape, color);
-                    score = (ulong)((long)score + scoreDiff);
-                }
-            }
-
-            if (iteration++ > coolingSteps)
-            {
-                iteration = 0;
-                temperature *= alpha;
-            }
-        }
-
-        long TryShape(Shape shape, Color color)
-        {
             long totalDiff = 0;
 
-            BoundingBox bbox = shape.BoundingBox;
+            BoundingBox bbox = shape.CreateBoundingBox();
 
             int minX = Math.Max(0, bbox.X);
-            int maxX = Math.Min(original.Width, bbox.X + bbox.Width);
+            int maxX = Math.Min(Solution.Canvas.Width, bbox.X + bbox.Width);
             int minY = Math.Max(0, bbox.Y);
-            int maxY = Math.Min(original.Height, bbox.Y + bbox.Height);
+            int maxY = Math.Min(Solution.Canvas.Height, bbox.Y + bbox.Height);
 
             for (int y = minY; y < maxY; y++)
             {
@@ -129,15 +54,16 @@ namespace LSPainter.ShapePainter
                 {
                     if (shape.IsInside(x, y))
                     {
-                        Color originalColor = original.GetPixel(x, y);
-
-                        Color currentColor = Painting.GetPixel(x, y);
+                        Color currentColor = Solution.Canvas.GetPixel(x, y);
                         Color blendedColor = Color.Blend(currentColor, color);
 
-                        int rDiff = Math.Abs(originalColor.R - blendedColor.R) - Math.Abs(originalColor.R - currentColor.R);
-                        int gDiff = Math.Abs(originalColor.G - blendedColor.G) - Math.Abs(originalColor.G - currentColor.G);
-                        int bDiff = Math.Abs(originalColor.B - blendedColor.B) - Math.Abs(originalColor.B - currentColor.B);
+                        (int dRCurrent, int dGCurrent, int dBCurrent) = SolutionChecker.PixelDiff(x, y, currentColor);
+                        (int dRNew, int dGNew, int dBNew) = SolutionChecker.PixelDiff(x, y, blendedColor);
 
+                        int rDiff = dRNew - dRCurrent;
+                        int gDiff = dGNew - dGCurrent;
+                        int bDiff = dBNew - dBCurrent;
+                        
                         int penaltyFactor = 10000;
 
                         if (rDiff > 0) rDiff *= penaltyFactor;
@@ -152,12 +78,20 @@ namespace LSPainter.ShapePainter
             return totalDiff;
         }
 
-        public ShapePainterChange GenerateNeighbour()
+        protected override ShapePainterChange GenerateNeighbour()
         {
             Shape shape = ShapeGenerator.Generate(shapeGeneratorSettings);
             Color color = ColorGenerator.Generate(colorGeneratorSettings);
 
             return new ShapePainterChange(shape, color);
+        }
+
+        protected override void ApplyChange(ShapePainterChange change)
+        {
+            Shape shape = change.Shape;
+            Color color = change.Color;
+
+            Solution.Canvas.DrawShape(shape, color);
         }
     }
 }

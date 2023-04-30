@@ -6,23 +6,11 @@ using LSPainter.Solver;
 
 namespace LSPainter.ShapePainter
 {
-    public class ShapePainterSolution : ISolution<ShapePainterChange>
+    public class ShapePainterSolution : CanvasSolution<ShapePainterChange>
     {
-        long ISolution<ShapePainterChange>.Score { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-        void ISolution<ShapePainterChange>.ApplyChange(ShapePainterChange change)
+        public ShapePainterSolution(int width, int height) : base(width, height)
         {
-            throw new NotImplementedException();
-        }
-
-        void ISolution<ShapePainterChange>.Draw(Frame frame)
-        {
-            throw new NotImplementedException();
-        }
-
-        long ISolution<ShapePainterChange>.TryChange(ShapePainterChange change)
-        {
-            throw new NotImplementedException();
+            Score = 0;
         }
     }
 }

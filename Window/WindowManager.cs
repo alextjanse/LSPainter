@@ -48,9 +48,9 @@ namespace LSPainter
         {
             this.original = original;
 
-            solverManager = new SolverManager(original, 1);
+            solverManager = new SolverManager(original, 4);
 
-            frameManager = new FrameManager(windowLayout, original, solverManager.Instances[0].Painting);
+            frameManager = new FrameManager(windowLayout, original, solverManager.Paintings);
 
             shader = new Shader("./Shaders/shader.vert", "./Shaders/shader.frag");
 

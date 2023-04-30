@@ -4,7 +4,7 @@ using LSPainter.Solver;
 
 namespace LSPainter.ShapePainter
 {
-    public class ShapePainterChange : IChange
+    public class ShapePainterChange : Change
     {
         public Shape Shape { get; }
         public Color Color { get; }
@@ -20,7 +20,7 @@ namespace LSPainter.ShapePainter
             canvas.DrawShape(Shape, Color);
         }
 
-        public BoundingBox GenerateBoundingBox()
+        public override BoundingBox GenerateBoundingBox()
         {
             return Shape.CreateBoundingBox();
         }

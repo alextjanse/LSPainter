@@ -1,24 +1,27 @@
+using LSPainter.ShapePainter;
+
 namespace LSPainter.Solver
 {
     public class SolverManager
     {
-        public SimulatedAnnealing[] Instances { get; }
+        public ShapePainterSolver[] Solvers { get; }
+        public IEnumerable<Painting> Paintings => Solvers.Select(s => s.Solution.Canvas );
 
         public SolverManager(ImageHandler original, int n)
         {
-            Instances = new SimulatedAnnealing[n];
+            Solvers = new ShapePainterSolver[n];
 
             for (int i = 0; i < n; i++)
             {
-                Instances[i] = new SimulatedAnnealing(original);
+                Solvers[i] = new ShapePainterSolver(original);
             }
         }
 
         public void Iterate()
         {
-            for (int i = 0; i < Instances.Length; i++)
+            for (int i = 0; i < Solvers.Length; i++)
             {
-                Instances[i].Iterate();
+                Solvers[i].Iterate();
             }
         }
     }

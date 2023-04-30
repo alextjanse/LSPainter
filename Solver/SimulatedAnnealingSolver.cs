@@ -1,15 +1,17 @@
 namespace LSPainter.Solver
 {
-    public abstract class SimulatedAnnealingSolver<TSolution, TChange> : ISolver<TSolution, TChange>
-        where TSolution : ISolution<TChange>
-        where TChange : IChange
+    public abstract class SimulatedAnnealingSolver<TSolutionChecker, TSolution, TChange> : 
+        Solver<TSolutionChecker, TSolution, TChange>
+        where TSolutionChecker : SolutionChecker<TSolution, TChange>
+        where TSolution : Solution<TChange>
+        where TChange : Change
     {
         double temperature = 1000000;
         int coolingSteps = 100000;
         int iteration = 0;
         double alpha = 0.95;
 
-        protected bool EvaluateScoreDiff(long scoreDiff)
+        protected override bool EvaluateScoreDiff(long scoreDiff)
         {
             if (scoreDiff < 0)
             {
