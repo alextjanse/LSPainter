@@ -1,4 +1,4 @@
-namespace LSPainter.Solver
+namespace LSPainter.LSSolver
 {
     public abstract class SimulatedAnnealingSolver<TSolutionChecker, TSolution, TChange> : 
         Solver<TSolutionChecker, TSolution, TChange>

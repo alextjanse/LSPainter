@@ -1,6 +1,12 @@
-namespace LSPainter.Solver
+namespace LSPainter.LSSolver
 {
-    public abstract class CanvasSolution<TChange> : Solution<TChange> where TChange : Change
+    public interface ICanvasSolution : ISolution
+    {
+        public Painting Canvas { get; }
+    }
+
+    public abstract class CanvasSolution<TChange> : Solution<TChange>, ICanvasSolution
+        where TChange : Change
     {
         public Painting Canvas { get; }
 

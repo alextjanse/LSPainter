@@ -1,4 +1,4 @@
-namespace LSPainter.Solver
+namespace LSPainter.LSSolver
 {
     public class CanvasSolutionChecker<TChange> : SolutionChecker<CanvasSolution<TChange>, TChange>
         where TChange : Change

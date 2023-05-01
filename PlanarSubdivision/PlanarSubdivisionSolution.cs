@@ -1,4 +1,4 @@
-namespace LSPainter.Solver
+namespace LSPainter.LSSolver
 {
     
 }

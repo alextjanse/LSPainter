@@ -1,4 +1,4 @@
-using LSPainter.Solver;
+using LSPainter.LSSolver;
 using LSPainter.Maths.Shapes;
 using LSPainter.Maths;
 

@@ -1,4 +1,4 @@
-namespace LSPainter.Solver
+namespace LSPainter.LSSolver
 {
     public abstract class SolutionChecker<TSolution, TChange>
         where TSolution : Solution<TChange>

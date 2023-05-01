@@ -1,6 +1,6 @@
 using LSPainter.Maths;
 
-namespace LSPainter.Solver
+namespace LSPainter.LSSolver
 {
     public abstract class Change
     {
