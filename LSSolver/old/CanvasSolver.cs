@@ -1,4 +1,4 @@
-namespace LSPainter.LSSolver
+/* namespace LSPainter.LSSolver
 {
     public interface ICanvasSolver : ISolver
     {
@@ -13,4 +13,4 @@ namespace LSPainter.LSSolver
             return Solution.Canvas;
         }
     }
-}
+} */

@@ -1,4 +1,4 @@
-namespace LSPainter.LSSolver
+/* namespace LSPainter.LSSolver
 {
     public interface ISolver
     {
@@ -29,4 +29,4 @@ namespace LSPainter.LSSolver
             }
         }
     }
-}
+} */

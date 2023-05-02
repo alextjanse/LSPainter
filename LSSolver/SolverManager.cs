@@ -4,12 +4,12 @@ namespace LSPainter.LSSolver
 {
     public class SolverManager
     {
-        public ICanvasSolver[] Solvers { get; }
-        public IEnumerable<Painting> Paintings => Solvers.Select(s => s.GetCanvas() );
+        public Solver[] Solvers { get; }
+        public IEnumerable<Painting> Paintings => Solvers.Select(s => s.Solution.Canvas );
 
         public SolverManager(ImageHandler original, int n)
         {
-            Solvers = new ICanvasSolver[n];
+            Solvers = new ShapePainterSolver[n];
 
             for (int i = 0; i < n; i++)
             {

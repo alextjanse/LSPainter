@@ -1,4 +1,4 @@
-namespace LSPainter.LSSolver
+/* namespace LSPainter.LSSolver
 {
     public interface ISolution
     {
@@ -10,4 +10,4 @@ namespace LSPainter.LSSolver
     {
         public long Score { get; protected set; }
     }
-}
+} */

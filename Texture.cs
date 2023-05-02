@@ -1,8 +1,10 @@
 using OpenTK.Graphics.OpenGL4;
+using LSPainter.Maths;
+using System.Collections;
 
 namespace LSPainter
 {
-    public abstract class Texture
+    public abstract class Texture : IEnumerable<Color>
     {
         public int Handle { get; private set; }
         public int Width { get; protected set; }
@@ -54,6 +56,38 @@ namespace LSPainter
                 Data[index + 1],    // G
                 Data[index + 2],    // B
                 Data[index + 3]);   // A
+        }
+
+        public IEnumerable<Color> EnumerateSection(BoundingBox bbox)
+        {
+            int x = bbox.X;
+            int xMax = x + bbox.Width;
+            int y = bbox.Y;
+            int yMax = y + bbox.Height;
+
+            for (; y < yMax; y++)
+            {
+                for (; x < xMax; x++)
+                {
+                    yield return GetPixel(x, y);
+                }
+            }
+        }
+
+        IEnumerator<Color> IEnumerable<Color>.GetEnumerator()
+        {
+            for (int y = 0; y < Height; y++)
+            {
+                for (int x = 0; x < Width; x++)
+                {
+                    yield return GetPixel(x, y);
+                }
+            }
+        }
+
+        public IEnumerator GetEnumerator()
+        {
+            return this.GetEnumerator();
         }
     }
 }

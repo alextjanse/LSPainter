@@ -1,4 +1,4 @@
-namespace LSPainter.LSSolver
+/* namespace LSPainter.LSSolver
 {
     public abstract class SolutionChecker<TSolution, TChange>
         where TSolution : Solution<TChange>
@@ -7,4 +7,4 @@ namespace LSPainter.LSSolver
         public abstract long ScoreSolution(TSolution solution);
         public abstract long GetScoreDiff(TSolution solution, TChange change);
     }
-}
+} */

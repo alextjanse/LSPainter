@@ -1,4 +1,4 @@
-using LSPainter.ShapePainter;
+/* using LSPainter.ShapePainter;
 
 namespace LSPainter.LSSolver
 {
@@ -15,7 +15,7 @@ namespace LSPainter.LSSolver
         TODO: this function generic. I'm screwing up the whole inheritance
         with the TSolutionChecker<TChange>, TSolution, TChange stuff, need
         to make it generic, but also explicit.
-         */
+        
         public static ISolver CreateSolver(ImageHandler original, SolverType type)
         {
             switch (type)
@@ -27,4 +27,4 @@ namespace LSPainter.LSSolver
             }
         }
     }
-}
+} */

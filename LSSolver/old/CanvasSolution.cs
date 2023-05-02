@@ -1,4 +1,4 @@
-namespace LSPainter.LSSolver
+/* namespace LSPainter.LSSolver
 {
     public interface ICanvasSolution : ISolution
     {
@@ -15,4 +15,4 @@ namespace LSPainter.LSSolver
             Canvas = new Painting(width, height);
         }
     }
-}
+} */

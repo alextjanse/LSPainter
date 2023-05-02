@@ -1,4 +1,4 @@
-namespace LSPainter.LSSolver
+/* namespace LSPainter.LSSolver
 {
     public class CanvasSolutionChecker<TChange> : SolutionChecker<CanvasSolution<TChange>, TChange>
         where TChange : Change
@@ -25,4 +25,4 @@ namespace LSPainter.LSSolver
             throw new NotImplementedException();
         }
     }
-}
+} */

@@ -1,4 +1,4 @@
-using LSPainter.Maths;
+/* using LSPainter.Maths;
 
 namespace LSPainter.LSSolver
 {
@@ -6,4 +6,4 @@ namespace LSPainter.LSSolver
     {
         public abstract BoundingBox GenerateBoundingBox();
     }
-}
+} */

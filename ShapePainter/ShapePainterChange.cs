@@ -1,13 +1,14 @@
 using LSPainter.Maths;
 using LSPainter.Maths.Shapes;
-using LSPainter.LSSolver;
+using LSPainter.LSSolver.CanvasSolution;
 
 namespace LSPainter.ShapePainter
 {
-    public class ShapePainterChange : Change
+    public class ShapePainterChange : CanvasChange
     {
         public Shape Shape { get; }
         public Color Color { get; }
+        public override BoundingBox BoundingBox => Shape.CreateBoundingBox();
 
         public ShapePainterChange(Shape shape, Color color)
         {
@@ -18,11 +19,6 @@ namespace LSPainter.ShapePainter
         public void ApplyToCanvas(Painting canvas)
         {
             canvas.DrawShape(Shape, Color);
-        }
-
-        public override BoundingBox GenerateBoundingBox()
-        {
-            return Shape.CreateBoundingBox();
         }
     }
 }

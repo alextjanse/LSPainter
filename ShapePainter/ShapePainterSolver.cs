@@ -1,30 +1,24 @@
-using LSPainter.LSSolver;
+using LSPainter.LSSolver.CanvasSolution;
 using LSPainter.Maths.Shapes;
 using LSPainter.Maths;
 
 namespace LSPainter.ShapePainter
 {
-    public class ShapePainterSolver : SimulatedAnnealingSolver<CanvasSolutionChecker<ShapePainterChange>, CanvasSolution<ShapePainterChange>, ShapePainterChange>
+    public class ShapePainterSolver : CanvasSolver
     {
         static Random random = new Random();
-
-        public override CanvasSolution<ShapePainterChange> Solution { get; }
-        public override CanvasSolutionChecker<ShapePainterChange> SolutionChecker { get; }
 
         ShapeGeneratorSettings shapeGeneratorSettings;
         ColorGeneratorSettings colorGeneratorSettings;
 
-        public ShapePainterSolver(ImageHandler original)
+        public ShapePainterSolver(ShapePainterSolution initialSolution, CanvasChecker checker) : base(initialSolution, checker)
         {
-            Solution = new ShapePainterSolution(original.Width, original.Height);
-            SolutionChecker = new CanvasSolutionChecker<ShapePainterChange>(original);
-
             shapeGeneratorSettings = new ShapeGeneratorSettings()
             {
                 MinX = 0,
-                MaxX = original.Width,
+                MaxX = Solution.Canvas.Width,
                 MinY = 0,
-                MaxY = original.Height,
+                MaxY = Solution.Canvas.Height,
                 Area = 20,
             };
 

@@ -1,6 +1,8 @@
+using System.Collections;
+
 namespace LSPainter.Maths
 {
-    public struct BoundingBox
+    public struct BoundingBox : IEnumerable<(int x, int y)>
     {
         public int X, Y, Width, Height;
 
@@ -28,6 +30,22 @@ namespace LSPainter.Maths
             }
 
             return new BoundingBox(minX, minY, maxX - minX, maxY - minY);
+        }
+
+        public IEnumerator GetEnumerator()
+        {
+            return this.GetEnumerator();
+        }
+
+        IEnumerator<(int, int)> IEnumerable<(int x, int y)>.GetEnumerator()
+        {
+            for (int y = Y; y < Y + Height; y++)
+            {
+                for (int x = X; x < X + Width; x++)
+                {
+                    yield return (x, y);
+                }
+            }
         }
     }
 }

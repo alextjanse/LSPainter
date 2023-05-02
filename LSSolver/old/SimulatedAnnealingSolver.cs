@@ -1,4 +1,4 @@
-namespace LSPainter.LSSolver
+/* namespace LSPainter.LSSolver
 {
     public abstract class SimulatedAnnealingSolver<TSolutionChecker, TSolution, TChange> : 
         Solver<TSolutionChecker, TSolution, TChange>
@@ -28,7 +28,6 @@ namespace LSPainter.LSSolver
                     /* 
                     Apply the change with a probablity
                     Source: https://en.wikipedia.org/wiki/Simulated_annealing#Acceptance_probabilities_2
-                     */
                     UpdateParameters();
                     return true;
                 }
@@ -47,4 +46,4 @@ namespace LSPainter.LSSolver
             }
         }
     }
-}
+} */
