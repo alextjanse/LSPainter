@@ -1,15 +1,15 @@
-using LSPainter.LSSolver.CanvasSolution;
+using LSPainter.LSSolver.Canvas;
 using LSPainter.ShapePainter;
 
 namespace LSPainter.LSSolver
 {
+    public enum SolverType
+    {
+        ShapePainter
+    }
+
     public class SolverFactory
     {
-        public enum SolverType
-        {
-            ShapePainter
-        }
-
         public static CanvasSolver CreateSolver(SolverType type, int width, int height, CanvasChecker checker)
         {
             switch (type)

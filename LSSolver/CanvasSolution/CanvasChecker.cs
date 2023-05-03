@@ -1,8 +1,8 @@
 using LSPainter.Maths;
 
-namespace LSPainter.LSSolver.CanvasSolution
+namespace LSPainter.LSSolver.Canvas
 {
-    public class CanvasChecker : IChecker<CanvasSolution, CanvasChange>
+    public class CanvasChecker : IChecker
     {
         private ImageHandler original { get; }
 
@@ -44,7 +44,7 @@ namespace LSPainter.LSSolver.CanvasSolution
             foreach ((int x, int y) in bbox.AsEnumerable())
             {
                 Color currentColor = solution.Canvas.GetPixel(x, y);
-                Color newColor = change.GetPixel(x, y);
+                Color newColor = change.GetPixel(x, y, currentColor);
 
                 long currentScore = PixelScoreDiff(x, y, currentColor);
                 long newScore = PixelScoreDiff(x, y, newColor);
@@ -54,5 +54,9 @@ namespace LSPainter.LSSolver.CanvasSolution
 
             return scoreDiff;
         }
+
+        public long ScoreSolution(ISolution solution) => ScoreSolution((CanvasSolution)solution);
+
+        public long ScoreChange(ISolution solution, IChange change) => ScoreChange((CanvasSolution)solution, (CanvasChange)change);
     }
 }

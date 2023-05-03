@@ -1,9 +1,6 @@
 namespace LSPainter.LSSolver
 {
-    public interface ISearchAlgorithm<TChecker, TSolution, TChange>
-        where TChecker : IChecker<TSolution, TChange>
-        where TSolution : ISolution<TChange>
-        where TChange : IChange
+    public interface ISearchAlgorithm
     {
         bool EvaluateScoreDiff(long scoreDiff);
         virtual void UpdateParameters()
@@ -11,9 +8,9 @@ namespace LSPainter.LSSolver
             
         }
 
-        virtual void Iterate(TSolution solution, TChecker checker)
+        virtual void Iterate(ISolution solution, IChecker checker)
         {
-            TChange change = solution.GenerateNeighbor();
+            IChange change = solution.GenerateNeighbor();
 
             long scoreDiff = checker.ScoreChange(solution, change);
 

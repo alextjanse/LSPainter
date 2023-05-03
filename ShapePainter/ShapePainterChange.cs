@@ -1,6 +1,6 @@
 using LSPainter.Maths;
 using LSPainter.Maths.Shapes;
-using LSPainter.LSSolver.CanvasSolution;
+using LSPainter.LSSolver.Canvas;
 
 namespace LSPainter.ShapePainter
 {
@@ -16,9 +16,9 @@ namespace LSPainter.ShapePainter
             Color = color;
         }
 
-        public void ApplyToCanvas(Painting canvas)
+        public override Color GetPixel(int x, int y, Color currentColor)
         {
-            canvas.DrawShape(Shape, Color);
+            return Shape.IsInside(x, y) ? Color.Blend(currentColor, Color) : currentColor;
         }
     }
 }

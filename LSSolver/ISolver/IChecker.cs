@@ -1,10 +1,8 @@
 namespace LSPainter.LSSolver
 {
-    public interface IChecker<in TSolution, in TChange>
-        where TSolution : ISolution<TChange>
-        where TChange : IChange
+    public interface IChecker
     {
-        long ScoreSolution(TSolution solution);
-        long ScoreChange(TSolution solution, TChange change);
+        long ScoreSolution(ISolution solution);
+        long ScoreChange(ISolution solution, IChange change);
     }
 }

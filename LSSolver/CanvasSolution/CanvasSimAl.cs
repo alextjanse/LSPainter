@@ -1,6 +1,6 @@
-namespace LSPainter.LSSolver.CanvasSolution
+namespace LSPainter.LSSolver.Canvas
 {
-    public class CanvasSimAl : SimulatedAnnealingSolver<CanvasChecker, CanvasSolution, CanvasChange>
+    public class CanvasSimAl : SimulatedAnnealingSolver
     {
 
     }

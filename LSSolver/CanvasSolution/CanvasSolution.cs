@@ -1,8 +1,8 @@
 using LSPainter.Maths;
 
-namespace LSPainter.LSSolver.CanvasSolution
+namespace LSPainter.LSSolver.Canvas
 {
-    public abstract class CanvasSolution : ISolution<CanvasChange>
+    public abstract class CanvasSolution : ISolution
     {
         public Painting Canvas { get; }
         public long Score { get; protected set; }
@@ -18,6 +18,20 @@ namespace LSPainter.LSSolver.CanvasSolution
 
         public abstract void Iterate();
 
-        public abstract long TryChange(CanvasChange change);
+        public long TryChange(CanvasChange change)
+        {
+            long scoreDiff = 0;
+
+            foreach ((int x, int y) in change.BoundingBox.AsEnumerable())
+            {
+                
+            }
+        }
+
+        // This feels wrong, but it works.
+        IChange ISolution.GenerateNeighbor() => GenerateNeighbor();
+        void ISolution.ApplyChange(IChange change) => ApplyChange((CanvasChange)change);
+
+        long ISolution.TryChange(IChange change) => TryChange((CanvasChange)change);
     }
 }

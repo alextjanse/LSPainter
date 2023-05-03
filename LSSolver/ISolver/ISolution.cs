@@ -1,11 +1,11 @@
 namespace LSPainter.LSSolver
 {
-    public interface ISolution<TChange> where TChange : IChange
+    public interface ISolution
     {
         long Score { get; }
-        TChange GenerateNeighbor();
-        long TryChange(TChange change);
-        void ApplyChange(TChange change);
+        IChange GenerateNeighbor();
+        long TryChange(IChange change);
+        void ApplyChange(IChange change);
         void Iterate();
     }
 }

@@ -1,18 +1,18 @@
-namespace LSPainter.LSSolver.CanvasSolution
+namespace LSPainter.LSSolver.Canvas
 {
-    public class CanvasSolver : ISolver<CanvasSimAl, CanvasChecker, CanvasSolution, CanvasChange>
+    public class CanvasSolver : ISolver<CanvasSolution>
     {
         public CanvasSolution Solution { get; }
-        public CanvasChecker Checker { get; }
+        public IChecker Checker { get; }
 
-        public CanvasSimAl Searcher { get; }
+        public ISearchAlgorithm SearchAlgorithm { get; }
 
         public CanvasSolver(CanvasSolution initialSolution, CanvasChecker checker)
         {
             Solution = initialSolution;
             Checker = checker;
 
-            Searcher = new CanvasSimAl();
+            SearchAlgorithm = new SimulatedAnnealingSolver();
         }
     }
 }

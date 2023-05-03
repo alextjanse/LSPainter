@@ -1,9 +1,6 @@
 namespace LSPainter.LSSolver
 {
-    public abstract class SimulatedAnnealingSolver<TChecker, TSolution, TChange> : ISearchAlgorithm<TChecker, TSolution, TChange>
-        where TChecker : IChecker<TSolution, TChange>
-        where TSolution : ISolution<TChange>
-        where TChange : IChange
+    public class SimulatedAnnealingSolver : ISearchAlgorithm
     {
         double temperature = 1000000;
         int coolingSteps = 10000;
