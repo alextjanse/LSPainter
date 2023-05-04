@@ -1,19 +1,19 @@
 using LSPainter.ShapePainter;
 using LSPainter.LSSolver;
-using LSPainter.LSSolver.Canvas;
+using LSPainter.LSSolver.Painter;
 
 namespace LSPainter.LSSolver
 {
     public class SolverManager
     {
-        public ISolver<CanvasSolution>[] Solvers { get; }
-        public IEnumerable<Painting> Paintings => Solvers.Select(s => s.Solution.Canvas );
+        public CanvasSolver[] Solvers { get; }
+        public IEnumerable<Canvas> EnumerateCanvases() => Solvers.Select(s => s.Solution.Canvas );
 
         public SolverManager(ImageHandler original, int n)
         {
-            Solvers = new ShapePainterSolver[n];
+            Solvers = new CanvasSolver[n];
 
-            CanvasChecker checker = new CanvasChecker(original);
+            CanvasComparer checker = new CanvasComparer(original);
 
             for (int i = 0; i < n; i++)
             {
@@ -28,7 +28,7 @@ namespace LSPainter.LSSolver
 
         public void Iterate()
         {
-            foreach (ISolver<CanvasSolution> solver in Solvers)
+            foreach (CanvasSolver solver in Solvers)
             {
                 solver.Iterate();
             }

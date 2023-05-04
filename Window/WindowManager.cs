@@ -50,7 +50,7 @@ namespace LSPainter
 
             solverManager = new SolverManager(original, 4);
 
-            frameManager = new FrameManager(windowLayout, original, solverManager.Paintings);
+            frameManager = new FrameManager(windowLayout, original, solverManager.EnumerateCanvases());
 
             shader = new Shader("./Shaders/shader.vert", "./Shaders/shader.frag");
 

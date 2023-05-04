@@ -2,7 +2,7 @@ namespace LSPainter.LSSolver
 {
     public class SimulatedAnnealingSolver : ISearchAlgorithm
     {
-        double temperature = 1000000;
+        double temperature = 1000;
         int coolingSteps = 10000;
         int iteration = 0;
         double alpha = 0.95;

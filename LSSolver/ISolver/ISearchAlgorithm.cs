@@ -8,11 +8,11 @@ namespace LSPainter.LSSolver
             
         }
 
-        virtual void Iterate(ISolution solution, IChecker checker)
+        virtual void Iterate(ISolution solution)
         {
             IChange change = solution.GenerateNeighbor();
 
-            long scoreDiff = checker.ScoreChange(solution, change);
+            long scoreDiff = solution.TryChange(change);
 
             if (EvaluateScoreDiff(scoreDiff))
             {

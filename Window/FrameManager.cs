@@ -13,7 +13,7 @@ namespace LSPainter
     {
         Frame[,] frames;
 
-        public FrameManager(WindowLayout windowLayout, ImageHandler originalImage, IEnumerable<Painting> paintings)
+        public FrameManager(WindowLayout windowLayout, ImageHandler originalImage, IEnumerable<Canvas> paintings)
         {
             frames = new Frame[windowLayout.Columns, windowLayout.Rows];
 
@@ -58,7 +58,7 @@ namespace LSPainter
 
             int remainingFrames = Math.Min(windowLayout.NCanvases, windowLayout.Columns * windowLayout.Rows + frameIndex);
 
-            Painting[] paintingArray = paintings.ToArray();
+            Canvas[] paintingArray = paintings.ToArray();
 
             for (int i = 0; i < remainingFrames; i++)
             {
@@ -79,7 +79,7 @@ namespace LSPainter
                     0, 2, 3
                 };
 
-                Painting painting = paintingArray[i];
+                Canvas painting = paintingArray[i];
 
                 frames[xI, yI] = new Frame(painting, frameVertices, frameIndices);
 
