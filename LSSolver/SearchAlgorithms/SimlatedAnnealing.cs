@@ -23,10 +23,7 @@ namespace LSPainter.LSSolver
                 return true;
             }
 
-            float x = Randomizer.RandomChance();
-            double p = Math.Pow(Math.E, -scoreDiff / temperature);
-
-            if (x < p)
+            if (Randomizer.RandomBool(Math.Pow(Math.E, -scoreDiff / temperature)))
             {
                 return true;
             }

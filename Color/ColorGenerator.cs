@@ -18,7 +18,7 @@ namespace LSPainter
                 bytes[0],
                 bytes[1],
                 bytes[2],
-                bytes[3] //settings.Alpha
+                settings.Alpha
             );
         }
     }
