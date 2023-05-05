@@ -3,6 +3,7 @@ using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using LSPainter.DCEL;
+using LSPainter.LSSolver;
 
 namespace LSPainter
 {
@@ -47,9 +48,9 @@ namespace LSPainter
         {
             this.original = original;
 
-            solverManager = new SolverManager(original, 1);
+            solverManager = new SolverManager(original, 4);
 
-            frameManager = new FrameManager(windowLayout, original, solverManager.Instances[0].Painting);
+            frameManager = new FrameManager(windowLayout, original, solverManager.EnumerateCanvases());
 
             shader = new Shader("./Shaders/shader.vert", "./Shaders/shader.frag");
 

@@ -11,7 +11,7 @@ namespace LSPainter
 
         public static Color Generate(ColorGeneratorSettings settings)
         {
-            byte[] bytes = new byte[3];
+            byte[] bytes = new byte[4];
             random.NextBytes(bytes);
 
             return new Color(

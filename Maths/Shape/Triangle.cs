@@ -1,6 +1,6 @@
 using LSPainter.Maths;
 
-namespace LSPainter.Shapes
+namespace LSPainter.Maths.Shapes
 {
     public class Triangle : Shape
     {
@@ -15,13 +15,6 @@ namespace LSPainter.Shapes
             P3 = p3;
 
             Area = Vector.Determinant(P1, P2, P3);
-
-            double minX = Math.Min(Math.Min(P1.X, P2.X), P3.X);
-            double maxX = Math.Max(Math.Max(P1.X, P2.X), P3.X);
-            double minY = Math.Min(Math.Min(P1.Y, P2.Y), P3.Y);
-            double maxY = Math.Max(Math.Max(P1.Y, P2.Y), P3.Y);
-
-            BoundingBox = new Rectangle(minX, minY, maxX - minX, maxY - minY);
         }
 
         public override bool IsInside(Vector p)
@@ -36,6 +29,11 @@ namespace LSPainter.Shapes
         bool IsRightOfHalfEdge(Vector v1, Vector v2, Vector p)
         {
             return Vector.Determinant(v1, v2, p) >= 0;
+        }
+
+        public override BoundingBox CreateBoundingBox()
+        {
+            return BoundingBox.FromPointCloud(new Vector[] { P1, P2, P3 });
         }
     }
 }
