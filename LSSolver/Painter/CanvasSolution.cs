@@ -1,4 +1,5 @@
 using LSPainter.Maths;
+using LSPainter.Maths.Shapes;
 
 namespace LSPainter.LSSolver.Painter
 {
@@ -26,5 +27,31 @@ namespace LSPainter.LSSolver.Painter
         public IChange GenerateNeighbor() => GenerateCanvasChange();
         public long TryChange(IChange change) => TryChange((CanvasChange)change);
         public void ApplyChange(IChange change) => ApplyChange((CanvasChange)change);
+
+        protected void DrawShape(Shape shape, Color color)
+        {
+            foreach ((int x, int y) in shape.EnumeratePixels(Canvas.Width, Canvas.Height))
+            {
+                Color currentColor = Canvas.GetPixel(x, y);
+                Color newColor = Color.Blend(currentColor, color);
+                Canvas.SetPixel(x, y, newColor);
+            }
+        }
+
+        protected long TryDrawShape(Shape shape, Color color)
+        {
+            long scoreDiff = 0;
+
+            foreach ((int x, int y) in shape.EnumeratePixels(Canvas.Width, Canvas.Height))
+            {
+                Color currentColor = Canvas.GetPixel(x, y);
+                Color newColor = Color.Blend(currentColor, color);
+
+                long pixelScoreDiff = comparer.PixelScoreDiff(x, y, currentColor, newColor);
+                scoreDiff += pixelScoreDiff;
+            }
+
+            return scoreDiff;
+        }
     }
 }

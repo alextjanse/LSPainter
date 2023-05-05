@@ -4,7 +4,12 @@ namespace LSPainter
     {
         static Random random = new Random();
 
-        public static T PickRandomly<T>((T, float)[] items)
+        public static T PickRandomly<T>(IEnumerable<T> items)
+        {
+            return PickRandomly(items.Zip(Enumerable.Repeat(1f, items.Count())));
+        }
+
+        public static T PickRandomly<T>(IEnumerable<(T, float)> items)
         {
             float sum = 0;
 
@@ -15,19 +20,19 @@ namespace LSPainter
 
             float x = random.NextSingle() * sum;
 
-            int i = -1;
-
             sum = 0;
 
-            do
+            foreach ((T t, float p) in items)
             {
-                (_, float p) = items[++i];
-
                 sum += p;
-            }
-            while (sum < x);
 
-            return items[i].Item1;
+                if (sum >= x)
+                {
+                    return t;
+                }
+            }
+
+            return items.Last().Item1;
         }
 
         public static double[] RandomFactors(double target, int n)

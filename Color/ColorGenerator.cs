@@ -8,10 +8,19 @@ namespace LSPainter
     public class ColorGenerator
     {
         static Random random = new Random();
+        static ColorGeneratorSettings defaultSettings = new ColorGeneratorSettings()
+        {
+            Alpha = 255,
+        };
+
+        public static Color Generate()
+        {
+            return Generate(defaultSettings);
+        }
 
         public static Color Generate(ColorGeneratorSettings settings)
         {
-            byte[] bytes = new byte[4];
+            byte[] bytes = new byte[3];
             random.NextBytes(bytes);
 
             return new Color(

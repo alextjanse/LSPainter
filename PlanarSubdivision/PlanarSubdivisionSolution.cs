@@ -134,95 +134,68 @@ namespace LSPainter.PlanarSubdivision
 
             foreach ((_, Triangle triangle) in triangulation.Triangles)
             {
-                // DrawShape(triangle, color);
+                DrawShape(triangle, color);
             }
-        }
-
-        /* 
-        Probably depracated.
-         */
-
-        void InsertIncidentEdge(Vertex v, HalfEdge e)
-        {
-            if (v.IncidentEdge == null)
-            {
-                v.IncidentEdge = e;
-                return;
-            }
-
-            // There is already an incident edge. Determine the order of next/prev edges
-            double angle = GetEdgeAngleWithXAxis(e);
-
-            HalfEdge? current = v.IncidentEdge;
-            double angleCurrent = GetEdgeAngleWithXAxis(current);
-            double angleNext;
-
-            do
-            {
-                angleNext = GetEdgeAngleWithXAxis(current?.Twin?.Next ?? throw new NullReferenceException());
-
-                if (AngleInRange(angle, angleCurrent, angleNext))
-                {
-                    // We found the angle where we need to insert the new edge
-                    break;
-                }
-
-                current = current?.Twin?.Next ?? throw new NullReferenceException();
-                angleCurrent = angleNext;
-            }
-            while (current.ID != v.IncidentEdge.ID);
-
-            // Insert the new edge after the current edge
-            e.AppendHalfEdge(current?.Next ?? throw new NullReferenceException());
-            e.PrependHalfEdge(current?.Twin ?? throw new NullReferenceException());
-        }
-
-        bool AngleInRange(double angle, double lb, double ub)
-        {
-            // Normal case: 0 rad is not in the angle range
-            if (lb < ub) return lb <= angle && angle <= ub;
-
-            // Edge case: 0 rad is in the range
-            return lb <= angle || angle <= ub;
-        }
-
-        double GetEdgeAngleWithXAxis(HalfEdge e)
-        {
-            if (e.Origin == null || e.Twin == null || e.Twin.Origin == null)
-            {
-                throw new NullReferenceException();
-            }
-
-            Vertex origin = e.Origin;
-            Vertex destination = e.Twin.Origin;
-
-            double length = Math.Sqrt(
-                (origin.X - destination.X) * (origin.X - destination.Y) +
-                (origin.Y - destination.Y) * (origin.Y - destination.Y)
-            );
-
-            if (length == 0)
-            {
-                throw new DivideByZeroException($"The distance between {origin} and {destination} is zero");
-            }
-
-            // cos(a) = adjacent / hypotenuse -> a = acos(adjacent / hyptenuse)
-            return Math.Acos((destination.X - origin.X) / length) + ((destination.Y - origin.Y) < 0 ? Math.PI : 0);
         }
 
         protected override CanvasChange GenerateCanvasChange()
         {
-            throw new NotImplementedException();
+            Func<PlanarSubdivisionChange>[] generators = new Func<PlanarSubdivisionChange>[]
+            {
+                GenerateFaceColorChange,
+            };
+
+            return Randomizer.PickRandomly(generators)();
         }
 
-        protected override long TryChange(CanvasChange change)
+        PlanarSubdivisionChange GenerateFaceColorChange()
         {
-            throw new NotImplementedException();
+            Face face = Randomizer.PickRandomly(faces.Values.Select(f => f.Item1));
+            Color color = ColorGenerator.Generate();
+
+            return new FaceColorChange(face, color);
         }
 
-        protected override void ApplyChange(CanvasChange change)
+        protected override long TryChange(CanvasChange change) => TryPSChange((PlanarSubdivisionChange)change);
+
+        protected override void ApplyChange(CanvasChange change) => ApplyPSChange((PlanarSubdivisionChange)change);
+
+        long TryPSChange(PlanarSubdivisionChange change)
         {
-            throw new NotImplementedException();
+            FaceColorChange fcChange = (FaceColorChange)change;
+
+            Color color = fcChange.Color;
+
+            long scoreDiff = 0;
+
+            foreach (Face face in fcChange.GetAlteredFaces())
+            {
+                Triangulation triangulation = faces[face.ID].Item3;
+
+                foreach ((_, Triangle triangle) in triangulation.Triangles)
+                {
+                    scoreDiff += TryDrawShape(triangle, color);
+                }
+            }
+
+            return scoreDiff;
+        }
+
+        void ApplyPSChange(PlanarSubdivisionChange change)
+        {
+            FaceColorChange fcChange = (FaceColorChange)change;
+
+            Color color = fcChange.Color;
+
+            foreach (Face face in fcChange.GetAlteredFaces())
+            {
+                Triangulation triangulation = faces[face.ID].Item3;
+
+                foreach ((_, Triangle triangle) in triangulation.Triangles)
+                {
+                    DrawShape(triangle, color);
+                }
+            }
         }
     }
 }

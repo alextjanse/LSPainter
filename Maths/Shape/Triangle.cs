@@ -2,7 +2,7 @@ using LSPainter.Maths;
 
 namespace LSPainter.Maths.Shapes
 {
-    public class Triangle : Shape, ITriangle
+    public class Triangle : Shape
     {
         public Vector P1 { get; }
         public Vector P2 { get; }
@@ -15,6 +15,15 @@ namespace LSPainter.Maths.Shapes
             P3 = p3;
 
             Area = Vector.Determinant(P1, P2, P3);
+
+            if (Area < 0)
+            {
+                // P1, P2, P3 aren't in clockwise order
+                Vector temp = P2;
+                P2 = P3;
+                P3 = temp;
+                Area = Vector.Determinant(P1, P2, P3);
+            }
         }
 
         public override bool IsInside(Vector p)

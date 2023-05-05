@@ -10,10 +10,10 @@ namespace LSPainter.ShapePainter
 
     public class ShapeGenerator
     {
-        static (Func<ShapeGeneratorSettings, Shape>, float)[] generators = new (Func<ShapeGeneratorSettings, Shape>, float)[]
+        static Func<ShapeGeneratorSettings, Shape>[] generators = new Func<ShapeGeneratorSettings, Shape>[]
         {
-            (GenerateCircle, 0.5f),
-            (GenerateTriangle, 0.5f),
+            (GenerateCircle),
+            (GenerateTriangle),
         };
 
         static Random random = new Random();

@@ -35,12 +35,7 @@ namespace LSPainter.ShapePainter
             Shape shape = change.Shape;
             Color color = change.Color;
 
-            foreach ((int x, int y) in shape.EnumeratePixels(Canvas.Width, Canvas.Height))
-            {
-                Color currentColor = Canvas.GetPixel(x, y);
-                Color newColor = Color.Blend(currentColor, color);
-                Canvas.SetPixel(x, y, newColor);
-            }
+            DrawShape(shape, color);
         }
 
         protected override CanvasChange GenerateCanvasChange()
@@ -55,21 +50,10 @@ namespace LSPainter.ShapePainter
 
         protected long TryChange(ShapePainterChange change)
         {
-            long scoreDiff = 0;
-
             Shape shape = change.Shape;
             Color color = change.Color;
 
-            foreach ((int x, int y) in shape.EnumeratePixels(Canvas.Width, Canvas.Height))
-            {
-                Color currentColor = Canvas.GetPixel(x, y);
-                Color newColor = Color.Blend(currentColor, color);
-
-                long pixelScoreDiff = comparer.PixelScoreDiff(x, y, currentColor, newColor);
-                scoreDiff += pixelScoreDiff;
-            }
-
-            return scoreDiff;
+            return TryDrawShape(shape, color);
         }
     }
 }
