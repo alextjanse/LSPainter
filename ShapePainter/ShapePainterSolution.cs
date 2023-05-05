@@ -35,27 +35,11 @@ namespace LSPainter.ShapePainter
             Shape shape = change.Shape;
             Color color = change.Color;
 
-            BoundingBox bbox = shape.CreateBoundingBox();
-
-            int minX = Math.Max(0, bbox.X);
-            int maxX = Math.Min(Canvas.Width, bbox.X + bbox.Width);
-            int minY = Math.Max(0, bbox.Y);
-            int maxY = Math.Min(Canvas.Height, bbox.Y + bbox.Height);
-
-            for (int y = minY; y < maxY; y++)
+            foreach ((int x, int y) in shape.EnumeratePixels(Canvas.Width, Canvas.Height))
             {
-                for (int x = minX; x < maxX; x++)
-                {
-                    Vector p = new Vector(x + 0.5f, y + 0.5f);
-
-                    if (shape.IsInside(p))
-                    {
-                        Color currentColor = Canvas.GetPixel(x, y);
-                        Color newColor = Color.Blend(currentColor, color);
-
-                        Canvas.SetPixel(x, y, newColor);
-                    }
-                }
+                Color currentColor = Canvas.GetPixel(x, y);
+                Color newColor = Color.Blend(currentColor, color);
+                Canvas.SetPixel(x, y, newColor);
             }
         }
 
@@ -76,28 +60,13 @@ namespace LSPainter.ShapePainter
             Shape shape = change.Shape;
             Color color = change.Color;
 
-            BoundingBox bbox = shape.CreateBoundingBox();
-
-            int minX = Math.Max(0, bbox.X);
-            int maxX = Math.Min(Canvas.Width, bbox.X + bbox.Width);
-            int minY = Math.Max(0, bbox.Y);
-            int maxY = Math.Min(Canvas.Height, bbox.Y + bbox.Height);
-
-            for (int y = minY; y < maxY; y++)
+            foreach ((int x, int y) in shape.EnumeratePixels(Canvas.Width, Canvas.Height))
             {
-                for (int x = minX; x < maxX; x++)
-                {
-                    Vector p = new Vector(x + 0.5f, y + 0.5f);
+                Color currentColor = Canvas.GetPixel(x, y);
+                Color newColor = Color.Blend(currentColor, color);
 
-                    if (shape.IsInside(p))
-                    {
-                        Color currentColor = Canvas.GetPixel(x, y);
-                        Color newColor = Color.Blend(currentColor, color);
-
-                        long pixelScoreDiff = comparer.PixelScoreDiff(x, y, currentColor, newColor);
-                        scoreDiff += pixelScoreDiff;
-                    }
-                }
+                long pixelScoreDiff = comparer.PixelScoreDiff(x, y, currentColor, newColor);
+                scoreDiff += pixelScoreDiff;
             }
 
             return scoreDiff;
