@@ -170,11 +170,14 @@ namespace LSPainter.PlanarSubdivision
 
             foreach (Face face in fcChange.GetAlteredFaces())
             {
-                Triangulation triangulation = faces[face.ID].Item3;
+                (_, Color currentColor, Triangulation triangulation) = faces[face.ID];
+
+                Color newColor = Color.Blend(currentColor, color);
 
                 foreach ((_, Triangle triangle) in triangulation.Triangles)
                 {
-                    scoreDiff += TryDrawShape(triangle, color);
+                    
+                    scoreDiff += TryDrawShape(triangle, newColor);
                 }
             }
 
@@ -189,12 +192,16 @@ namespace LSPainter.PlanarSubdivision
 
             foreach (Face face in fcChange.GetAlteredFaces())
             {
-                Triangulation triangulation = faces[face.ID].Item3;
+                (_, Color currentColor, Triangulation triangulation) = faces[face.ID];
+                
+                Color newColor = Color.Blend(currentColor, color);
 
                 foreach ((_, Triangle triangle) in triangulation.Triangles)
                 {
-                    DrawShape(triangle, color);
+                    DrawShape(triangle, newColor);
                 }
+
+                faces[face.ID] = (face, newColor, triangulation);
             }
         }
     }

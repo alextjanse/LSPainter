@@ -10,7 +10,7 @@ namespace LSPainter
         static Random random = new Random();
         static ColorGeneratorSettings defaultSettings = new ColorGeneratorSettings()
         {
-            Alpha = 255,
+            Alpha = 255 / 10,
         };
 
         public static Color Generate()
