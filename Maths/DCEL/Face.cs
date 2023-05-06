@@ -126,6 +126,64 @@ namespace LSPainter.Maths.DCEL
             return faceClone;
         }
 
+        public (Face, Face) SplitAt(Vertex v1, Vertex v2)
+        {
+            // Clean the face
+            foreach (HalfEdge e in this)
+            {
+                e.SetAsIncidentEdgeOfOrigin();
+            }
+
+            // See drawing in notes for names, or make the drawing yourself
+
+            HalfEdge e2 = v1.IncidentEdge ?? throw new NullReferenceException();
+            HalfEdge e1 = e2.Prev ?? throw new NullReferenceException();
+            
+            HalfEdge e4 = v2.IncidentEdge ?? throw new NullReferenceException();
+            HalfEdge e3 = e4.Prev ?? throw new NullReferenceException();
+
+            HalfEdge e5 = new HalfEdge();
+            HalfEdge e6 = new HalfEdge();
+
+            Face f1 = new Face();
+            Face f2 = e1.IncidentFace ?? throw new NullReferenceException();
+
+            e5.SetOrigin(v1);
+            e5.SetNextAndItsPrev(e4);
+            e5.SetPrevAndItsNext(e1);
+
+            e6.SetOrigin(v2);
+            e6.SetNextAndItsPrev(e2);
+            e6.SetPrevAndItsNext(e3);
+
+            e5.SetTwinAndItsTwin(e6);
+
+            e5.SetIncidentFace(f1);
+            f1.SetOuterComponent(e5);
+
+            e6.SetIncidentFace(f2);
+            f2.SetOuterComponent(e6);
+
+            foreach (HalfEdge e in f1)
+            {
+                e.SetIncidentFace(f1);
+            }
+
+            /* 
+            Set the newly created half-edge as the incident edge of its origin.
+            This way, all the vertices in the remaining polygon have the polygon
+            half-edge as their incident edges.
+            */
+            e6.SetAsIncidentEdgeOfOrigin();
+
+            /* 
+            We don't need to do the same for f2, because that was the old face,
+            so all half-edges should have it as incident face already.
+             */
+
+            return (f1, f2);
+        }
+
         public IEnumerator<HalfEdge> GetEnumerator()
         {
             HalfEdge current = OuterComponent ?? throw new NullReferenceException();

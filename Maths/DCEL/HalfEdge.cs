@@ -185,6 +185,36 @@ namespace LSPainter.Maths.DCEL
             return edgeClone;
         }
 
+        public Vertex SplitInHalf()
+        {
+            Vertex origin = Origin ?? throw new NullReferenceException();
+            Vertex destination = Twin?.Origin ?? throw new NullReferenceException();
+
+            Vector p = (Vector)origin;
+            Vector q = (Vector)destination;
+
+            Vector r = q - p;
+
+            Vector h = p + 0.5 * r;
+
+            Vertex v = new Vertex(h.X, h.Y);
+
+            HalfEdge e = new HalfEdge();
+            HalfEdge eT = new HalfEdge();
+
+            e.SetTwinAndItsTwin(eT);
+            e.SetOrigin(v);
+
+            Twin?.SetOrigin(v);
+
+            AppendHalfEdge(e);
+
+            Next?.SetPrevAndItsNext(e);
+            Twin?.Prev?.SetNextAndItsPrev(eT);
+
+            return v;
+        }
+
         public bool Equals(HalfEdge? other)
         {
             if (other == null) return false;

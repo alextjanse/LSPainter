@@ -61,6 +61,32 @@ namespace LSPainter.Maths.DCEL
             return true;
         }
 
+        public IEnumerable<HalfEdge> IncidentEdges()
+        {
+            HalfEdge startEdge = IncidentEdge ?? throw new NullReferenceException();
+            HalfEdge currentEdge = startEdge;
+
+            do
+            {
+                yield return currentEdge;
+
+                currentEdge = currentEdge.Twin?.Next ?? throw new NullReferenceException();
+            }
+            while (startEdge != currentEdge);
+        }
+
+        public bool IsAdjacentVertex(Vertex vertex)
+        {
+            foreach (HalfEdge edge in IncidentEdges())
+            {
+                Vertex destination = edge.Twin?.Origin ?? throw new NullReferenceException();
+                
+                if (vertex == destination) return true;
+            }
+
+            return false;
+        }
+
         public override string ToString()
         {
             return $"Vertex {ID}: ({X}, {Y})";

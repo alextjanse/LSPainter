@@ -5,7 +5,8 @@ namespace LSPainter.Maths.DCEL
 {
     public class Triangulation
     {
-        public List<(Face, Triangle)> Triangles;
+        public List<Face> TriangleFaces;
+        public List<Triangle> Triangles;
 
         /// <summary>
         /// Store the vertices, paired with the vertex they are referring to
@@ -17,7 +18,8 @@ namespace LSPainter.Maths.DCEL
 
         public Triangulation(Face face)
         {
-            Triangles = new List<(Face, Triangle)>();
+            TriangleFaces = new List<Face>();
+            Triangles = new List<Triangle>();
             VertexRefs = new Dictionary<Vertex, Vertex>();
 
             Face faceClone = face.Clone();
@@ -60,6 +62,14 @@ namespace LSPainter.Maths.DCEL
         void Triangulate(Face face)
         {
             // Recompute the triangulation
+
+            if (face.Count() == 3)
+            {
+                // The face is already a triangle
+                AddTriangle(face);
+                return;
+            }
+
             List<Face> yMonotones = LineSweep(face);
 
             foreach (Face yMonotone in yMonotones)
@@ -274,7 +284,7 @@ namespace LSPainter.Maths.DCEL
         /// </summary>
         /// <returns>
         /// A tuple with the two faces that have been created by adding the
-        /// edge. The first face is new, the second face is the old face. 
+        /// edge. The first face is new, the second face is the old face.
         /// </returns>
         (Face, Face) AddEdge(Vertex v1, Vertex v2)
         {
@@ -625,7 +635,8 @@ namespace LSPainter.Maths.DCEL
                 (Vector)vertices[2]
             );
 
-            Triangles.Add((face, triangle));
+            TriangleFaces.Add(face);
+            Triangles.Add(triangle);
         }
     }
 

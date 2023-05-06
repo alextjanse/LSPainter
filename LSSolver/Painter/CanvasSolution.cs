@@ -28,7 +28,7 @@ namespace LSPainter.LSSolver.Painter
         public long TryChange(IChange change) => TryChange((CanvasChange)change);
         public void ApplyChange(IChange change) => ApplyChange((CanvasChange)change);
 
-        protected void DrawShape(Shape shape, Color color)
+        public void DrawShape(Shape shape, Color color)
         {
             foreach ((int x, int y) in shape.EnumeratePixels(Canvas.Width, Canvas.Height))
             {
@@ -38,7 +38,7 @@ namespace LSPainter.LSSolver.Painter
             }
         }
 
-        protected long TryDrawShape(Shape shape, Color color)
+        public long TryDrawShape(Shape shape, Color color)
         {
             long scoreDiff = 0;
 

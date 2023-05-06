@@ -8,21 +8,21 @@ namespace LSPainter.PlanarSubdivision
     // Doubly connected edge list: https://en.wikipedia.org/wiki/Doubly_connected_edge_list
     public class PlanSubSolution : CanvasSolution
     {
-        Dictionary<uint, Color> faceColors;
-        Dictionary<uint, Triangulation> triangulations;
+        public Dictionary<uint, Color> faceColors;
+        public Dictionary<uint, Triangulation> Triangulations;
         DCEL dcel;
 
         public PlanSubSolution(int width, int height, CanvasComparer comparer) : base(width, height, comparer)
         {
             faceColors = new Dictionary<uint, Color>();
-            triangulations = new Dictionary<uint, Triangulation>();
+            Triangulations = new Dictionary<uint, Triangulation>();
 
             dcel = DCELGenerator.CreateCanvas(width, height);
             
             foreach (Face face in dcel.Faces)
             {
                 faceColors.Add(face.ID, Color.Black);
-                triangulations.Add(face.ID, new Triangulation(face));
+                Triangulations.Add(face.ID, new Triangulation(face));
             }
         }
 
@@ -39,9 +39,9 @@ namespace LSPainter.PlanarSubdivision
             uint id = face.ID;
 
             Color color = faceColors[id];
-            Triangulation triangulation = triangulations[id];
+            Triangulation triangulation = Triangulations[id];
 
-            foreach ((_, Triangle triangle) in triangulation.Triangles)
+            foreach (Triangle triangle in triangulation.Triangles)
             {
                 DrawShape(triangle, color);
             }
@@ -65,10 +65,10 @@ namespace LSPainter.PlanarSubdivision
             return new FaceColorChange(face, color);
         }
 
-        PlanSubChange GenerateFaceSplitChange()
+        PlanSubChange GenerateNewVertexChange()
         {
             Face face = Randomizer.Pick(dcel.Faces);
-            return PlanSubChangeGenerator.FaceSplitChangeFromTriangulation(face, triangulations[face.ID]);
+            return PlanSubChangeGenerator.NewVertexChangeFromTriangulation(face, Triangulations[face.ID]);
         }
 
         protected override long TryChange(CanvasChange change) => TryPlanSubChange((PlanSubChange)change);
@@ -79,46 +79,14 @@ namespace LSPainter.PlanarSubdivision
         {
             FaceColorChange fcChange = (FaceColorChange)change;
 
-            Color color = fcChange.Color;
-
-            long scoreDiff = 0;
-
-            foreach (Face face in fcChange.GetAlteredFaces())
-            {
-                Color currentColor = faceColors[face.ID];
-                Triangulation triangulation = triangulations[face.ID];
-
-                Color newColor = Color.Blend(currentColor, color);
-
-                foreach ((_, Triangle triangle) in triangulation.Triangles)
-                {
-                    scoreDiff += TryDrawShape(triangle, newColor);
-                }
-            }
-
-            return scoreDiff;
+            return fcChange.Try(this);
         }
 
         void ApplyPlanSubChange(PlanSubChange change)
         {
             FaceColorChange fcChange = (FaceColorChange)change;
 
-            Color color = fcChange.Color;
-
-            foreach (Face face in fcChange.GetAlteredFaces())
-            {
-                Color currentColor = faceColors[face.ID];
-                Triangulation triangulation = triangulations[face.ID];
-                
-                Color newColor = Color.Blend(currentColor, color);
-
-                foreach ((_, Triangle triangle) in triangulation.Triangles)
-                {
-                    DrawShape(triangle, newColor);
-                }
-
-                faceColors[face.ID] = newColor;
-            }
+            fcChange.Apply(this);
         }
     }
 }
