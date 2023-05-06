@@ -8,19 +8,17 @@ namespace LSPainter.Maths.DCEL
         public List<(Face, Triangle)> Triangles;
 
         /// <summary>
-        /// Stores the IDs of the vertices of the actual face. If the face changes,
-        /// we need to update the triangulation as well. If a vertex updates, call
-        /// Update() to all its incident face triangulations, so they can update
-        /// accordingly.
+        /// Store the vertices, paired with the vertex they are referring to
+        /// in the DCEL.
         /// </summary>
-        Dictionary<uint, Vertex> vertices;
+        public Dictionary<Vertex, Vertex> VertexRefs;
 
         HalfEdge outsideEdge;
 
         public Triangulation(Face face)
         {
             Triangles = new List<(Face, Triangle)>();
-            vertices = new Dictionary<uint, Vertex>();
+            VertexRefs = new Dictionary<Vertex, Vertex>();
 
             Face faceClone = face.Clone();
 
@@ -32,7 +30,7 @@ namespace LSPainter.Maths.DCEL
                 Vertex vertexClone = edgeClone.Origin ?? throw new NullReferenceException();
 
                 // Register the vertex as a clone of this vertex
-                vertices.Add(edge.Origin?.ID ?? throw new NullReferenceException(), vertexClone);
+                VertexRefs.Add(edge.Origin ?? throw new NullReferenceException(), vertexClone);
             }
 
             Triangulate(faceClone);
@@ -40,7 +38,7 @@ namespace LSPainter.Maths.DCEL
 
         public void UpdateVertex(Vertex vertex)
         {
-            vertices[vertex.ID].SetXY(vertex.X, vertex.Y);
+            VertexRefs[vertex].SetXY(vertex.X, vertex.Y);
 
             //TODO: Check if triangulation needs to be updated. For now, just recompute the triangulation.
 

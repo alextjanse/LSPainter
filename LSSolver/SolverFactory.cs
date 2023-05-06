@@ -31,10 +31,10 @@ namespace LSPainter.LSSolver
             return new ShapePainterSolver(solution);
         }
 
-        static PlanarSubdivisionSolver CreatePlanarSubdivisionSolver(int width, int height, CanvasComparer checker)
+        static PlanSubSolver CreatePlanarSubdivisionSolver(int width, int height, CanvasComparer checker)
         {
-            PlanarSubdivisionSolution solution = new PlanarSubdivisionSolution(width, height, checker);
-            return new PlanarSubdivisionSolver(solution);
+            PlanSubSolution solution = new PlanSubSolution(width, height, checker);
+            return new PlanSubSolver(solution);
         }
     }
 }

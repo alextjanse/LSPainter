@@ -3,13 +3,37 @@ namespace LSPainter
     public class Randomizer
     {
         static Random random = new Random();
+        public static bool RandomBool(double p = 0.5) => random.NextDouble() < p;
+        public static double RandomDouble(double lb = 0, double ub = 1) => lb + random.NextDouble() * (ub - lb);
+        public static float RandomFloat(float lb = 0, float ub = 1) => lb + random.NextSingle() * (ub - lb);
 
-        public static T PickRandomly<T>(IEnumerable<T> items)
+        public static T[] PickMultiple<T>(T[] items, int n)
         {
-            return PickRandomly(items.Zip(Enumerable.Repeat(1f, items.Count())));
+            // For now, only pick multiple items uniformly
+
+            int nItems = items.Length;
+
+            if (nItems > n) throw new Exception("Too few items");
+
+            int[] offSets = Randomizer.Split(nItems - n, n).Select(d => (int)d).ToArray();
+
+            T[] output = new T[n];
+            int index = 0;
+            for (int i = 0; i < n; i++)
+            {
+                index += offSets[i];
+                output[i] = items[index];
+            }
+
+            return output;
         }
 
-        public static T PickRandomly<T>(IEnumerable<(T, float)> items)
+        public static T Pick<T>(IEnumerable<T> items)
+        {
+            return Pick(items.Zip(Enumerable.Repeat(1f, items.Count())));
+        }
+
+        public static T Pick<T>(IEnumerable<(T, float)> items)
         {
             float sum = 0;
 
@@ -35,7 +59,7 @@ namespace LSPainter
             return items.Last().Item1;
         }
 
-        public static double[] RandomFactors(double target, int n)
+        public static double[] Factorise(double target, int n)
         {
             double[] output = new double[n];
 
@@ -70,7 +94,7 @@ namespace LSPainter
             return output;
         }
 
-        public static double[] SplitRandomly(double amount, int n)
+        public static double[] Split(double amount, int n)
         {
             double[] output = new double[n];
 
@@ -91,16 +115,6 @@ namespace LSPainter
             }
 
             return output;
-        }
-
-        public static double Range(double lb, double ub)
-        {
-            return lb + random.NextDouble() * (ub - lb);
-        }
-
-        public static bool RandomBool(double p = 0.5)
-        {
-            return random.NextDouble() < p;
         }
     }
 }

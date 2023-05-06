@@ -19,7 +19,7 @@ namespace LSPainter.ShapePainter
         static Random random = new Random();
         public static Shape Generate(ShapeGeneratorSettings settings)
         {
-            Func<ShapeGeneratorSettings, Shape> generator = Randomizer.PickRandomly(generators);
+            Func<ShapeGeneratorSettings, Shape> generator = Randomizer.Pick(generators);
             return generator(settings);
         }
 
@@ -36,16 +36,16 @@ namespace LSPainter.ShapePainter
             return new Vector(Math.Cos(angle), Math.Sin(angle));
         }
 
-        static LSPainter.Maths.Shapes.Triangle GenerateTriangle(ShapeGeneratorSettings settings)
+        static Triangle GenerateTriangle(ShapeGeneratorSettings settings)
         {
             Point p1 = GeneratePoint(settings);
 
-            double gamma = Randomizer.Range(0.1f, 0.9f) * Math.PI;
+            double gamma = Randomizer.RandomDouble(0.1f, 0.9f) * Math.PI;
 
             double remainder = 2 * settings.Area / Math.Sin(gamma);
 
             // Lengths a and b of the triangle
-            double[] factors = Randomizer.RandomFactors(remainder, 2);
+            double[] factors = Randomizer.Factorise(remainder, 2);
 
             double angle1 = 2 * Math.PI * random.NextDouble();
             double angle2 = angle1 - gamma;
