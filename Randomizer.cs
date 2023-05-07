@@ -116,5 +116,21 @@ namespace LSPainter
 
             return output;
         }
+
+        public static IEnumerable<T> Shuffle<T>(IEnumerable<T> items)
+        {
+            T[] array = items.ToArray();
+
+            for (int i = 0; i < array.Length; i++)
+            {
+                int j = random.Next(array.Length);
+
+                T temp = array[i];
+                array[i] = array[j];
+                array[j] = temp;
+            }
+
+            return array;
+        }
     }
 }

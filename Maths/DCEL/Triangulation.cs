@@ -33,6 +33,8 @@ namespace LSPainter.Maths.DCEL
 
                 // Register the vertex as a clone of this vertex
                 VertexRefs.Add(edge.Origin ?? throw new NullReferenceException(), vertexClone);
+                // And vice versa (TODO: this is hacky...)
+                VertexRefs.Add(vertexClone, edge.Origin);
             }
 
             Triangulate(faceClone);

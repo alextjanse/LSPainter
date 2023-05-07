@@ -12,6 +12,8 @@ namespace LSPainter.PlanarSubdivision
         public Dictionary<uint, Triangulation> Triangulations;
         DCEL dcel;
 
+        Func<PlanSubChange?>[] generators;
+
         public PlanSubSolution(int width, int height, CanvasComparer comparer) : base(width, height, comparer)
         {
             faceColors = new Dictionary<uint, Color>();
@@ -24,6 +26,12 @@ namespace LSPainter.PlanarSubdivision
                 faceColors.Add(face.ID, Color.Black);
                 Triangulations.Add(face.ID, new Triangulation(face));
             }
+
+            generators = new Func<PlanSubChange?>[]
+            {
+                GenerateFaceColorChange,
+                GenerateFaceSplitChange
+            };
         }
 
         public void Draw()
@@ -49,15 +57,21 @@ namespace LSPainter.PlanarSubdivision
 
         protected override CanvasChange GenerateCanvasChange()
         {
-            Func<PlanSubChange>[] generators = new Func<PlanSubChange>[]
-            {
-                GenerateFaceColorChange,
-            };
+            Stack<Func<PlanSubChange?>> shuffledGenerators = new Stack<Func<PlanSubChange?>>(Randomizer.Shuffle(generators));
 
-            return Randomizer.Pick(generators)();
+            while (shuffledGenerators.Count > 0)
+            {
+                PlanSubChange? change = shuffledGenerators.Pop()();
+
+                if (change != null) return change;
+            }
+
+            Console.WriteLine("None of the generators could make a change. Retrying.");
+
+            return GenerateCanvasChange();
         }
 
-        PlanSubChange GenerateFaceColorChange()
+        PlanSubChange? GenerateFaceColorChange()
         {
             Face face = Randomizer.Pick(dcel.Faces);
             Color color = ColorGenerator.Generate();
@@ -65,9 +79,22 @@ namespace LSPainter.PlanarSubdivision
             return new FaceColorChange(face, color);
         }
 
-        PlanSubChange GenerateNewVertexChange()
+        PlanSubChange? GenerateFaceSplitChange()
         {
             Face face = Randomizer.Pick(dcel.Faces);
+
+            if (face.Count() <= 3)
+            {
+                return null;
+            }
+
+            return PlanSubChangeGenerator.GenerateFaceSplitChange(face);
+        }
+
+        PlanSubChange? GenerateNewVertexChange()
+        {
+            Face face = Randomizer.Pick(dcel.Faces);
+            
             return PlanSubChangeGenerator.NewVertexChangeFromTriangulation(face, Triangulations[face.ID]);
         }
 
@@ -77,16 +104,12 @@ namespace LSPainter.PlanarSubdivision
 
         long TryPlanSubChange(PlanSubChange change)
         {
-            FaceColorChange fcChange = (FaceColorChange)change;
-
-            return fcChange.Try(this);
+            return change.Try(this);
         }
 
         void ApplyPlanSubChange(PlanSubChange change)
         {
-            FaceColorChange fcChange = (FaceColorChange)change;
-
-            fcChange.Apply(this);
+            change.Apply(this);
         }
     }
 }
