@@ -12,7 +12,7 @@ namespace LSPainter.LSSolver
 
     public class SolverFactory
     {
-        public static CanvasSolver CreateCanvasSolver(SolverType type, int width, int height, CanvasComparer checker)
+        public static CanvasSolver CreateCanvasSolver(SolverType type, int width, int height, CanvasSolutionChecker checker)
         {
             switch (type)
             {
@@ -25,13 +25,13 @@ namespace LSPainter.LSSolver
             }
         }
 
-        static ShapePainterSolver CreateShapePainterSolver(int width, int height, CanvasComparer checker)
+        static ShapePainterSolver CreateShapePainterSolver(int width, int height, CanvasSolutionChecker checker)
         {
-            ShapePainterSolution solution = new ShapePainterSolution(width, height, checker);
-            return new ShapePainterSolver(solution);
+            ShapePainterSolution solution = new ShapePainterSolution(width, height);
+            return new ShapePainterSolver(solution, checker);
         }
 
-        static PlanSubSolver CreatePlanarSubdivisionSolver(int width, int height, CanvasComparer checker)
+        static PlanSubSolver CreatePlanarSubdivisionSolver(int width, int height, CanvasSolutionChecker checker)
         {
             PlanSubSolution solution = new PlanSubSolution(width, height, checker);
             return new PlanSubSolver(solution);

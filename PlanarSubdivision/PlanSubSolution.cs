@@ -5,7 +5,6 @@ using LSPainter.LSSolver.Painter;
 
 namespace LSPainter.PlanarSubdivision
 {
-    // Doubly connected edge list: https://en.wikipedia.org/wiki/Doubly_connected_edge_list
     public class PlanSubSolution : CanvasSolution
     {
         public Dictionary<uint, Color> faceColors;
@@ -14,7 +13,14 @@ namespace LSPainter.PlanarSubdivision
 
         Func<PlanSubChange?>[] generators;
 
-        public PlanSubSolution(int width, int height, CanvasComparer comparer) : base(width, height, comparer)
+        PlanSubSolutionConstraints constraints = new PlanSubSolutionConstraints()
+        {
+            MaxVertices = 100,
+        };
+
+        PlanSubScore penalties = new PlanSubScore(1000, 1);
+
+        public PlanSubSolution(int width, int height, CanvasSolutionChecker comparer) : base(width, height, comparer)
         {
             faceColors = new Dictionary<uint, Color>();
             Triangulations = new Dictionary<uint, Triangulation>();

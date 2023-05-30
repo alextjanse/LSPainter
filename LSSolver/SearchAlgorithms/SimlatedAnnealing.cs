@@ -7,7 +7,7 @@ namespace LSPainter.LSSolver
         int iteration = 0;
         double alpha = 0.95;
 
-        public void UpdateParameters()
+        public void Update()
         {
             if (iteration++ > coolingSteps)
             {

@@ -3,6 +3,7 @@ using SixLabors.ImageSharp.PixelFormats;
 using LSPainter.Maths.Shapes;
 using LSPainter.Maths;
 using LSPainter.LSSolver.Painter;
+using LSPainter.LSSolver;
 
 namespace LSPainter.ShapePainter
 {
@@ -11,7 +12,8 @@ namespace LSPainter.ShapePainter
         ShapeGeneratorSettings shapeGeneratorSettings;
         ColorGeneratorSettings colorGeneratorSettings;
 
-        public ShapePainterSolution(int width, int height, CanvasComparer comparer) : base(width, height, comparer)
+
+        public ShapePainterSolution(int width, int height) : base(width, height)
         {
             shapeGeneratorSettings = new ShapeGeneratorSettings()
             {
@@ -28,32 +30,18 @@ namespace LSPainter.ShapePainter
             };
         }
 
-        protected override void ApplyChange(CanvasChange change) => ApplyChange((ShapePainterChange)change);
-
-        protected void ApplyChange(ShapePainterChange change)
-        {
-            Shape shape = change.Shape;
-            Color color = change.Color;
-
-            DrawShape(shape, color);
-        }
-
-        protected override CanvasChange GenerateCanvasChange()
+        public override IChange<ISolution> GenerateNeighbor()
         {
             Shape shape = ShapeGenerator.Generate(shapeGeneratorSettings);
             Color color = ColorGenerator.Generate(colorGeneratorSettings);
 
-            return new ShapePainterChange(shape, color);
+            ShapePainterChange change = new ShapePainterChange(shape, color);
+            return (IChange<ISolution>)change;
         }
 
-        protected override long TryChange(CanvasChange change) => TryChange((ShapePainterChange)change);
-
-        protected long TryChange(ShapePainterChange change)
+        public override void Update()
         {
-            Shape shape = change.Shape;
-            Color color = change.Color;
-
-            return TryDrawShape(shape, color);
+            // TODO: update generator parameters
         }
     }
 }

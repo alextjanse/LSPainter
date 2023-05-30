@@ -14,7 +14,7 @@ namespace LSPainter.LSSolver
         {
             Solvers = new CanvasSolver[n];
 
-            CanvasComparer checker = new CanvasComparer(original);
+            CanvasSolutionChecker checker = new CanvasSolutionChecker(original);
 
             for (int i = 0; i < n; i++)
             {

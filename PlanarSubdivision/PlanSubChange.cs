@@ -1,3 +1,5 @@
+using LSPainter.Maths;
+using LSPainter.LSSolver;
 using LSPainter.Maths.DCEL;
 using LSPainter.Maths.Shapes;
 using LSPainter.LSSolver.Painter;
@@ -6,7 +8,7 @@ namespace LSPainter.PlanarSubdivision
 {
     public abstract class PlanSubChange : CanvasChange
     {
-        public abstract long Try(PlanSubSolution solution);
+        public abstract PlanSubScore Try(PlanSubSolution solution, CanvasSolutionChecker checker);
         public abstract void Apply(PlanSubSolution solution);
     }
 
@@ -15,27 +17,29 @@ namespace LSPainter.PlanarSubdivision
         public Face Face { get; }
         public Color Color { get; }
 
+        public override BoundingBox BoundingBox => throw new NotImplementedException();
+
         public FaceColorChange(Face face, Color color)
         {
             Face = face;
             Color = color;
         }
 
-        public override long Try(PlanSubSolution solution)
+        public override PlanSubScore Try(PlanSubSolution solution, CanvasSolutionChecker checker)
         {
             Triangulation triangulation = solution.Triangulations[Face.ID];
 
             Color currentColor = solution.faceColors[Face.ID];
             Color newColor = Color.Blend(currentColor, Color);
 
-            long scoreDiff = 0;
+            long pixelDiff = 0;
 
             foreach (Triangle triangle in triangulation.Triangles)
             {
-                scoreDiff += solution.TryDrawShape(triangle, newColor);
+                pixelDiff += TryDrawShape(solution, checker, triangle, newColor);
             }
 
-            return scoreDiff;
+            return new PlanSubScore(0, pixelDiff);
         }
 
         public override void Apply(PlanSubSolution solution)
@@ -47,8 +51,18 @@ namespace LSPainter.PlanarSubdivision
 
             foreach (Triangle triangle in triangulation.Triangles)
             {
-                solution.DrawShape(triangle, newColor);
+                DrawShape(solution, triangle, newColor);
             }
+        }
+
+        public override IScore<CanvasSolution> Try(CanvasSolution solution, ISolutionChecker<CanvasSolution> solutionChecker)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Apply(CanvasSolution solution)
+        {
+            throw new NotImplementedException();
         }
     }
 
@@ -61,6 +75,8 @@ namespace LSPainter.PlanarSubdivision
         public Vertex V2 { get; }
         public Color Color1 { get; }
         public Color Color2 { get; }
+
+        public override BoundingBox BoundingBox => throw new NotImplementedException();
 
         private Triangulation triangulation1, triangulation2;
 
@@ -78,34 +94,44 @@ namespace LSPainter.PlanarSubdivision
             triangulation2 = new Triangulation(Split2);
         }
 
-        public override long Try(PlanSubSolution solution)
+        public override PlanSubScore Try(PlanSubSolution solution, ISolutionChecker<CanvasSolution> checker)
         {
-            long scoreDiff = 0;
+            long pixelDiff = 0;
 
             foreach (Triangle triangle in triangulation1.Triangles)
             {
-                scoreDiff += solution.TryDrawShape(triangle, Color1);
+                pixelDiff += TryDrawShape(solution, (CanvasSolutionChecker)checker, triangle, Color1);
             }
 
             foreach (Triangle triangle in triangulation2.Triangles)
             {
-                scoreDiff += solution.TryDrawShape(triangle, Color2);
+                pixelDiff += TryDrawShape(solution, (CanvasSolutionChecker)checker, triangle, Color2);
             }
 
-            return scoreDiff;
+            return new PlanSubScore(0, pixelDiff);
         }
 
         public override void Apply(PlanSubSolution solution)
         {
             foreach (Triangle triangle in triangulation1.Triangles)
             {
-                solution.DrawShape(triangle, Color1);
+                DrawShape(solution, triangle, Color1);
             }
 
             foreach (Triangle triangle in triangulation2.Triangles)
             {
-                solution.DrawShape(triangle, Color2);
+                DrawShape(solution, triangle, Color2);
             }
+        }
+
+        public override IScore<CanvasSolution> Try(CanvasSolution solution, ISolutionChecker<CanvasSolution> solutionChecker)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Apply(CanvasSolution solution)
+        {
+            throw new NotImplementedException();
         }
     }
 
