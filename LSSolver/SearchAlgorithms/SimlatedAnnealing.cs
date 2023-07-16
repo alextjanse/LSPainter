@@ -16,7 +16,7 @@ namespace LSPainter.LSSolver
             }
         }
 
-        public bool EvaluateScoreDiff(long scoreDiff)
+        public bool EvaluateScoreDiff(double scoreDiff)
         {
             if (scoreDiff < 0)
             {
