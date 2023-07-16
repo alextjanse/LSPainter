@@ -8,9 +8,6 @@ namespace LSPainter.ShapePainter
 {
     public class ShapePainterSolution : CanvasSolution
     {
-        ShapeGeneratorSettings shapeGeneratorSettings;
-        ColorGeneratorSettings colorGeneratorSettings;
-
         public ShapePainterSolution(int width, int height, CanvasComparer comparer) : base(width, height, comparer)
         {
             shapeGeneratorSettings = new ShapeGeneratorSettings()

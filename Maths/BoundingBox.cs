@@ -2,7 +2,7 @@ using System.Collections;
 
 namespace LSPainter.Maths
 {
-    public struct BoundingBox : IEnumerable<(int x, int y)>
+    public struct BoundingBox : IEnumerable<(int, int)>
     {
         public int X, Y, Width, Height;
 
@@ -37,7 +37,7 @@ namespace LSPainter.Maths
             return this.GetEnumerator();
         }
 
-        IEnumerator<(int, int)> IEnumerable<(int x, int y)>.GetEnumerator()
+        IEnumerator<(int, int)> IEnumerable<(int, int)>.GetEnumerator()
         {
             for (int y = Y; y < Y + Height; y++)
             {
