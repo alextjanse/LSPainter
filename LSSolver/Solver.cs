@@ -2,31 +2,63 @@ namespace LSPainter.LSSolver
 {
     public interface ISolution
     {
-        long Score { get; }
-        IChange GenerateNeighbor();
-        long TryChange(IChange change);
-        void ApplyChange(IChange change);
+        IScore Score { get; }
     }
 
-    public interface IChange
+    public interface IScore
     {
+        double GetValue();
+    }
+    public interface IOperation<TSolution>
+        where TSolution : ISolution
+    {
+        void Apply(TSolution solution);
+        double Try(TSolution solution);
+    }
 
+    public interface IOperationFactory<TSolution> where TSolution : ISolution
+    {
+        IOperation<TSolution, IScore, ISolutionComparer<TSolution>> Generate(TSolution solution);
+    }
+
+    public interface IConstraint<TScore> where TScore : IScore
+    {
+        double GetPenalty(IScore score);
+    }
+
+    public interface ISolutionComparer<TSolution> where TSolution : ISolution
+    {
+        
     }
 
     public abstract class Solver<TSolution> where TSolution : ISolution
     {
         public TSolution Solution { get; }
+        public IScore Score { get; }
+        public List<IConstraint<IScore>> Constraints { get; }
         ISearchAlgorithm SearchAlgorithm { get; }
+        ISolutionComparer<TSolution> Comparer { get; }
+        IOperationFactory<TSolution> OperationFactory { get; }
 
-        public Solver(ISearchAlgorithm algorithm, TSolution initialSolution)
+        public Solver(TSolution initialSolution, ISolutionComparer<TSolution> comparer, IOperationFactory<TSolution> factory, ISearchAlgorithm algorithm, List<IConstraint<IScore>>? constraints = null)
         {
-            SearchAlgorithm = algorithm;
             Solution = initialSolution;
+            Constraints = constraints ?? new List<IConstraint<IScore>>();
+            Comparer = comparer;
+            OperationFactory = factory;
+            SearchAlgorithm = algorithm;
+
+            
         }
 
         public void Iterate()
         {
-            SearchAlgorithm.Iterate(Solution);
+            // TODO: make operation, calculate its score diff
+            IOperation<TSolution> operation = OperationFactory.Generate(Solution);
+
+            
+
+            SearchAlgorithm.UpdateParameters();
         }
     }
 }
