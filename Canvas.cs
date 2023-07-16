@@ -5,7 +5,7 @@ using LSPainter.Maths;
 
 namespace LSPainter
 {
-    public class Canvas : Texture
+    public class Canvas : Texture, ICloneable
     {
         Image<Rgba32> image;
         private byte[] data;
@@ -36,6 +36,21 @@ namespace LSPainter
         {
             // Upload Data
             base.Update();
+        }
+
+        public object Clone()
+        {
+            Canvas newCanvas = new Canvas(Width, Height);
+
+            for (int y = 0; y < Height; y++)
+            {
+                for (int x = 0; x < Width; x++)
+                {
+                    newCanvas.SetPixel(x, y, GetPixel(x, y));
+                }
+            }
+
+            return newCanvas;
         }
     }
 }

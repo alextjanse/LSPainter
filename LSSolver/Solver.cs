@@ -23,6 +23,13 @@ namespace LSPainter.LSSolver
 
     public abstract class OperationFactory<TSolution, TScore, TChecker> : IUpdatable where TSolution : Solution where TScore : Score<TSolution> where TChecker : SolutionChecker<TSolution, TScore>
     {
+        protected TChecker Checker { get; }
+
+        public OperationFactory(TChecker checker)
+        {
+            Checker = checker;
+        }
+
         public abstract Operation<TSolution, TScore, TChecker> Generate();
         public abstract void Update();
     }

@@ -1,8 +1,18 @@
 namespace LSPainter
 {
-    public struct ColorGeneratorSettings
+    public class ColorGeneratorSettings : ICloneable
     {
-        public byte Alpha;
+        public double Alpha { get; set; }
+
+        public ColorGeneratorSettings(double alpha)
+        {
+            Alpha = alpha;
+        }
+
+        public object Clone()
+        {
+            return new ColorGeneratorSettings(Alpha);
+        }
     }
 
     public class ColorGenerator
@@ -18,7 +28,7 @@ namespace LSPainter
                 bytes[0],
                 bytes[1],
                 bytes[2],
-                settings.Alpha
+                (byte)settings.Alpha
             );
         }
     }
