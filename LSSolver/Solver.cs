@@ -1,64 +1,117 @@
 namespace LSPainter.LSSolver
 {
-    public interface ISolution
+    public interface IUpdatable
     {
-        IScore Score { get; }
+        void Update();
     }
 
-    public interface IScore
+    public interface IIterable
     {
-        double GetValue();
-    }
-    public interface IOperation<TSolution>
-        where TSolution : ISolution
-    {
-        void Apply(TSolution solution);
-        double Try(TSolution solution);
+        void Iterate();
     }
 
-    public interface IOperationFactory<TSolution> where TSolution : ISolution
+    public abstract class Solution : ICloneable
     {
-        IOperation<TSolution, IScore, ISolutionComparer<TSolution>> Generate(TSolution solution);
+        public abstract object Clone();
     }
 
-    public interface IConstraint<TScore> where TScore : IScore
+    public abstract class Operation<TSolution, TScore, TChecker> where TSolution : Solution where TScore : Score<TSolution> where TChecker : SolutionChecker<TSolution, TScore>
     {
-        double GetPenalty(IScore score);
+        public abstract TScore Try(TSolution solution, TScore currentScore, TChecker checker);
+        public abstract void Apply(TSolution solution);
     }
 
-    public interface ISolutionComparer<TSolution> where TSolution : ISolution
+    public abstract class OperationFactory<TSolution, TScore, TChecker> : IUpdatable where TSolution : Solution where TScore : Score<TSolution> where TChecker : SolutionChecker<TSolution, TScore>
     {
-        
+        public abstract Operation<TSolution, TScore, TChecker> Generate();
+        public abstract void Update();
     }
 
-    public abstract class Solver<TSolution> where TSolution : ISolution
+    public abstract class Score<TSolution> : ICloneable where TSolution : Solution
     {
-        public TSolution Solution { get; }
-        public IScore Score { get; }
-        public List<IConstraint<IScore>> Constraints { get; }
-        ISearchAlgorithm SearchAlgorithm { get; }
-        ISolutionComparer<TSolution> Comparer { get; }
-        IOperationFactory<TSolution> OperationFactory { get; }
+        public abstract double ToDouble();
+        public abstract object Clone();
+    }
 
-        public Solver(TSolution initialSolution, ISolutionComparer<TSolution> comparer, IOperationFactory<TSolution> factory, ISearchAlgorithm algorithm, List<IConstraint<IScore>>? constraints = null)
+    public abstract class Constraint<TSolution, TScore> : IUpdatable where TSolution : Solution where TScore : Score<TSolution>
+    {
+        public double Penalty { get; set; }
+        public abstract double ApplyPenalty(TScore score);
+        public abstract void Update();
+    }
+
+    public abstract class SolutionChecker<TSolution, TScore> where TSolution : Solution where TScore : Score<TSolution>
+    {
+        public abstract TScore ScoreSolution(TSolution solution);
+    }
+
+    public class Solver<TSolution, TScore, TChecker> : IIterable where TSolution : Solution where TScore : Score<TSolution> where TChecker : SolutionChecker<TSolution, TScore>
+    {
+        public TSolution Solution { get; private set; }
+        public TScore Score { get; private set; }
+        public TChecker Checker { get; }
+        public List<Constraint<TSolution, TScore>> Constraints { get; }
+        public ISearchAlgorithm Algorithm;
+        public OperationFactory<TSolution, TScore, TChecker> OperationFactory { get; }
+
+        public Solver
+        (
+            TSolution startSolution,
+            TChecker checker,
+            ISearchAlgorithm algorithm,
+            OperationFactory<TSolution, TScore, TChecker> factory,
+            List<Constraint<TSolution, TScore>>? constraints = null
+        )
         {
-            Solution = initialSolution;
-            Constraints = constraints ?? new List<IConstraint<IScore>>();
-            Comparer = comparer;
+            Solution = startSolution;
+            Checker = checker;
+            Algorithm = algorithm;
             OperationFactory = factory;
-            SearchAlgorithm = algorithm;
+            Constraints = constraints ?? new List<Constraint<TSolution, TScore>>();
 
-            
+            Score = Checker.ScoreSolution(Solution);
         }
 
         public void Iterate()
         {
-            // TODO: make operation, calculate its score diff
-            IOperation<TSolution> operation = OperationFactory.Generate(Solution);
-
+            Operation<TSolution, TScore, TChecker> operation = OperationFactory.Generate();
             
+            TScore newScore = operation.Try(Solution, Score, Checker);
 
-            SearchAlgorithm.UpdateParameters();
+            double currentValue = GetScoreValue(Score);
+            double newValue = GetScoreValue(newScore);
+
+            double scoreDiff = newValue - currentValue;
+
+            if (Algorithm.EvaluateScoreDiff(scoreDiff))
+            {
+                operation.Apply(Solution);
+                Score = newScore;
+            }
+
+            UpdateParameters();
+        }
+
+        void UpdateParameters()
+        {
+            Algorithm.UpdateParameters();
+            OperationFactory.Update();
+            foreach (Constraint<TSolution, TScore> constraint in Constraints)
+            {
+                constraint.Update();
+            }
+        }
+
+        double GetScoreValue(TScore score)
+        {
+            double value = score.ToDouble();
+
+            foreach (Constraint<TSolution, TScore> constraint in Constraints)
+            {
+                value += constraint.ApplyPenalty(score);
+            }
+
+            return value;
         }
     }
 }

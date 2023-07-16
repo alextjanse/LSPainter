@@ -2,7 +2,7 @@ namespace LSPainter.LSSolver
 {
     public interface ISearchAlgorithm
     {
-        bool EvaluateScoreDiff(long scoreDiff);
+        bool EvaluateScoreDiff(double scoreDiff);
         virtual void UpdateParameters()
         {
             
