@@ -33,9 +33,10 @@ namespace LSPainter.ShapePainter
             {
                 if (Shape.IsInside(GetPixelVector(x, y)))
                 {
-                    long currentPixelScoreDiff = checker.GetPixelScore(x, y, Color);
-
+                    Color currentColor = solution.Canvas.GetPixel(x, y);
                     Color newColor = Color.Blend(solution.Canvas.GetPixel(x, y), Color);
+
+                    long currentPixelScoreDiff = checker.GetPixelScore(x, y, currentColor);
                     long newPixelScoreDiff = checker.GetPixelScore(x, y, newColor);
 
                     newScore.SquaredPixelDiff += newPixelScoreDiff - currentPixelScoreDiff;

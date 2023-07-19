@@ -10,20 +10,17 @@ namespace LSPainter.ShapePainter
 
         public override ShapePainterScore ScoreSolution(ShapePainterSolution solution)
         {
-            long pixelScoreDiff = 0;
+            long totalPixelScore = 0;
             
-            int r, g, b;
             for (int y = 0; y < solution.Canvas.Height; y++)
             {
                 for (int x = 0; x < solution.Canvas.Width; x++)
                 {
-                    (r, g, b) = Color.Diff(solution.Canvas.GetPixel(x, y), OriginalImage.GetPixel(x, y));
-
-                    pixelScoreDiff += r * r + b * b + g * g;
+                    totalPixelScore += GetPixelScore(x, y, solution.Canvas.GetPixel(x, y));
                 }
             }
 
-            return new ShapePainterScore(pixelScoreDiff);
+            return new ShapePainterScore(totalPixelScore);
         }
     }
 }
