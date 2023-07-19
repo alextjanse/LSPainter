@@ -25,9 +25,11 @@ namespace LSPainter.ShapePainter
 
         public override ShapePainterScore Try(ShapePainterSolution solution, ShapePainterScore currentScore, ShapePainterChecker checker)
         {
+            TrimToCanvas(checker);
+            
             ShapePainterScore newScore = (ShapePainterScore)currentScore.Clone();
 
-            foreach ((int x, int y) in BoundingBox.AsEnumerable<(int, int)>())
+            foreach ((int x, int y) in BBox.AsEnumerable())
             {
                 if (Shape.IsInside(GetPixelVector(x, y)))
                 {
@@ -45,7 +47,7 @@ namespace LSPainter.ShapePainter
 
         public override void Apply(ShapePainterSolution solution)
         {
-            foreach ((int x, int y) in BoundingBox.AsEnumerable<(int, int)>())
+            foreach ((int x, int y) in BBox.AsEnumerable<(int, int)>())
             {
                 if (Shape.IsInside(GetPixelVector(x, y)))
                 {

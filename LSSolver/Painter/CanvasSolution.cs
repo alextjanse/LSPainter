@@ -2,7 +2,7 @@ using LSPainter.Maths;
 
 namespace LSPainter.LSSolver.Painter
 {
-    public abstract class CanvasSolution : Solution
+    public abstract class CanvasSolution : Solution, ICanvasSolution
     {
         public Canvas Canvas { get; set; }
 

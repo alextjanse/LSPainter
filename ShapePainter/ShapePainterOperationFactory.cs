@@ -9,11 +9,11 @@ namespace LSPainter.ShapePainter
     {
         public ShapeGeneratorSettings ShapeGeneratorSettings { get; }
         public ColorGeneratorSettings ColorGeneratorSettings { get; }
-        public double Alpha = 0.99;
+        public double Alpha = 1;
 
         public ShapePainterOperationFactory(int canvasWidth, int canvasHeight, ShapePainterChecker checker) : base(checker)
         {
-            ShapeGeneratorSettings = new ShapeGeneratorSettings(0, canvasWidth, 0, canvasHeight, canvasWidth * canvasHeight);
+            ShapeGeneratorSettings = new ShapeGeneratorSettings(0, canvasWidth, 0, canvasHeight, 50);
             ColorGeneratorSettings = new ColorGeneratorSettings(255 / 10);
         }
 

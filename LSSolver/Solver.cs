@@ -10,7 +10,23 @@ namespace LSPainter.LSSolver
         void Iterate();
     }
 
-    public abstract class Solution : ICloneable
+    public interface ISolution : ICloneable
+    {
+
+    }
+
+    public interface ICanvasSolution : ISolution
+    {
+        Canvas Canvas { get; }
+    }
+
+    public interface ISolver<out TSolution> : IIterable
+        where TSolution : ISolution
+    {
+        TSolution Solution { get; }
+    }
+
+    public abstract class Solution : ISolution
     {
         public abstract object Clone();
     }
@@ -52,8 +68,8 @@ namespace LSPainter.LSSolver
         public abstract TScore ScoreSolution(TSolution solution);
     }
 
-    public class Solver<TSolution, TScore, TChecker> : IIterable where TSolution : Solution where TScore : Score<TSolution> where TChecker : SolutionChecker<TSolution, TScore>
-    {
+    public class Solver<TSolution, TScore, TChecker> : ISolver<TSolution> where TSolution : Solution where TScore : Score<TSolution> where TChecker : SolutionChecker<TSolution, TScore>
+    {   
         public TSolution Solution { get; private set; }
         public TScore Score { get; private set; }
         public TChecker Checker { get; }

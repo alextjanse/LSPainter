@@ -10,22 +10,28 @@ namespace LSPainter.LSSolver
 
     public class SolverFactory
     {
-        public CanvasChecker<CanvasSolution, CanvasScore<CanvasSolution>> Checker { get; }
+        public ImageHandler OriginalImage { get; }
 
-        public SolverFactory(CanvasChecker<CanvasSolution, CanvasScore<CanvasSolution>> checker)
+        public SolverFactory(ImageHandler originalImage)
         {
-            Checker = checker;
+            OriginalImage = originalImage;
         }
 
-        public Solver<CanvasSolution, CanvasScore<CanvasSolution>, CanvasChecker<CanvasSolution, CanvasScore<CanvasSolution>>> CreateCanvasSolver(SolverType type, int width, int height)
+        public ISolver<ICanvasSolution> CreateCanvasSolver(SolverType type)
         {
+            int width = OriginalImage.Width;
+            int height = OriginalImage.Height;
+
             switch (type)
             {
                 case SolverType.ShapePainter:
                     ShapePainterSolution solution = new ShapePainterSolution(new Canvas(width, height));
-                    ShapePainterOperationFactory factory = new ShapePainterOperationFactory(width, height, Checker);
+                    ShapePainterChecker checker = new ShapePainterChecker(OriginalImage);
+                    ShapePainterOperationFactory factory = new ShapePainterOperationFactory(width, height, checker);
 
-                    return new Solver<CanvasSolution, CanvasScore<CanvasSolution>, CanvasChecker<CanvasSolution, CanvasScore<CanvasSolution>>>(solution, Checker, new SimulatedAnnealingAlgorithm(), factory);
+                    var solver = new Solver<ShapePainterSolution, ShapePainterScore, ShapePainterChecker>(solution, checker, new SimulatedAnnealingAlgorithm(), factory);
+
+                    return (ISolver<ICanvasSolution>)solver;
                 default:
                     throw new NotImplementedException();
             }

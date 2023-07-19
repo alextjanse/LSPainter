@@ -2,7 +2,7 @@ namespace LSPainter.LSSolver.Painter
 {
     public abstract class CanvasChecker<TSolution, TScore> : SolutionChecker<TSolution, TScore> where TSolution : CanvasSolution where TScore : CanvasScore<TSolution>
     {
-        protected ImageHandler OriginalImage { get; }
+        public ImageHandler OriginalImage { get; }
 
         public CanvasChecker(ImageHandler originalImage)
         {
