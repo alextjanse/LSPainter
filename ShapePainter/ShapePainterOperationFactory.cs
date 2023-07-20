@@ -11,7 +11,7 @@ namespace LSPainter.ShapePainter
         public ColorGeneratorSettings ColorGeneratorSettings { get; }
         public double Alpha = 1;
 
-        public ShapePainterOperationFactory(int canvasWidth, int canvasHeight, ShapePainterChecker checker) : base(checker)
+        public ShapePainterOperationFactory(int canvasWidth, int canvasHeight)
         {
             ShapeGeneratorSettings = new ShapeGeneratorSettings(0, canvasWidth, 0, canvasHeight, 50);
             ColorGeneratorSettings = new ColorGeneratorSettings(255 / 10);

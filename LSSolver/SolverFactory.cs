@@ -27,7 +27,7 @@ namespace LSPainter.LSSolver
                 case SolverType.ShapePainter:
                     ShapePainterSolution solution = new ShapePainterSolution(new Canvas(width, height));
                     ShapePainterChecker checker = new ShapePainterChecker(OriginalImage);
-                    ShapePainterOperationFactory factory = new ShapePainterOperationFactory(width, height, checker);
+                    ShapePainterOperationFactory factory = new ShapePainterOperationFactory(width, height);
 
                     var solver = new Solver<ShapePainterSolution, ShapePainterScore, ShapePainterChecker>(solution, checker, new SimulatedAnnealingAlgorithm(), factory);
 

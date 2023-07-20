@@ -78,7 +78,7 @@ namespace LSPainter.LSSolver
         public double MaxStep { get; set; }
         public double Alpha { get; set; }
 
-        public PiOperationFactory(double maxStep, PiChecker checker) : base(checker)
+        public PiOperationFactory(double maxStep)
         {
             MaxStep = maxStep;
 
@@ -104,7 +104,7 @@ namespace LSPainter.LSSolver
         {
             PiSolution solution = new PiSolution(0);
             PiChecker checker = new PiChecker();
-            PiOperationFactory operationFactory = new PiOperationFactory(1, checker);
+            PiOperationFactory operationFactory = new PiOperationFactory(1);
 
             solver = new Solver<PiSolution, PiScore, PiChecker>(solution, checker, new SimulatedAnnealingAlgorithm(), operationFactory);
         }

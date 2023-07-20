@@ -1,73 +1,20 @@
 namespace LSPainter.LSSolver
 {
-    public interface IUpdatable
-    {
-        void Update();
-    }
-
-    public interface IIterable
-    {
-        void Iterate();
-    }
-
-    public interface ISolution : ICloneable
-    {
-
-    }
-
-    public interface ICanvasSolution : ISolution
-    {
-        Canvas Canvas { get; }
-    }
-
     public interface ISolver<out TSolution> : IIterable
         where TSolution : ISolution
     {
         TSolution Solution { get; }
     }
 
-    public abstract class Solution : ISolution
-    {
-        public abstract object Clone();
-    }
-
-    public abstract class Operation<TSolution, TScore, TChecker> where TSolution : Solution where TScore : Score<TSolution> where TChecker : SolutionChecker<TSolution, TScore>
-    {
-        public abstract TScore Try(TSolution solution, TScore currentScore, TChecker checker);
-        public abstract void Apply(TSolution solution);
-    }
-
-    public abstract class OperationFactory<TSolution, TScore, TChecker> : IUpdatable where TSolution : Solution where TScore : Score<TSolution> where TChecker : SolutionChecker<TSolution, TScore>
-    {
-        protected TChecker Checker { get; }
-
-        public OperationFactory(TChecker checker)
-        {
-            Checker = checker;
-        }
-
-        public abstract Operation<TSolution, TScore, TChecker> Generate();
-        public abstract void Update();
-    }
-
-    public abstract class Score<TSolution> : ICloneable where TSolution : Solution
-    {
-        public abstract double ToDouble();
-        public abstract object Clone();
-    }
-
-    public abstract class Constraint<TSolution, TScore> : IUpdatable where TSolution : Solution where TScore : Score<TSolution>
-    {
-        public double Penalty { get; set; }
-        public abstract double ApplyPenalty(TScore score);
-        public abstract void Update();
-    }
-
-    public abstract class SolutionChecker<TSolution, TScore> where TSolution : Solution where TScore : Score<TSolution>
-    {
-        public abstract TScore ScoreSolution(TSolution solution);
-    }
-
+    /// <summary>
+    /// A solver solves the solution it is holding. The solution space
+    /// is defined by TSolution, with the solution Checker TChecker
+    /// giving score value TScore, and an OperationFactory making changes
+    /// to the solution.
+    /// </summary>
+    /// <typeparam name="TSolution">The solution data structure</typeparam>
+    /// <typeparam name="TScore">The solution score and parameters</typeparam>
+    /// <typeparam name="TChecker">The solution scorer</typeparam>
     public class Solver<TSolution, TScore, TChecker> : ISolver<TSolution> where TSolution : Solution where TScore : Score<TSolution> where TChecker : SolutionChecker<TSolution, TScore>
     {   
         public TSolution Solution { get; private set; }
@@ -76,6 +23,8 @@ namespace LSPainter.LSSolver
         public List<Constraint<TSolution, TScore>> Constraints { get; }
         public ISearchAlgorithm Algorithm;
         public OperationFactory<TSolution, TScore, TChecker> OperationFactory { get; }
+
+        private int tick = 0;
 
         public Solver
         (
@@ -99,11 +48,11 @@ namespace LSPainter.LSSolver
         {
             Operation<TSolution, TScore, TChecker> operation = OperationFactory.Generate();
             
+            // The score after the operation would be applied
             TScore newScore = operation.Try(Solution, Score, Checker);
 
             double currentValue = GetScoreValue(Score);
             double newValue = GetScoreValue(newScore);
-
             double scoreDiff = newValue - currentValue;
 
             if (Algorithm.EvaluateScoreDiff(scoreDiff))
@@ -112,7 +61,12 @@ namespace LSPainter.LSSolver
                 Score = newScore;
             }
 
-            UpdateParameters();
+            // Set on an interval of 1000 iterations
+            if (tick++ > 1000)
+            {
+                UpdateParameters();
+                tick = 0;
+            }
         }
 
         void UpdateParameters()
