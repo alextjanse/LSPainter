@@ -1,6 +1,6 @@
 namespace LSPainter.LSSolver
 {
-    public class SimulatedAnnealingSolver : ISearchAlgorithm
+    public class SimulatedAnnealingAlgorithm : ISearchAlgorithm
     {
         double temperature = 1000;
         int coolingSteps = 10000;
@@ -16,7 +16,7 @@ namespace LSPainter.LSSolver
             }
         }
 
-        public bool EvaluateScoreDiff(long scoreDiff)
+        public bool EvaluateScoreDiff(double scoreDiff)
         {
             if (scoreDiff < 0)
             {

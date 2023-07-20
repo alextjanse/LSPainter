@@ -3,9 +3,27 @@ using LSPainter.Maths.Shapes;
 
 namespace LSPainter.ShapePainter
 {
-    public struct ShapeGeneratorSettings
+    public class ShapeGeneratorSettings : ICloneable
     {
-        public double MinX, MaxX, MinY, MaxY, Area;
+        public double MinX { get; set; }
+        public double MaxX { get; set; }
+        public double MinY { get; set; }
+        public double MaxY { get; set; }
+        public double Area { get; set; }
+
+        public ShapeGeneratorSettings(double minX, double maxX, double minY, double maxY, double area)
+        {
+            MinX = minX;
+            MaxX = maxX;
+            MinY = minY;
+            MaxY = maxY;
+            Area = area;
+        }
+
+        public object Clone()
+        {
+            return new ShapeGeneratorSettings(MinX, MaxX, MinY, MaxY, Area);
+        }
     }
 
     public class ShapeGenerator

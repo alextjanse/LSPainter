@@ -10,7 +10,18 @@ namespace LSPainter
         public int Width { get; protected set; }
         public int Height { get; protected set; }
         public (int, int) Size => (Width, Height);
-        public abstract byte[] Data { get; }
+        public byte[] Data { get; protected set; }
+        public BoundingBox BBox { get; }
+
+        public Texture(int width, int height)
+        {
+            Width = width;
+            Height = height;
+
+            Data = new byte[4 * Width * Height];
+
+            BBox = new BoundingBox(0, Width, 0, Height);
+        }
 
         public void Load()
         {
@@ -60,18 +71,7 @@ namespace LSPainter
 
         public IEnumerable<Color> EnumerateSection(BoundingBox bbox)
         {
-            int x = bbox.X;
-            int xMax = x + bbox.Width;
-            int y = bbox.Y;
-            int yMax = y + bbox.Height;
-
-            for (; y < yMax; y++)
-            {
-                for (; x < xMax; x++)
-                {
-                    yield return GetPixel(x, y);
-                }
-            }
+            return bbox.AsEnumerable().Select(((int x, int y) c) => GetPixel(c.x, c.y));
         }
 
         IEnumerator<Color> IEnumerable<Color>.GetEnumerator()

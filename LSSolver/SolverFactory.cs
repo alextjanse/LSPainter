@@ -10,15 +10,30 @@ namespace LSPainter.LSSolver
 
     public class SolverFactory
     {
-        public static CanvasSolver CreateSolver(SolverType type, int width, int height, CanvasComparer checker)
+        public ImageHandler OriginalImage { get; }
+
+        public SolverFactory(ImageHandler originalImage)
         {
+            OriginalImage = originalImage;
+        }
+
+        public ISolver<ICanvasSolution> CreateCanvasSolver(SolverType type)
+        {
+            int width = OriginalImage.Width;
+            int height = OriginalImage.Height;
+
             switch (type)
             {
                 case SolverType.ShapePainter:
-                    ShapePainterSolution solution = new ShapePainterSolution(width, height, checker);
-                    return new ShapePainterSolver(solution);
+                    ShapePainterSolution solution = new ShapePainterSolution(new Canvas(width, height));
+                    ShapePainterChecker checker = new ShapePainterChecker(OriginalImage);
+                    ShapePainterOperationFactory factory = new ShapePainterOperationFactory(width, height);
+
+                    var solver = new Solver<ShapePainterSolution, ShapePainterScore, ShapePainterChecker>(solution, checker, new SimulatedAnnealingAlgorithm(), factory);
+
+                    return (ISolver<ICanvasSolution>)solver;
                 default:
-                    throw new Exception("Unknown solver type");
+                    throw new NotImplementedException();
             }
         }
     }

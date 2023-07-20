@@ -9,9 +9,9 @@ namespace LSPainter.Maths
         
         public static implicit operator BoundingBox(Rectangle r) => new BoundingBox(
                                                                         (int)Math.Floor(r.X),
+                                                                        (int)Math.Ceiling(r.X + r.Width),
                                                                         (int)Math.Floor(r.Y),
-                                                                        (int)Math.Ceiling(r.Width),
-                                                                        (int)Math.Ceiling(r.Height)
+                                                                        (int)Math.Ceiling(r.Y + r.Height)
                                                                     );
 
         public Rectangle(double x, double y, double width, double height)

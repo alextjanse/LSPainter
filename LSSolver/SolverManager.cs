@@ -7,29 +7,25 @@ namespace LSPainter.LSSolver
 {
     public class SolverManager
     {
-        public CanvasSolver[] Solvers { get; }
-        public IEnumerable<Canvas> EnumerateCanvases() => Solvers.Select(s => s.Solution.Canvas );
+        public List<ISolver<ICanvasSolution>> CanvasSolvers { get; }
+        public IEnumerable<Canvas> EnumerateCanvases() => CanvasSolvers.Select(s => s.Solution.Canvas);
+        private SolverFactory factory;
 
         public SolverManager(ImageHandler original, int n)
         {
-            Solvers = new CanvasSolver[n];
+            CanvasSolvers = new List<ISolver<ICanvasSolution>>();
 
-            CanvasComparer checker = new CanvasComparer(original);
+            factory = new SolverFactory(original);
 
             for (int i = 0; i < n; i++)
             {
-                Solvers[i] = SolverFactory.CreateSolver(
-                    SolverType.ShapePainter,
-                    original.Width,
-                    original.Height,
-                    checker
-                );
+                CanvasSolvers.Add(factory.CreateCanvasSolver(SolverType.ShapePainter));
             }
         }
 
         public void Iterate()
         {
-            foreach (CanvasSolver solver in Solvers)
+            foreach (ISolver<ICanvasSolution> solver in CanvasSolvers)
             {
                 solver.Iterate();
             }

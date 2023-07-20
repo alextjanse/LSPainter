@@ -7,6 +7,16 @@ using LSPainter.LSSolver;
 
 namespace LSPainter
 {
+    public interface IUpdatable
+    {
+        void Update();
+    }
+
+    public interface IIterable
+    {
+        void Iterate();
+    }
+    
     public struct WindowLayout
     {
         public int Rows { get; }

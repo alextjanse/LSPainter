@@ -27,7 +27,7 @@ namespace LSPainter.Maths.Shapes
             int minY = (int)Math.Floor(Origin.Y - Radius);
             int maxY = (int)Math.Ceiling(Origin.Y + Radius);
 
-            return new BoundingBox(minX, minY, maxX - minX, maxY - minY);
+            return new BoundingBox(minX, maxX, minY, maxY);
         }
     }
 }
