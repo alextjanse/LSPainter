@@ -4,6 +4,8 @@ namespace LSPainter.Maths.Shapes
 {
     public class Circle : Shape
     {
+        public override Rectangle BoundingBox { get; }
+
         public Vector Origin { get; }
         public double Radius { get; }
 
@@ -13,6 +15,8 @@ namespace LSPainter.Maths.Shapes
             Radius = radius;
 
             Area = Math.PI * Radius * Radius;
+
+            BoundingBox = CreateBoundingBox();
         }
 
         public override bool IsInside(Vector p)
@@ -20,14 +24,14 @@ namespace LSPainter.Maths.Shapes
             return (p - Origin).Length <= Radius;
         }
 
-        public override BoundingBox CreateBoundingBox()
+        public Rectangle CreateBoundingBox()
         {
-            int minX = (int)Math.Floor(Origin.X - Radius);
-            int maxX = (int)Math.Ceiling(Origin.X + Radius);
-            int minY = (int)Math.Floor(Origin.Y - Radius);
-            int maxY = (int)Math.Ceiling(Origin.Y + Radius);
+            double minX = Math.Floor(Origin.X - Radius);
+            double maxX = Math.Ceiling(Origin.X + Radius);
+            double minY = Math.Floor(Origin.Y - Radius);
+            double maxY = Math.Ceiling(Origin.Y + Radius);
 
-            return new BoundingBox(minX, maxX, minY, maxY);
+            return new Rectangle(minX, maxX, minY, maxY);
         }
     }
 }

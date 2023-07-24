@@ -4,6 +4,7 @@ namespace LSPainter.Maths.Shapes
 {
     public class Triangle : Shape
     {
+        public override Rectangle BoundingBox { get; }
         public Vector P1 { get; }
         public Vector P2 { get; }
         public Vector P3 { get; }
@@ -15,6 +16,8 @@ namespace LSPainter.Maths.Shapes
             P3 = p3;
 
             Area = Vector.Determinant(P1, P2, P3);
+
+            BoundingBox = CreateBoundingBox();
         }
 
         public override bool IsInside(Vector p)
@@ -31,9 +34,9 @@ namespace LSPainter.Maths.Shapes
             return Vector.Determinant(v1, v2, p) >= 0;
         }
 
-        public override BoundingBox CreateBoundingBox()
+        public Rectangle CreateBoundingBox()
         {
-            return BoundingBox.FromPointCloud(new Vector[] { P1, P2, P3 });
+            return Rectangle.FromPointCloud(new Vector[] { P1, P2, P3 });
         }
     }
 }

@@ -58,7 +58,7 @@ namespace LSPainter
         {
             this.original = original;
 
-            solverManager = new SolverManager(original, 4);
+            solverManager = new SolverManager(original, 1);
 
             frameManager = new FrameManager(windowLayout, original, solverManager.EnumerateCanvases());
 

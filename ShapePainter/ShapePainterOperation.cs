@@ -7,7 +7,7 @@ namespace LSPainter.ShapePainter
 {
     public abstract class ShapePainterOperation : CanvasOperation<ShapePainterSolution, ShapePainterScore, ShapePainterChecker>
     {
-        protected ShapePainterOperation(BoundingBox bbox) : base(bbox)
+        protected ShapePainterOperation(Rectangle bbox) : base(bbox)
         {
         }
     }
@@ -17,7 +17,7 @@ namespace LSPainter.ShapePainter
         public Shape Shape { get; }
         public Color Color { get; }
 
-        public PaintShapeOperation(Shape shape, Color color) :base(shape.CreateBoundingBox())
+        public PaintShapeOperation(Shape shape, Color color) :base(shape.BoundingBox)
         {
             Shape = shape;
             Color = color;

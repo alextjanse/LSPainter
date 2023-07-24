@@ -11,7 +11,7 @@ namespace LSPainter
         public int Height { get; protected set; }
         public (int, int) Size => (Width, Height);
         public byte[] Data { get; protected set; }
-        public BoundingBox BBox { get; }
+        public Rectangle BBox { get; }
 
         public Texture(int width, int height)
         {
@@ -20,7 +20,7 @@ namespace LSPainter
 
             Data = new byte[4 * Width * Height];
 
-            BBox = new BoundingBox(0, Width, 0, Height);
+            BBox = new Rectangle(0, Width, 0, Height);
         }
 
         public void Load()
@@ -69,7 +69,7 @@ namespace LSPainter
                 Data[index + 3]);   // A
         }
 
-        public IEnumerable<Color> EnumerateSection(BoundingBox bbox)
+        public IEnumerable<Color> EnumerateSection(Rectangle bbox)
         {
             return bbox.AsEnumerable().Select(((int x, int y) c) => GetPixel(c.x, c.y));
         }

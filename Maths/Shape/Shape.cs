@@ -1,8 +1,8 @@
 namespace LSPainter.Maths.Shapes
 {
-    public abstract class Shape
+    public abstract class Shape : IBoundable
     {
-        public abstract BoundingBox CreateBoundingBox();
+        public abstract Rectangle BoundingBox { get; }
 
         public double Area { get; protected set; }
         public abstract bool IsInside(Vector p);
