@@ -2,7 +2,7 @@ using LSPainter.LSSolver.Painter;
 using LSPainter.Maths;
 using LSPainter.Maths.Shapes;
 
-namespace LSPainter.ShapePainter.FiniteShapePainter
+namespace LSPainter.FiniteShapePainter
 {
     public class FiniteShapePainterSolution : CanvasSolution
     {

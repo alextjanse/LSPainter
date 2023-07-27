@@ -1,7 +1,7 @@
 using LSPainter.Maths;
 using LSPainter.Maths.Shapes;
 
-namespace LSPainter.ShapePainter
+namespace LSPainter.Maths.Shapes
 {
     public class ShapeGeneratorSettings : ICloneable
     {

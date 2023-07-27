@@ -1,6 +1,6 @@
 using LSPainter.LSSolver.Painter;
 using LSPainter.ShapePainter;
-using LSPainter.ShapePainter.FiniteShapePainter;
+using LSPainter.FiniteShapePainter;
 
 namespace LSPainter.LSSolver
 {

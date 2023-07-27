@@ -3,7 +3,7 @@ using LSPainter.LSSolver;
 using LSPainter.Maths.Shapes;
 using LSPainter.LSSolver.Painter;
 
-namespace LSPainter.ShapePainter.FiniteShapePainter
+namespace LSPainter.FiniteShapePainter
 {
     public class FiniteShapePainterOperationFactory : OperationFactory<FiniteShapePainterSolution, FiniteShapePainterScore, FiniteShapePainterChecker>
     {

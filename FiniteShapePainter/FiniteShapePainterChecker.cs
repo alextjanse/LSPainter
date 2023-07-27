@@ -1,6 +1,6 @@
 using LSPainter.LSSolver.Painter;
 
-namespace LSPainter.ShapePainter.FiniteShapePainter
+namespace LSPainter.FiniteShapePainter
 {
     public class FiniteShapePainterChecker : CanvasChecker<FiniteShapePainterSolution, FiniteShapePainterScore>
     {
