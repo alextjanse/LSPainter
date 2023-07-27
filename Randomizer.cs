@@ -103,7 +103,8 @@ namespace LSPainter
             return output;
         }
 
-        public static double Range(double lb, double ub)
+        public static double RandomDouble() => random.NextDouble();
+        public static double RandomDouble(double lb, double ub)
         {
             return lb + random.NextDouble() * (ub - lb);
         }
@@ -112,5 +113,9 @@ namespace LSPainter
         {
             return random.NextDouble() < p;
         }
+
+        public static int RandomInt() => random.Next();
+        public static int RandomInt(int maxValue) => random.Next(maxValue);
+        public static int RandomInt(int minValue, int maxValue) => random.Next(minValue, maxValue);
     }
 }

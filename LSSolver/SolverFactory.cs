@@ -32,7 +32,12 @@ namespace LSPainter.LSSolver
                     ShapePainterChecker checker = new ShapePainterChecker(OriginalImage);
                     ShapePainterOperationFactory factory = new ShapePainterOperationFactory(width, height);
 
-                    var solver = new Solver<ShapePainterSolution, ShapePainterScore, ShapePainterChecker>(solution, checker, new SimulatedAnnealingAlgorithm(), factory);
+                    var solver = new Solver<ShapePainterSolution, ShapePainterScore, ShapePainterChecker>(
+                        solution,
+                        checker,
+                        new SimulatedAnnealingAlgorithm(),
+                        factory
+                    );
 
                     return (ISolver<ICanvasSolution>)solver;
                 }
@@ -42,7 +47,13 @@ namespace LSPainter.LSSolver
                     FiniteShapePainterChecker checker = new FiniteShapePainterChecker(OriginalImage);
                     FiniteShapePainterOperationFactory factory = new FiniteShapePainterOperationFactory(width, height);
 
-                    var solver = new Solver<FiniteShapePainterSolution, FiniteShapePainterScore, FiniteShapePainterChecker>(solution, checker, new SimulatedAnnealingAlgorithm(), factory);
+                    var solver = new Solver<FiniteShapePainterSolution, FiniteShapePainterScore, FiniteShapePainterChecker>(
+                        solution,
+                        checker,
+                        new SimulatedAnnealingAlgorithm(),
+                        factory,
+                        new Constraint<FiniteShapePainterSolution, FiniteShapePainterScore>[] { new FiniteShapePainterConstraint(100, 1000) }
+                    );
 
                     return (ISolver<ICanvasSolution>)solver;
                 }

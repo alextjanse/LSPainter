@@ -17,7 +17,7 @@ namespace LSPainter.ShapePainter
             ColorGeneratorSettings = new ColorGeneratorSettings(255 / 10);
         }
 
-        public override Operation<ShapePainterSolution, ShapePainterScore, ShapePainterChecker> Generate()
+        public override Operation<ShapePainterSolution, ShapePainterScore, ShapePainterChecker> Generate(ShapePainterSolution solution)
         {
             Shape shape = ShapeGenerator.Generate(ShapeGeneratorSettings);
             Color color = ColorGenerator.Generate(ColorGeneratorSettings);

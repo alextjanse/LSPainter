@@ -54,11 +54,11 @@ namespace LSPainter.Maths.Shapes
             return new Vector(Math.Cos(angle), Math.Sin(angle));
         }
 
-        static LSPainter.Maths.Shapes.Triangle GenerateTriangle(ShapeGeneratorSettings settings)
+        static Triangle GenerateTriangle(ShapeGeneratorSettings settings)
         {
             Point p1 = GeneratePoint(settings);
 
-            double gamma = Randomizer.Range(0.1f, 0.9f) * Math.PI;
+            double gamma = Randomizer.RandomDouble(0.1f, 0.9f) * Math.PI;
 
             double remainder = 2 * settings.Area / Math.Sin(gamma);
 
@@ -71,7 +71,7 @@ namespace LSPainter.Maths.Shapes
             Point p2 = p1 + factors[0] * GenerateUnitVector(angle1);
             Point p3 = p1 + factors[1] * GenerateUnitVector(angle2);
 
-            return new LSPainter.Maths.Shapes.Triangle(p1, p2, p3);
+            return new Triangle(p1, p2, p3);
         }
 
         static Circle GenerateCircle(ShapeGeneratorSettings settings)

@@ -2,6 +2,7 @@ using LSPainter.Maths;
 using LSPainter.LSSolver;
 using LSPainter.Maths.Shapes;
 using LSPainter.LSSolver.Painter;
+using LSPainter.FiniteShapePainter.Operations;
 
 namespace LSPainter.FiniteShapePainter
 {
@@ -17,13 +18,23 @@ namespace LSPainter.FiniteShapePainter
             ColorGeneratorSettings = new ColorGeneratorSettings(255 / 2);
         }
 
-        public override Operation<FiniteShapePainterSolution, FiniteShapePainterScore, FiniteShapePainterChecker> Generate()
+        public override Operation<FiniteShapePainterSolution, FiniteShapePainterScore, FiniteShapePainterChecker> Generate(FiniteShapePainterSolution solution)
         {
-            Shape shape = ShapeGenerator.Generate(ShapeGeneratorSettings);
-            Color color = ColorGenerator.Generate(ColorGeneratorSettings);
+            if (solution.Shapes.Count > 0 && Randomizer.RandomBool())
+            {
+                int index = Randomizer.RandomInt(solution.Shapes.Count);
+                (Shape obj, _) = solution.Shapes[index];
 
-            // TODO: make Generate take a solution as argument
-            return new InsertNewShapeOperation(shape, color, 0);
+                return new RemoveShapeOperation(index, obj.BoundingBox);
+            }
+            else
+            {
+                Shape shape = ShapeGenerator.Generate(ShapeGeneratorSettings);
+                Color color = ColorGenerator.Generate(ColorGeneratorSettings);
+                
+                return new InsertShapeOperation(shape, color, 0);
+            }
+
         }
 
         public override void Update()
