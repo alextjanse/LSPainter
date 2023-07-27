@@ -7,7 +7,7 @@ namespace LSPainter.Maths
         Rectangle BoundingBox { get; }
     }
 
-    public class Rectangle : IEnumerable<(int, int)>
+    public class Rectangle
     {
 
         public double MinX { get; private set; }
@@ -17,6 +17,7 @@ namespace LSPainter.Maths
 
         public double Width => MaxX - MinX;
         public double Height => MaxY - MinY;
+        public double Area => Width * Height;
 
         public static Rectangle Empty => new Rectangle(double.NaN, double.NaN, double.NaN, double.NaN);
         public bool IsEmpty => MinX + MaxX + MinY + MaxY == double.NaN;
@@ -37,6 +38,9 @@ namespace LSPainter.Maths
             double xMax = Math.Min(a.MaxX, b.MaxX);
             double yMin = Math.Max(a.MinY, b.MinY);
             double yMax = Math.Min(a.MaxY, b.MaxY);
+
+            // Intersection is empty
+            if (xMin > xMax || yMin > yMax) return Rectangle.Empty;
 
             return new Rectangle(xMin, xMax, yMin, yMax);
         }
@@ -109,12 +113,7 @@ namespace LSPainter.Maths
             return new Rectangle(minX, maxX, minY, maxY);
         }
 
-        public IEnumerator GetEnumerator()
-        {
-            return this.GetEnumerator();
-        }
-
-        IEnumerator<(int, int)> IEnumerable<(int, int)>.GetEnumerator()
+        public IEnumerable<(int x, int y)> PixelCoords()
         {
             int minX = (int)Math.Floor(MinX);
             int maxX = (int)Math.Ceiling(MaxX);
@@ -129,5 +128,9 @@ namespace LSPainter.Maths
                 }
             }
         }
+
+        public (int XOffset, int YOffset) OriginOffsets => ((int)Math.Floor(MinX), (int)Math.Floor(MinY));
+        public int SectionWidth => (int)Math.Ceiling(MaxX) - (int)Math.Floor(MinX);
+        public int SectionHeight => (int)Math.Ceiling(MaxY) - (int)Math.Floor(MinY);
     }
 }

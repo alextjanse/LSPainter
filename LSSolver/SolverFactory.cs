@@ -1,11 +1,13 @@
 using LSPainter.LSSolver.Painter;
 using LSPainter.ShapePainter;
+using LSPainter.ShapePainter.FiniteShapePainter;
 
 namespace LSPainter.LSSolver
 {
     public enum SolverType
     {
-        ShapePainter
+        ShapePainter,
+        FiniteShapePainter
     }
 
     public class SolverFactory
@@ -25,6 +27,7 @@ namespace LSPainter.LSSolver
             switch (type)
             {
                 case SolverType.ShapePainter:
+                {
                     ShapePainterSolution solution = new ShapePainterSolution(new Canvas(width, height));
                     ShapePainterChecker checker = new ShapePainterChecker(OriginalImage);
                     ShapePainterOperationFactory factory = new ShapePainterOperationFactory(width, height);
@@ -32,8 +35,18 @@ namespace LSPainter.LSSolver
                     var solver = new Solver<ShapePainterSolution, ShapePainterScore, ShapePainterChecker>(solution, checker, new SimulatedAnnealingAlgorithm(), factory);
 
                     return (ISolver<ICanvasSolution>)solver;
-                default:
-                    throw new NotImplementedException();
+                }
+                case SolverType.FiniteShapePainter:
+                {
+                    FiniteShapePainterSolution solution = new FiniteShapePainterSolution(new Canvas(width, height));
+                    FiniteShapePainterChecker checker = new FiniteShapePainterChecker(OriginalImage);
+                    FiniteShapePainterOperationFactory factory = new FiniteShapePainterOperationFactory(width, height);
+
+                    var solver = new Solver<FiniteShapePainterSolution, FiniteShapePainterScore, FiniteShapePainterChecker>(solution, checker, new SimulatedAnnealingAlgorithm(), factory);
+
+                    return (ISolver<ICanvasSolution>)solver;
+                }
+                default: throw new NotImplementedException();
             }
         }
     }

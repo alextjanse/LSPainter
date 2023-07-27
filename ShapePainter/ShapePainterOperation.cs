@@ -29,7 +29,7 @@ namespace LSPainter.ShapePainter
             
             ShapePainterScore newScore = (ShapePainterScore)currentScore.Clone();
 
-            foreach ((int x, int y) in BBox.AsEnumerable())
+            foreach ((int x, int y) in BoudningBox.PixelCoords())
             {
                 if (Shape.IsInside(GetPixelVector(x, y)))
                 {
@@ -48,7 +48,7 @@ namespace LSPainter.ShapePainter
 
         public override void Apply(ShapePainterSolution solution)
         {
-            foreach ((int x, int y) in BBox.AsEnumerable<(int, int)>())
+            foreach ((int x, int y) in BoudningBox.PixelCoords())
             {
                 if (Shape.IsInside(GetPixelVector(x, y)))
                 {

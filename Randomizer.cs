@@ -30,6 +30,21 @@ namespace LSPainter
             return items[i].Item1;
         }
 
+        public static IEnumerable<T> Shuffle<T>(IEnumerable<T> items)
+        {
+            List<T> list = items.ToList();
+
+            for (int i = 0; i < list.Count; i++)
+            {
+                int j = random.Next(list.Count);
+                T temp = list[j];
+                list[j] = list[i];
+                list[i] = temp;
+            }
+
+            return list;
+        }
+
         public static double[] RandomFactors(double target, int n)
         {
             double[] output = new double[n];

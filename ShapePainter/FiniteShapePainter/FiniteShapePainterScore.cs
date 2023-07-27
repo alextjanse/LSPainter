@@ -4,7 +4,7 @@ namespace LSPainter.ShapePainter.FiniteShapePainter
 {
     public class FiniteShapePainterScore : CanvasScore<FiniteShapePainterSolution>
     {
-        public int NumberOfShapes { get; }
+        public int NumberOfShapes { get; set; }
 
         public FiniteShapePainterScore(int nShapes, long squaredPixelDiff) : base(squaredPixelDiff)
         {

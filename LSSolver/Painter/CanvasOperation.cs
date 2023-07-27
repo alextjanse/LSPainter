@@ -4,11 +4,11 @@ namespace LSPainter.LSSolver.Painter
 {
     public abstract class CanvasOperation<TSolution, TScore, TChecker> : Operation<TSolution, TScore, TChecker> where TSolution : CanvasSolution where TScore : CanvasScore<TSolution> where TChecker : CanvasChecker<TSolution, TScore>
     {
-        public Rectangle BBox { get; protected set; }
+        public Rectangle BoudningBox { get; protected set; }
 
-        public CanvasOperation(Rectangle bbox)
+        public CanvasOperation(Rectangle boundingBox)
         {
-            BBox = bbox;
+            BoudningBox = boundingBox;
         }
         
         public Vector GetPixelVector(int x, int y)
@@ -18,7 +18,7 @@ namespace LSPainter.LSSolver.Painter
 
         protected void TrimToCanvas(TChecker checker)
         {
-            BBox = Rectangle.Intersect(BBox, checker.OriginalImage.BBox);
+            BoudningBox = Rectangle.Intersect(BoudningBox, checker.OriginalImage.BBox);
         }
     }
 }

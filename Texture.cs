@@ -71,7 +71,7 @@ namespace LSPainter
 
         public IEnumerable<Color> EnumerateSection(Rectangle bbox)
         {
-            return bbox.AsEnumerable().Select(((int x, int y) c) => GetPixel(c.x, c.y));
+            return bbox.PixelCoords().Select(((int x, int y) c) => GetPixel(c.x, c.y));
         }
 
         IEnumerator<Color> IEnumerable<Color>.GetEnumerator()
