@@ -33,7 +33,7 @@ namespace LSPainter.FiniteShapePainter.Operations
 
             DrawShapeOnSection(ref section, Shape, Color);
 
-            for (int i = Index; i < solution.Shapes.Count; i++)
+            for (int i = Index; i < solution.NumberOfShapes; i++)
             {
                 (Shape shape, Color color) = solution.Shapes[i];
 

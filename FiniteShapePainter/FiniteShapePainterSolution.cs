@@ -6,6 +6,7 @@ namespace LSPainter.FiniteShapePainter
     public class FiniteShapePainterSolution : CanvasSolution
     {
         public List<(Shape shape, Color color)> Shapes;
+        public int NumberOfShapes => Shapes.Count;
 
         public FiniteShapePainterSolution(Canvas canvas) : base(canvas)
         {

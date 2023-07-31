@@ -10,7 +10,7 @@ namespace LSPainter.FiniteShapePainter
 
         public override FiniteShapePainterScore ScoreSolution(FiniteShapePainterSolution solution)
         {
-            int n = solution.Shapes.Count;
+            int n = solution.NumberOfShapes;
             long pixelScore = GetTotalPixelScore(solution);
 
             return new FiniteShapePainterScore(n, pixelScore);
