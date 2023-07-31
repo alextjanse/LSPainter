@@ -1,6 +1,5 @@
 using LSPainter.Maths;
 using LSPainter.LSSolver;
-using LSPainter.Maths.Shapes;
 using LSPainter.LSSolver.Painter;
 using LSPainter.FiniteShapePainter.Operations;
 
@@ -26,6 +25,7 @@ namespace LSPainter.FiniteShapePainter
                 (GenerateRemoveOperation, 1f),
                 (GenerateReplaceOperation, 1f),
                 (GenerateRecolorOperation, 1f),
+                (GenerateTranslateOperation, 1f),
             };
 
             FiniteShapePainterOperation? operation = null;
@@ -79,6 +79,26 @@ namespace LSPainter.FiniteShapePainter
             Color blendColor = ColorGenerator.Generate(ColorGeneratorSettings);
 
             return new RecolorOperation(index, blendColor, shape.BoundingBox);
+        }
+
+        FiniteShapePainterOperation? GenerateTranslateOperation(FiniteShapePainterSolution solution)
+        {
+            if (solution.Shapes.Count == 0) return null;
+
+            int index = Randomizer.RandomInt(solution.Shapes.Count);
+
+            (Shape s, _) = solution.Shapes[index];
+
+            double angle = Randomizer.RandomAngle();
+            double magnitude = Randomizer.RandomDouble(0, 100);
+
+            Vector translation = ShapeGenerator.GenerateUnitVector(angle) * magnitude;
+
+            Rectangle newBoundingBox = (Rectangle)s.BoundingBox.Clone();
+            newBoundingBox.Translate(translation);
+            Rectangle union = Rectangle.Union(s.BoundingBox, newBoundingBox);
+
+            return new TranslateOperation(index, translation, union);
         }
 
         public override void Update()

@@ -1,13 +1,11 @@
-using LSPainter.Maths;
-
-namespace LSPainter.Maths.Shapes
+namespace LSPainter.Maths
 {
     public class Circle : Shape
     {
-        public override Rectangle BoundingBox { get; }
+        public override Rectangle BoundingBox { get; protected set; }
 
-        public Vector Origin { get; }
-        public double Radius { get; }
+        public Vector Origin { get; set; }
+        public double Radius { get; set; }
 
         public Circle(Vector origin, double radius)
         {
@@ -24,7 +22,7 @@ namespace LSPainter.Maths.Shapes
             return (p - Origin).Length <= Radius;
         }
 
-        public Rectangle CreateBoundingBox()
+        Rectangle CreateBoundingBox()
         {
             double minX = Math.Floor(Origin.X - Radius);
             double maxX = Math.Ceiling(Origin.X + Radius);
@@ -32,6 +30,18 @@ namespace LSPainter.Maths.Shapes
             double maxY = Math.Ceiling(Origin.Y + Radius);
 
             return new Rectangle(minX, maxX, minY, maxY);
+        }
+
+        public override void Translate(Vector translation)
+        {
+            Origin += translation;
+
+            BoundingBox = CreateBoundingBox();
+        }
+
+        public override object Clone()
+        {
+            return new Circle((Vector)Origin.Clone(), Radius);
         }
     }
 }

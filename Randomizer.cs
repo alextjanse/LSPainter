@@ -108,6 +108,7 @@ namespace LSPainter
         {
             return lb + random.NextDouble() * (ub - lb);
         }
+        public static double RandomAngle() => random.NextDouble() * 2 * Math.PI;
 
         public static bool RandomBool(double p = 0.5)
         {

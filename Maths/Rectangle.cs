@@ -1,5 +1,3 @@
-using System.Collections;
-
 namespace LSPainter.Maths
 {
     public interface IBoundable
@@ -7,7 +5,7 @@ namespace LSPainter.Maths
         Rectangle BoundingBox { get; }
     }
 
-    public class Rectangle
+    public class Rectangle : Shape
     {
 
         public double MinX { get; private set; }
@@ -17,7 +15,6 @@ namespace LSPainter.Maths
 
         public double Width => MaxX - MinX;
         public double Height => MaxY - MinY;
-        public double Area => Width * Height;
 
         public static Rectangle Empty => new Rectangle(double.NaN, double.NaN, double.NaN, double.NaN);
         public bool IsEmpty => MinX + MaxX + MinY + MaxY == double.NaN;
@@ -28,6 +25,9 @@ namespace LSPainter.Maths
             MaxX = maxX;
             MinY = minY;
             MaxY = maxY;
+
+            Area = Width * Height;
+            BoundingBox = this;
         }
 
         public static Rectangle Intersect(Rectangle a, Rectangle b)
@@ -132,5 +132,42 @@ namespace LSPainter.Maths
         public (int XOffset, int YOffset) OriginOffsets => ((int)Math.Floor(MinX), (int)Math.Floor(MinY));
         public int SectionWidth => (int)Math.Ceiling(MaxX) - (int)Math.Floor(MinX);
         public int SectionHeight => (int)Math.Ceiling(MaxY) - (int)Math.Floor(MinY);
+
+        public override Rectangle BoundingBox
+        {
+            get
+            {
+                return this;
+            }
+            protected set
+            {
+                MinX = value.MinX;
+                MaxX = value.MaxX;
+                MinY = value.MinY;
+                MaxY = value.MaxY;
+                Area = value.Area;
+            }
+        }
+
+        public override object Clone()
+        {
+            return new Rectangle(MinX, MaxX, MinY, MaxY);
+        }
+
+        public override bool IsInside(Vector p)
+        {
+            return (
+                MinX <= p.X && p.X <= MaxX &&
+                MinY <= p.Y && p.Y <= MaxY
+            );
+        }
+
+        public override void Translate(Vector translation)
+        {
+            MinX += translation.X;
+            MaxX += translation.X;
+            MinY += translation.Y;
+            MaxY += translation.Y;
+        }
     }
 }

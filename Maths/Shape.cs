@@ -1,8 +1,8 @@
-namespace LSPainter.Maths.Shapes
+namespace LSPainter.Maths
 {
-    public abstract class Shape : IBoundable
+    public abstract class Shape : IBoundable, ICloneable
     {
-        public abstract Rectangle BoundingBox { get; }
+        public abstract Rectangle BoundingBox { get; protected set; }
 
         public double Area { get; protected set; }
         public abstract bool IsInside(Vector p);
@@ -12,5 +12,9 @@ namespace LSPainter.Maths.Shapes
 
             return IsInside(p);
         }
+
+        public abstract void Translate(Vector translation);
+
+        public abstract object Clone();
     }
 }

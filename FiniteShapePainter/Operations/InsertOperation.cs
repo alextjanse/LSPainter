@@ -1,4 +1,4 @@
-using LSPainter.Maths.Shapes;
+using LSPainter.Maths;
 
 namespace LSPainter.FiniteShapePainter.Operations
 {
