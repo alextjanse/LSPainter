@@ -22,32 +22,32 @@ namespace LSPainter.FiniteShapePainter.Operations
 
             Color[,] section = new Color[BoudningBox.SectionWidth, BoudningBox.SectionHeight];
 
-            (Shape shape1, Color color1) = solution.Shapes[Index1];
-            (Shape shape2, Color color2) = solution.Shapes[Index2];
+            (Shape, Color) obj1 = solution.Shapes[Index1];
+            (Shape, Color) obj2 = solution.Shapes[Index2];
 
             for (int i = 0; i < Index1; i++)
             {
-                (Shape shape, Color color) = solution.Shapes[i];
+                (Shape, Color) obj = solution.Shapes[i];
 
-                DrawShapeOnSection(ref section, shape, color);
+                DrawShapeOnSection(ref section, obj);
             }
 
-            DrawShapeOnSection(ref section, shape2, color2);
+            DrawShapeOnSection(ref section, obj2);
 
             for (int i = Index1 + 1; i < Index2; i++)
             {
-                (Shape shape, Color color) = solution.Shapes[i];
+                (Shape, Color) obj = solution.Shapes[i];
 
-                DrawShapeOnSection(ref section, shape, color);
+                DrawShapeOnSection(ref section, obj);
             }
 
-            DrawShapeOnSection(ref section, shape1, color1);
+            DrawShapeOnSection(ref section, obj1);
 
             for (int i = Index2 + 1; i < solution.NumberOfShapes; i++)
             {
-                (Shape shape, Color color) = solution.Shapes[i];
+                (Shape, Color) obj = solution.Shapes[i];
 
-                DrawShapeOnSection(ref section, shape, color);
+                DrawShapeOnSection(ref section, obj);
             }
 
             long pixelScoreDiff = GetSectionScoreDiff(section, minX, minY, solution, checker);

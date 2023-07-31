@@ -8,6 +8,8 @@ namespace LSPainter.Maths
     public class Rectangle : Shape
     {
 
+        public static Rectangle Empty => new Rectangle(double.NaN, double.NaN, double.NaN, double.NaN);
+
         public double MinX { get; private set; }
         public double MinY { get; private set; }
         public double MaxX { get; private set; }
@@ -16,8 +18,25 @@ namespace LSPainter.Maths
         public double Width => MaxX - MinX;
         public double Height => MaxY - MinY;
 
-        public static Rectangle Empty => new Rectangle(double.NaN, double.NaN, double.NaN, double.NaN);
         public bool IsEmpty => MinX + MaxX + MinY + MaxY == double.NaN;
+
+        public override Rectangle BoundingBox
+        {
+            get
+            {
+                return this;
+            }
+            protected set
+            {
+                MinX = value.MinX;
+                MaxX = value.MaxX;
+                MinY = value.MinY;
+                MaxY = value.MaxY;
+                Area = value.Area;
+            }
+        }
+
+        public override Vector Centroid => new Vector(MinX + (MaxX - MinX) / 2, MinY + (MaxY - MinY) / 2);
 
         public Rectangle(double minX, double maxX, double minY, double maxY)
         {
@@ -28,6 +47,24 @@ namespace LSPainter.Maths
 
             Area = Width * Height;
             BoundingBox = this;
+        }
+
+        public static Rectangle FromPointCloud(IEnumerable<Vector> points)
+        {
+            double minX = double.PositiveInfinity;
+            double maxX = double.NegativeInfinity;
+            double minY = double.PositiveInfinity;
+            double maxY = double.NegativeInfinity;
+
+            foreach (Vector v in points)
+            {
+                minX = Math.Min(minX, v.X);
+                maxX = Math.Max(maxX, v.X);
+                minY = Math.Min(minY, v.Y);
+                maxY = Math.Max(maxY, v.Y);
+            }
+
+            return new Rectangle(minX, maxX, minY, maxY);
         }
 
         public static Rectangle Intersect(Rectangle a, Rectangle b)
@@ -95,24 +132,6 @@ namespace LSPainter.Maths
             double maxY = Math.Max(MaxY, other.MaxY);
         }
 
-        public static Rectangle FromPointCloud(IEnumerable<Vector> points)
-        {
-            double minX = double.PositiveInfinity;
-            double maxX = double.NegativeInfinity;
-            double minY = double.PositiveInfinity;
-            double maxY = double.NegativeInfinity;
-
-            foreach (Vector v in points)
-            {
-                minX = Math.Min(minX, v.X);
-                maxX = Math.Max(maxX, v.X);
-                minY = Math.Min(minY, v.Y);
-                maxY = Math.Max(maxY, v.Y);
-            }
-
-            return new Rectangle(minX, maxX, minY, maxY);
-        }
-
         public IEnumerable<(int x, int y)> PixelCoords()
         {
             int minX = (int)Math.Floor(MinX);
@@ -133,22 +152,6 @@ namespace LSPainter.Maths
         public int SectionWidth => (int)Math.Ceiling(MaxX) - (int)Math.Floor(MinX);
         public int SectionHeight => (int)Math.Ceiling(MaxY) - (int)Math.Floor(MinY);
 
-        public override Rectangle BoundingBox
-        {
-            get
-            {
-                return this;
-            }
-            protected set
-            {
-                MinX = value.MinX;
-                MaxX = value.MaxX;
-                MinY = value.MinY;
-                MaxY = value.MaxY;
-                Area = value.Area;
-            }
-        }
-
         public override object Clone()
         {
             return new Rectangle(MinX, MaxX, MinY, MaxY);
@@ -168,6 +171,21 @@ namespace LSPainter.Maths
             MaxX += translation.X;
             MinY += translation.Y;
             MaxY += translation.Y;
+        }
+
+        public override void Resize(double scale)
+        {
+            Vector centroid = Centroid;
+
+            double newWidth = Width * scale;
+            double newHeight = Height * scale;
+
+            MinX = centroid.X - newWidth / 2;
+            MaxX = centroid.X + newWidth / 2;
+            MinY = centroid.Y - newHeight / 2;
+            MaxY = centroid.Y + newHeight / 2;
+
+            Area = newWidth * newHeight;
         }
     }
 }

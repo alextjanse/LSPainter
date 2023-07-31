@@ -24,22 +24,22 @@ namespace LSPainter.FiniteShapePainter.Operations
 
             for (int i = 0; i < Index; i++)
             {
-                (Shape shape, Color color) = solution.Shapes[i];
+                (Shape, Color) obj = solution.Shapes[i];
 
-                DrawShapeOnSection(ref section, shape, color);
+                DrawShapeOnSection(ref section, obj);
             }
 
             (Shape s, Color c) = solution.Shapes[Index];
 
             Color newColor = Color.Blend(c, Color);
 
-            DrawShapeOnSection(ref section, s, newColor);
+            DrawShapeOnSection(ref section, (s, newColor));
 
             for (int i = Index + 1; i < solution.NumberOfShapes; i++)
             {
-                (Shape shape, Color color) = solution.Shapes[i];
+                (Shape, Color) obj = solution.Shapes[i];
 
-                DrawShapeOnSection(ref section, shape, color);
+                DrawShapeOnSection(ref section, obj);
             }
 
             long pixelScoreDiff = GetSectionScoreDiff(section, minX, minY, solution, checker);

@@ -17,8 +17,10 @@ namespace LSPainter.FiniteShapePainter
 
         public abstract override FiniteShapePainterScore Try(FiniteShapePainterSolution solution, FiniteShapePainterScore currentScore, FiniteShapePainterChecker checker);
 
-        protected void DrawShapeOnSection(ref Color[,] section, Shape shape, Color color)
+        protected void DrawShapeOnSection(ref Color[,] section, (Shape, Color) obj)
         {
+            (Shape shape, Color color) = obj;
+
             Rectangle intersection = Rectangle.Intersect(BoudningBox, shape.BoundingBox);
 
             if (intersection.IsEmpty) return;

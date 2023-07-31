@@ -2,10 +2,11 @@ namespace LSPainter.Maths
 {
     public class Circle : Shape
     {
-        public override Rectangle BoundingBox { get; protected set; }
-
         public Vector Origin { get; set; }
         public double Radius { get; set; }
+
+        public override Rectangle BoundingBox { get; protected set; }
+        public override Vector Centroid => Origin;
 
         public Circle(Vector origin, double radius)
         {
@@ -35,6 +36,15 @@ namespace LSPainter.Maths
         public override void Translate(Vector translation)
         {
             Origin += translation;
+
+            BoundingBox = CreateBoundingBox();
+        }
+
+        public override void Resize(double scale)
+        {
+            Radius *= scale;
+
+            Area = Math.PI * Radius * Radius;
 
             BoundingBox = CreateBoundingBox();
         }

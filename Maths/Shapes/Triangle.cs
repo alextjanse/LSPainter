@@ -2,10 +2,12 @@ namespace LSPainter.Maths
 {
     public class Triangle : Shape
     {
-        public override Rectangle BoundingBox { get; protected set; }
         public Vector P1 { get; private set; }
         public Vector P2 { get; private set; }
         public Vector P3 { get; private set; }
+
+        public override Rectangle BoundingBox { get; protected set; }
+        public override Vector Centroid => (P1 + P2 + P3) * (1.0 / 3.0);
 
         public Triangle(Vector p1, Vector p2, Vector p3)
         {
@@ -47,6 +49,25 @@ namespace LSPainter.Maths
             P1 += translation;
             P2 += translation;
             P3 += translation;
+
+            SetProperties();
+        }
+
+        public override void Resize(double scale)
+        {
+            Vector centroid = Centroid;
+
+            Vector p1c = P1 - centroid;
+            Vector p2c = P2 - centroid;
+            Vector p3c = P3 - centroid;
+
+            p1c *= scale;
+            p2c *= scale;
+            p3c *= scale;
+
+            P1 = centroid + p1c;
+            P2 = centroid + p2c;
+            P3 = centroid + p3c;
 
             SetProperties();
         }

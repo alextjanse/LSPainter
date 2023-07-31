@@ -5,7 +5,7 @@ namespace LSPainter.FiniteShapePainter
 {
     public class FiniteShapePainterSolution : CanvasSolution
     {
-        public List<(Shape shape, Color color)> Shapes;
+        public List<(Shape, Color)> Shapes;
         public int NumberOfShapes => Shapes.Count;
 
         public FiniteShapePainterSolution(Canvas canvas) : base(canvas)
@@ -23,9 +23,9 @@ namespace LSPainter.FiniteShapePainter
             return new FiniteShapePainterSolution((Canvas)Canvas.Clone(), Shapes);
         }
 
-        public void InsertShape(Shape shape, Color color, int index)
+        public void InsertShape((Shape, Color) obj, int index)
         {
-            Shapes.Insert(index, (shape, color));
+            Shapes.Insert(index, obj);
         }
 
         public void RemoveAt(int index)
@@ -35,7 +35,7 @@ namespace LSPainter.FiniteShapePainter
 
         public void DrawSection(Rectangle section)
         {
-            IEnumerable<(Shape, Color)> intersectingShapes = Shapes.Where(item => item.shape.BoundingBox.Overlaps(section));
+            IEnumerable<(Shape, Color)> intersectingShapes = Shapes.Where(obj => obj.Item1.BoundingBox.Overlaps(section));
 
             foreach ((int x, int y) in section.PixelCoords())
             {

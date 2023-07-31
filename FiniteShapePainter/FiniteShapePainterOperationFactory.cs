@@ -17,7 +17,7 @@ namespace LSPainter.FiniteShapePainter
             ColorPalette = colorPalette;
             
             ShapeGeneratorSettings = new ShapeGeneratorSettings(0, canvasWidth, 0, canvasHeight, 400);
-            ColorGeneratorSettings = new ColorGeneratorSettings(255 / 2);
+            ColorGeneratorSettings = new ColorGeneratorSettings(50);
         }
 
         public override Operation<FiniteShapePainterSolution, FiniteShapePainterScore, FiniteShapePainterChecker> Generate(FiniteShapePainterSolution solution)
@@ -30,7 +30,7 @@ namespace LSPainter.FiniteShapePainter
                 (GenerateRecolorOperation, 10f),
                 (GenerateTranslateOperation, 4f),
                 (GenerateReorderOperation, 2f),
-
+                (GenerateResizeOperation, 4f),
             };
 
             FiniteShapePainterOperation? operation = null;
@@ -48,8 +48,8 @@ namespace LSPainter.FiniteShapePainter
         FiniteShapePainterOperation? GenerateInsertOperation(FiniteShapePainterSolution solution)
         {
             Shape shape = ShapeGenerator.Generate(ShapeGeneratorSettings);
-            Color color = ColorGenerator.Generate(ColorGeneratorSettings);
-            // Color color = Randomizer.PickRandomly<Color>(ColorPalette.Colors);
+            // Color color = ColorGenerator.Generate(ColorGeneratorSettings);
+            Color color = Randomizer.PickRandomly<Color>(ColorPalette.Colors);
             int index = Randomizer.RandomInt(solution.NumberOfShapes);
 
             return new InsertOperation(shape, color, index);
@@ -70,11 +70,15 @@ namespace LSPainter.FiniteShapePainter
             if (solution.NumberOfShapes == 0) return null;
 
             Shape shape = ShapeGenerator.Generate(ShapeGeneratorSettings);
-            Color color = ColorGenerator.Generate(ColorGeneratorSettings);
-            // Color color = Randomizer.PickRandomly<Color>(ColorPalette.Colors);
+            // Color color = ColorGenerator.Generate(ColorGeneratorSettings);
+            Color color = Randomizer.PickRandomly<Color>(ColorPalette.Colors);
             int index = Randomizer.RandomInt(solution.NumberOfShapes);
 
-            return new ReplaceOperation(shape, color, solution.Shapes[index].shape, index);
+            (Shape currentShape, Color currentColor) = solution.Shapes[index];
+
+            Rectangle union = Rectangle.Union(currentShape.BoundingBox, shape.BoundingBox);
+
+            return new ReplaceOperation(shape, color, union, index);
         }
 
         FiniteShapePainterOperation? GenerateRecolorOperation(FiniteShapePainterSolution solution)
@@ -112,8 +116,8 @@ namespace LSPainter.FiniteShapePainter
         {
             if (solution.NumberOfShapes < 2) return null;
 
-            int index1 = Randomizer.RandomInt(solution.NumberOfShapes - 2);
-            int index2 = Randomizer.RandomInt(index1 + 1, solution.NumberOfShapes - 1);
+            int index1 = Randomizer.RandomInt(solution.NumberOfShapes - 1);
+            int index2 = Randomizer.RandomInt(index1 + 1, solution.NumberOfShapes);
 
             (Shape shape1, Color color1) = solution.Shapes[index1];
             (Shape shape2, Color color2) = solution.Shapes[index2];
@@ -121,6 +125,23 @@ namespace LSPainter.FiniteShapePainter
             Rectangle union = Rectangle.Union(shape1.BoundingBox, shape2.BoundingBox);
 
             return new ReorderOperation(index1, index2, union);
+        }
+
+        FiniteShapePainterOperation? GenerateResizeOperation(FiniteShapePainterSolution solution)
+        {
+            if (solution.NumberOfShapes == 0) return null;
+
+            int index = Randomizer.RandomInt(solution.NumberOfShapes);
+            (Shape shape, _) = solution.Shapes[index];
+
+            double scale = Randomizer.RandomDouble(0, 2);
+
+            Rectangle resized = (Rectangle)shape.BoundingBox.Clone();
+            resized.Resize(scale);
+
+            Rectangle union = Rectangle.Union(resized, shape.BoundingBox);
+
+            return new ResizeOperation(index, scale, union);
         }
 
         public override void Update()

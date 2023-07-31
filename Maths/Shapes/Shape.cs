@@ -3,6 +3,7 @@ namespace LSPainter.Maths
     public abstract class Shape : IBoundable, ICloneable
     {
         public abstract Rectangle BoundingBox { get; protected set; }
+        public abstract Vector Centroid { get; }
 
         public double Area { get; protected set; }
         public abstract bool IsInside(Vector p);
@@ -14,6 +15,7 @@ namespace LSPainter.Maths
         }
 
         public abstract void Translate(Vector translation);
+        public abstract void Resize(double scale);
 
         public abstract object Clone();
     }
