@@ -45,8 +45,8 @@ namespace LSPainter.FiniteShapePainter
                     int xIndex = minX + x;
                     int yIndex = minY + y;
 
-                    pixelScoreDiff += checker.GetPixelScore(xIndex, yIndex, solution.Canvas.GetPixel(xIndex, yIndex))
-                                    - checker.GetPixelScore(xIndex, yIndex, section[x, y]);
+                    pixelScoreDiff += checker.GetPixelScore(xIndex, yIndex, section[x, y])
+                                    - checker.GetPixelScore(xIndex, yIndex, solution.Canvas.GetPixel(xIndex, yIndex));
                 }
             }
 

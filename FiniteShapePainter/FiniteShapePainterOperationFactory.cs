@@ -16,7 +16,7 @@ namespace LSPainter.FiniteShapePainter
         {
             ColorPalette = colorPalette;
             
-            ShapeGeneratorSettings = new ShapeGeneratorSettings(0, canvasWidth, 0, canvasHeight, 0.2 * canvasWidth * canvasHeight);
+            ShapeGeneratorSettings = new ShapeGeneratorSettings(0, canvasWidth, 0, canvasHeight, 400);
             ColorGeneratorSettings = new ColorGeneratorSettings(255 / 2);
         }
 
