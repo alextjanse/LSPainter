@@ -13,7 +13,7 @@ namespace LSPainter.ShapePainter
 
         public ShapePainterOperationFactory(int canvasWidth, int canvasHeight)
         {
-            ShapeGeneratorSettings = new ShapeGeneratorSettings(0, canvasWidth, 0, canvasHeight, 50);
+            ShapeGeneratorSettings = new ShapeGeneratorSettings(0, canvasWidth, 0, canvasHeight, 1000);
             ColorGeneratorSettings = new ColorGeneratorSettings(255 / 10);
         }
 
@@ -27,7 +27,7 @@ namespace LSPainter.ShapePainter
 
         public override void Update()
         {
-            ShapeGeneratorSettings.Area *= Alpha;
+            ShapeGeneratorSettings.MaxArea *= Alpha;
 
             ColorGeneratorSettings.Alpha *= Alpha;
         }

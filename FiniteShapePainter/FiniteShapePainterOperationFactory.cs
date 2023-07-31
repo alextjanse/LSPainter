@@ -20,26 +20,70 @@ namespace LSPainter.FiniteShapePainter
 
         public override Operation<FiniteShapePainterSolution, FiniteShapePainterScore, FiniteShapePainterChecker> Generate(FiniteShapePainterSolution solution)
         {
-            if (solution.Shapes.Count > 0 && Randomizer.RandomBool())
+            (Func<FiniteShapePainterSolution, FiniteShapePainterOperation?>, float)[] generators = new (Func<FiniteShapePainterSolution, FiniteShapePainterOperation?>, float)[]
             {
-                int index = Randomizer.RandomInt(solution.Shapes.Count);
-                (Shape obj, _) = solution.Shapes[index];
+                (GenerateInsertOperation, 1f),
+                (GenerateRemoveOperation, 1f),
+                (GenerateReplaceOperation, 1f),
+                (GenerateRecolorOperation, 1f),
+            };
 
-                return new RemoveShapeOperation(index, obj.BoundingBox);
-            }
-            else
+            FiniteShapePainterOperation? operation = null;
+
+            while (operation == null)
             {
-                Shape shape = ShapeGenerator.Generate(ShapeGeneratorSettings);
-                Color color = ColorGenerator.Generate(ColorGeneratorSettings);
+                var generator = Randomizer.PickRandomly(generators);
                 
-                return new InsertShapeOperation(shape, color, 0);
+                operation = generator(solution);
             }
 
+            return operation;
+        }
+
+        FiniteShapePainterOperation? GenerateInsertOperation(FiniteShapePainterSolution solution)
+        {
+            Shape shape = ShapeGenerator.Generate(ShapeGeneratorSettings);
+            Color color = ColorGenerator.Generate(ColorGeneratorSettings);
+            int index = Randomizer.RandomInt(solution.Shapes.Count);
+
+            return new InsertOperation(shape, color, index);
+        }
+
+        FiniteShapePainterOperation? GenerateRemoveOperation(FiniteShapePainterSolution solution)
+        {
+            if (solution.Shapes.Count == 0) return null;
+
+            int index = Randomizer.RandomInt(solution.Shapes.Count);
+            (Shape shape, _) = solution.Shapes[index];
+
+            return new RemoveOperation(index, shape.BoundingBox);
+        }
+
+        FiniteShapePainterOperation? GenerateReplaceOperation(FiniteShapePainterSolution solution)
+        {
+            if (solution.Shapes.Count == 0) return null;
+
+            Shape shape = ShapeGenerator.Generate(ShapeGeneratorSettings);
+            Color color = ColorGenerator.Generate(ColorGeneratorSettings);
+            int index = Randomizer.RandomInt(solution.Shapes.Count);
+
+            return new ReplaceOperation(shape, color, solution.Shapes[index].shape, index);
+        }
+
+        FiniteShapePainterOperation? GenerateRecolorOperation(FiniteShapePainterSolution solution)
+        {
+            if (solution.Shapes.Count == 0) return null;
+
+            int index = Randomizer.RandomInt(solution.Shapes.Count);
+            (Shape shape, _) = solution.Shapes[index];
+            Color blendColor = ColorGenerator.Generate(ColorGeneratorSettings);
+
+            return new RecolorOperation(index, blendColor, shape.BoundingBox);
         }
 
         public override void Update()
         {
-            ShapeGeneratorSettings.Area *= Alpha;
+            ShapeGeneratorSettings.MaxArea *= Alpha;
             ColorGeneratorSettings.Alpha *= Alpha;
         }
     }

@@ -1,14 +1,18 @@
-using LSPainter.Maths.Shapes;
 using LSPainter.Maths;
+using LSPainter.Maths.Shapes;
 
 namespace LSPainter.FiniteShapePainter.Operations
 {
-    public class RemoveShapeOperation : FiniteShapePainterOperation
+    public class ReplaceOperation : FiniteShapePainterOperation
     {
+        public Shape Shape { get; }
+        public Color Color { get; }
         public int Index { get; }
 
-        public RemoveShapeOperation(int index, Rectangle boundingBox) : base(boundingBox)
+        public ReplaceOperation(Shape shape, Color color, Shape currentShape, int index) : base(Rectangle.Union(shape.BoundingBox, currentShape.BoundingBox))
         {
+            Shape = shape;
+            Color = color;
             Index = index;
         }
 
@@ -28,6 +32,8 @@ namespace LSPainter.FiniteShapePainter.Operations
                 DrawShapeOnSection(ref section, shape, color);
             }
 
+            DrawShapeOnSection(ref section, Shape, Color);
+
             for (int i = Index + 1; i < solution.Shapes.Count; i++)
             {
                 (Shape shape, Color color) = solution.Shapes[i];
@@ -39,7 +45,7 @@ namespace LSPainter.FiniteShapePainter.Operations
 
             FiniteShapePainterScore newScore = (FiniteShapePainterScore)currentScore.Clone();
 
-            newScore.NumberOfShapes--;
+            newScore.NumberOfShapes++;
             newScore.SquaredPixelDiff += pixelScoreDiff;
 
             return newScore;
@@ -48,6 +54,7 @@ namespace LSPainter.FiniteShapePainter.Operations
         public override void Apply(FiniteShapePainterSolution solution)
         {
             solution.RemoveAt(Index);
+            solution.InsertShape(Shape, Color, Index);
 
             solution.DrawSection(BoudningBox);
         }

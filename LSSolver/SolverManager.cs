@@ -19,7 +19,7 @@ namespace LSPainter.LSSolver
 
             for (int i = 0; i < n; i++)
             {
-                CanvasSolvers.Add(factory.CreateCanvasSolver((i & 1) == 1 ? SolverType.ShapePainter : SolverType.FiniteShapePainter));
+                CanvasSolvers.Add(factory.CreateCanvasSolver(SolverType.FiniteShapePainter));
             }
         }
 

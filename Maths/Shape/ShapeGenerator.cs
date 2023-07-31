@@ -9,20 +9,20 @@ namespace LSPainter.Maths.Shapes
         public double MaxX { get; set; }
         public double MinY { get; set; }
         public double MaxY { get; set; }
-        public double Area { get; set; }
+        public double MaxArea { get; set; }
 
-        public ShapeGeneratorSettings(double minX, double maxX, double minY, double maxY, double area)
+        public ShapeGeneratorSettings(double minX, double maxX, double minY, double maxY, double maxArea)
         {
             MinX = minX;
             MaxX = maxX;
             MinY = minY;
             MaxY = maxY;
-            Area = area;
+            MaxArea = maxArea;
         }
 
         public object Clone()
         {
-            return new ShapeGeneratorSettings(MinX, MaxX, MinY, MaxY, Area);
+            return new ShapeGeneratorSettings(MinX, MaxX, MinY, MaxY, MaxArea);
         }
     }
 
@@ -56,11 +56,13 @@ namespace LSPainter.Maths.Shapes
 
         static Triangle GenerateTriangle(ShapeGeneratorSettings settings)
         {
-            Point p1 = GeneratePoint(settings);
+            double area = GenerateArea(settings);
 
+            Point p1 = GeneratePoint(settings);
+            
             double gamma = Randomizer.RandomDouble(0.1f, 0.9f) * Math.PI;
 
-            double remainder = 2 * settings.Area / Math.Sin(gamma);
+            double remainder = 2 * area / Math.Sin(gamma);
 
             // Lengths a and b of the triangle
             double[] factors = Randomizer.RandomFactors(remainder, 2);
@@ -77,10 +79,16 @@ namespace LSPainter.Maths.Shapes
         static Circle GenerateCircle(ShapeGeneratorSettings settings)
         {
             Point origin = GeneratePoint(settings);
+            double area = GenerateArea(settings);
 
-            double radius = Math.Sqrt(settings.Area / Math.PI);
+            double radius = Math.Sqrt(area / Math.PI);
 
             return new Circle(origin, radius);
+        }
+
+        static double GenerateArea(ShapeGeneratorSettings settings)
+        {
+            return Randomizer.RandomDouble() * settings.MaxArea;
         }
     }
 }
