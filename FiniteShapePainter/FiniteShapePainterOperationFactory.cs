@@ -9,10 +9,13 @@ namespace LSPainter.FiniteShapePainter
     {
         public ShapeGeneratorSettings ShapeGeneratorSettings { get; }
         public ColorGeneratorSettings ColorGeneratorSettings { get; }
+        public ColorPalette ColorPalette { get; }
         public double Alpha = 1;
 
-        public FiniteShapePainterOperationFactory(int canvasWidth, int canvasHeight)
+        public FiniteShapePainterOperationFactory(int canvasWidth, int canvasHeight, ColorPalette colorPalette)
         {
+            ColorPalette = colorPalette;
+            
             ShapeGeneratorSettings = new ShapeGeneratorSettings(0, canvasWidth, 0, canvasHeight, 0.2 * canvasWidth * canvasHeight);
             ColorGeneratorSettings = new ColorGeneratorSettings(255 / 2);
         }
@@ -21,11 +24,11 @@ namespace LSPainter.FiniteShapePainter
         {
             (Func<FiniteShapePainterSolution, FiniteShapePainterOperation?>, float)[] generators = new (Func<FiniteShapePainterSolution, FiniteShapePainterOperation?>, float)[]
             {
-                (GenerateInsertOperation, 1f),
+                (GenerateInsertOperation, 4f),
                 (GenerateRemoveOperation, 1f),
                 (GenerateReplaceOperation, 1f),
-                (GenerateRecolorOperation, 1f),
-                (GenerateTranslateOperation, 1f),
+                (GenerateRecolorOperation, 4f),
+                (GenerateTranslateOperation, 4f),
             };
 
             FiniteShapePainterOperation? operation = null;
@@ -43,7 +46,7 @@ namespace LSPainter.FiniteShapePainter
         FiniteShapePainterOperation? GenerateInsertOperation(FiniteShapePainterSolution solution)
         {
             Shape shape = ShapeGenerator.Generate(ShapeGeneratorSettings);
-            Color color = ColorGenerator.Generate(ColorGeneratorSettings);
+            Color color = Randomizer.PickRandomly<Color>(ColorPalette.Colors);
             int index = Randomizer.RandomInt(solution.Shapes.Count);
 
             return new InsertOperation(shape, color, index);
@@ -64,7 +67,7 @@ namespace LSPainter.FiniteShapePainter
             if (solution.Shapes.Count == 0) return null;
 
             Shape shape = ShapeGenerator.Generate(ShapeGeneratorSettings);
-            Color color = ColorGenerator.Generate(ColorGeneratorSettings);
+            Color color = Randomizer.PickRandomly<Color>(ColorPalette.Colors);
             int index = Randomizer.RandomInt(solution.Shapes.Count);
 
             return new ReplaceOperation(shape, color, solution.Shapes[index].shape, index);

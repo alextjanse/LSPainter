@@ -30,6 +30,15 @@ namespace LSPainter
             return items[i].Item1;
         }
 
+        public static T PickRandomly<T>(IEnumerable<T> items)
+        {
+            int length = items.Count();
+
+            int index = RandomInt(length);
+
+            return items.ElementAt(index);
+        }
+
         public static IEnumerable<T> Shuffle<T>(IEnumerable<T> items)
         {
             List<T> list = items.ToList();
