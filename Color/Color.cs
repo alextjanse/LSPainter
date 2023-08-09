@@ -27,6 +27,7 @@ namespace LSPainter
             A = color.A;
         }
 
+        public static Color None = new Color(0, 0, 0, 0);
         public static Color Black = new Color(0, 0, 0);
         public static Color Red = new Color(255, 0, 0);
         public static Color Green = new Color(0, 255, 0);

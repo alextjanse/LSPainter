@@ -88,7 +88,10 @@ namespace LSPainter.LSSolver
                         checker,
                         new SimulatedAnnealingAlgorithm(),
                         factory,
-                        new Constraint<FiniteShapePainterSolution, FiniteShapePainterScore>[] { new FiniteShapePainterConstraint(5000, 100) }
+                        new Constraint<FiniteShapePainterSolution, FiniteShapePainterScore>[] {
+                            new LimitShapesConstraint(100, 100000),
+                            new BlankPixelConstraint(1000),
+                        }
                     );
 
                     return (ISolver<ICanvasSolution>)solver;

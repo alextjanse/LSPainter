@@ -29,5 +29,22 @@ namespace LSPainter.LSSolver.Painter
 
             return r * r + g * g + b * b;
         }
+
+        public long GetBlankPixelCount(TSolution solution)
+        {
+            long result = 0;
+
+            foreach ((int x, int y) in solution.Canvas.BBox.PixelCoords())
+            {
+                if (PixelIsBlank(solution, x, y)) result++;
+            }
+
+            return result;
+        }
+
+        public bool PixelIsBlank(TSolution solution, int x, int y)
+        {
+            return solution.Canvas.GetPixel(x, y).A == 0;
+        }
     }
 }

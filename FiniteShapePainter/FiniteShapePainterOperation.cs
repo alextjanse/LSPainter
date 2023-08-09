@@ -36,9 +36,10 @@ namespace LSPainter.FiniteShapePainter
             }
         }
 
-        protected long GetSectionScoreDiff(Color[,] section, int minX, int minY, FiniteShapePainterSolution solution, FiniteShapePainterChecker checker)
+        protected (long pixelScoreDiff, long blankPixelDiff) GetSectionScoreDiff(Color[,] section, int minX, int minY, FiniteShapePainterSolution solution, FiniteShapePainterChecker checker)
         {
             long pixelScoreDiff = 0;
+            long blankPixelDiff = 0;
 
             for (int y = 0; y < section.GetLength(1); y++)
             {
@@ -49,10 +50,13 @@ namespace LSPainter.FiniteShapePainter
 
                     pixelScoreDiff += checker.GetPixelScore(xIndex, yIndex, section[x, y])
                                     - checker.GetPixelScore(xIndex, yIndex, solution.Canvas.GetPixel(xIndex, yIndex));
+
+                    blankPixelDiff += checker.PixelIsBlank(solution, xIndex, yIndex) && section[x, y].A > 0 ? -1 : 0;
+                    blankPixelDiff += !checker.PixelIsBlank(solution, xIndex, yIndex) && section[x, y].A == 0 ? 1 : 0;
                 }
             }
 
-            return pixelScoreDiff;
+            return (pixelScoreDiff, blankPixelDiff);
         }
 
         public abstract override void Apply(FiniteShapePainterSolution solution);

@@ -48,8 +48,8 @@ namespace LSPainter.FiniteShapePainter
         FiniteShapePainterOperation? GenerateInsertOperation(FiniteShapePainterSolution solution)
         {
             Shape shape = ShapeGenerator.Generate(ShapeGeneratorSettings);
-            // Color color = ColorGenerator.Generate(ColorGeneratorSettings);
-            Color color = Randomizer.PickRandomly<Color>(ColorPalette.Colors);
+            Color color = ColorGenerator.Generate(ColorGeneratorSettings);
+            // Color color = Randomizer.PickRandomly<Color>(ColorPalette.Colors);
             int index = Randomizer.RandomInt(solution.NumberOfShapes);
 
             return new InsertOperation(shape, color, index);
@@ -70,8 +70,8 @@ namespace LSPainter.FiniteShapePainter
             if (solution.NumberOfShapes == 0) return null;
 
             Shape shape = ShapeGenerator.Generate(ShapeGeneratorSettings);
-            // Color color = ColorGenerator.Generate(ColorGeneratorSettings);
-            Color color = Randomizer.PickRandomly<Color>(ColorPalette.Colors);
+            Color color = ColorGenerator.Generate(ColorGeneratorSettings);
+            // Color color = Randomizer.PickRandomly<Color>(ColorPalette.Colors);
             int index = Randomizer.RandomInt(solution.NumberOfShapes);
 
             (Shape currentShape, Color currentColor) = solution.Shapes[index];

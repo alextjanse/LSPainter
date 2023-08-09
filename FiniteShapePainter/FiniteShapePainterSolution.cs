@@ -35,22 +35,21 @@ namespace LSPainter.FiniteShapePainter
 
         public void DrawSection(Rectangle section)
         {
-            IEnumerable<(Shape, Color)> intersectingShapes = Shapes.Where(obj => obj.Item1.BoundingBox.Overlaps(section));
-
             foreach ((int x, int y) in section.PixelCoords())
             {
-                Color pixelColor = default;
-                Vector pixelCoord = new Vector(x + 0.5, y + 0.5);
+                Canvas.SetPixel(x, y, default);
+            }
 
-                foreach ((Shape shape, Color color) in intersectingShapes)
+            foreach ((Shape shape, Color color) in Shapes)
+            {
+                Rectangle intersection = Rectangle.Intersect(shape.BoundingBox, section);
+                foreach ((int x, int y) in intersection.PixelCoords())
                 {
-                    if (shape.IsInside(pixelCoord))
+                    if (shape.IsInside(new Vector(x + 0.5, y + 0.5)))
                     {
-                        pixelColor = Color.Blend(pixelColor, color);
-                    }    
+                        Canvas.PaintPixel(x, y, color);
+                    }
                 }
-
-                Canvas.SetPixel(x, y, pixelColor);
             }
         }
     }

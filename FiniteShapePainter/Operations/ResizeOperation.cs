@@ -44,11 +44,12 @@ namespace LSPainter.FiniteShapePainter.Operations
                 DrawShapeOnSection(ref section, obj);
             }
 
-            long pixelScoreDiff = GetSectionScoreDiff(section, minX, minY, solution, checker);
+            (long pixelScoreDiff, long blankPixelDiff) = GetSectionScoreDiff(section, minX, minY, solution, checker);
 
             FiniteShapePainterScore newScore = (FiniteShapePainterScore)currentScore.Clone();
 
             newScore.SquaredPixelDiff += pixelScoreDiff;
+            newScore.BlankPixels += blankPixelDiff;
 
             return newScore;
         }

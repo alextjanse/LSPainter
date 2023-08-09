@@ -10,7 +10,7 @@ namespace LSPainter
 
         public Canvas(int width, int height) : base(width, height)
         {
-            image = new Image<Rgba32>(Width, Height, Color.Black);
+            image = new Image<Rgba32>(Width, Height, Color.None);
 
             image.CopyPixelDataTo(Data);
         }
@@ -23,6 +23,15 @@ namespace LSPainter
             Data[index + 1] = color.G;
             Data[index + 2] = color.B;
             Data[index + 3] = color.A;
+        }
+
+        public void PaintPixel(int x, int y, Color color)
+        {
+            Color currentColor = GetPixel(x, y);
+
+            Color newColor = Color.Blend(currentColor, color);
+
+            SetPixel(x, y, newColor);
         }
 
         public override void Update()

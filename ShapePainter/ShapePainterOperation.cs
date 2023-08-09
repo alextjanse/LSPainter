@@ -28,12 +28,17 @@ namespace LSPainter.ShapePainter
             
             ShapePainterScore newScore = (ShapePainterScore)currentScore.Clone();
 
+            long blankPixelDiff = 0;
+
             foreach ((int x, int y) in BoudningBox.PixelCoords())
             {
                 if (Shape.IsInside(GetPixelVector(x, y)))
                 {
                     Color currentColor = solution.Canvas.GetPixel(x, y);
-                    Color newColor = Color.Blend(solution.Canvas.GetPixel(x, y), Color);
+                    
+                    if (checker.PixelIsBlank(solution, x, y)) blankPixelDiff--;
+
+                    Color newColor = Color.Blend(currentColor, Color);
 
                     long currentPixelScoreDiff = checker.GetPixelScore(x, y, currentColor);
                     long newPixelScoreDiff = checker.GetPixelScore(x, y, newColor);
@@ -41,6 +46,8 @@ namespace LSPainter.ShapePainter
                     newScore.SquaredPixelDiff += newPixelScoreDiff - currentPixelScoreDiff;
                 }
             }
+
+            newScore.BlankPixels += blankPixelDiff;
 
             return newScore;
         }

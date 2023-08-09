@@ -12,8 +12,9 @@ namespace LSPainter.FiniteShapePainter
         {
             int n = solution.NumberOfShapes;
             long pixelScore = GetTotalPixelScore(solution);
+            long blankPixels = GetBlankPixelCount(solution);
 
-            return new FiniteShapePainterScore(n, pixelScore);
+            return new FiniteShapePainterScore(n, pixelScore, blankPixels);
         }
     }
 }
