@@ -17,10 +17,10 @@ namespace LSPainter.FiniteShapePainter.Operations
         {
             TrimToCanvas(checker);
 
-            int minX = (int)BoudningBox.MinX;
-            int minY = (int)BoudningBox.MinY;
+            int minX = (int)BoundingBox.MinX;
+            int minY = (int)BoundingBox.MinY;
 
-            Color[,] section = new Color[BoudningBox.SectionWidth, BoudningBox.SectionHeight];
+            Color[,] section = new Color[BoundingBox.SectionWidth, BoundingBox.SectionHeight];
 
             for (int i = 0; i < Index; i++)
             {
@@ -53,7 +53,7 @@ namespace LSPainter.FiniteShapePainter.Operations
         {
             solution.InsertShape(Obj, Index);
 
-            solution.DrawSection(BoudningBox);
+            solution.DrawSection(BoundingBox);
         }
     }
 }

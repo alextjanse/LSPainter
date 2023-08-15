@@ -21,38 +21,53 @@ namespace LSPainter.FiniteShapePainter
         {
             (Shape shape, Color color) = obj;
 
-            Rectangle intersection = Rectangle.Intersect(BoudningBox, shape.BoundingBox);
+            Rectangle intersection = Rectangle.Intersect(BoundingBox, shape.BoundingBox);
 
             if (intersection.IsEmpty) return;
 
             (int xOffset, int yOffset) = intersection.OriginOffsets;
 
-            foreach ((int x, int y) in intersection.PixelCoords())
+            foreach ((int xSolution, int ySolution) in intersection.PixelCoords())
             {
-                if (shape.IsInside(GetPixelVector(x, y)))
+                if (shape.IsInside(GetPixelVector(xSolution, ySolution)))
                 {
-                    section[x - xOffset, y - yOffset] = Color.Blend(section[x - xOffset, y - yOffset], color);
+                    int xSection = xSolution - xOffset;
+                    int ySection = ySolution - yOffset;
+                    section[xSection, ySection] = Color.Blend(section[xSection, ySection], color);
                 }
             }
         }
 
-        protected (long pixelScoreDiff, long blankPixelDiff) GetSectionScoreDiff(Color[,] section, int minX, int minY, FiniteShapePainterSolution solution, FiniteShapePainterChecker checker)
+        protected (long pixelScoreDiff, long blankPixelDiff) GetSectionScoreDiff(Color[,] section, int xOffset, int yOffset, FiniteShapePainterSolution solution, FiniteShapePainterChecker checker)
         {
             long pixelScoreDiff = 0;
             long blankPixelDiff = 0;
 
-            for (int y = 0; y < section.GetLength(1); y++)
+            int sectionWidth = section.GetLength(0);
+            int sectionHeight = section.GetLength(1);
+
+            for (int y = 0; y < sectionHeight; y++)
             {
-                for (int x = 0; x < section.GetLength(0); x++)
+                for (int x = 0; x < sectionWidth; x++)
                 {
-                    int xIndex = minX + x;
-                    int yIndex = minY + y;
+                    int xSolution = xOffset + x;
+                    int ySolution = yOffset + y;
 
-                    pixelScoreDiff += checker.GetPixelScore(xIndex, yIndex, section[x, y])
-                                    - checker.GetPixelScore(xIndex, yIndex, solution.Canvas.GetPixel(xIndex, yIndex));
+                    Color currentColor = solution.Canvas.GetPixel(xSolution, ySolution);
+                    Color newColor = section[x, y];
 
-                    blankPixelDiff += checker.PixelIsBlank(solution, xIndex, yIndex) && section[x, y].A > 0 ? -1 : 0;
-                    blankPixelDiff += !checker.PixelIsBlank(solution, xIndex, yIndex) && section[x, y].A == 0 ? 1 : 0;
+                    bool pixelIsBlank = checker.PixelIsBlank(solution, x, y);
+                    bool pixelWillBeBlank = newColor == Color.None;
+
+                    if (pixelIsBlank && pixelWillBeBlank) continue;
+
+                    if (pixelIsBlank && !pixelWillBeBlank) blankPixelDiff--;
+                    if (!pixelIsBlank && pixelWillBeBlank) blankPixelDiff++;
+
+                    long currentPixelScore = checker.GetPixelScore(xSolution, ySolution, currentColor);
+                    long newPixelScore = checker.GetPixelScore(xSolution, ySolution, newColor);
+
+                    pixelScoreDiff += newPixelScore - currentPixelScore;
                 }
             }
 

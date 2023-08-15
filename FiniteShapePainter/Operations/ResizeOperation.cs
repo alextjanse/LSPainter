@@ -17,10 +17,9 @@ namespace LSPainter.FiniteShapePainter.Operations
         {
             TrimToCanvas(checker);
 
-            int minX = (int)BoudningBox.MinX;
-            int minY = (int)BoudningBox.MinY;
+            (int xOffset, int yOffset) = BoundingBox.OriginOffsets;
 
-            Color[,] section = new Color[BoudningBox.SectionWidth, BoudningBox.SectionHeight];
+            Color[,] section = new Color[BoundingBox.SectionWidth, BoundingBox.SectionHeight];
 
             for (int i = 0; i < Index; i++)
             {
@@ -44,13 +43,13 @@ namespace LSPainter.FiniteShapePainter.Operations
                 DrawShapeOnSection(ref section, obj);
             }
 
-            (long pixelScoreDiff, long blankPixelDiff) = GetSectionScoreDiff(section, minX, minY, solution, checker);
+            (long pixelScoreDiff, long blankPixelDiff) = GetSectionScoreDiff(section, xOffset, yOffset, solution, checker);
 
             FiniteShapePainterScore newScore = (FiniteShapePainterScore)currentScore.Clone();
 
             newScore.SquaredPixelDiff += pixelScoreDiff;
             newScore.BlankPixels += blankPixelDiff;
-
+            
             return newScore;
         }
 
@@ -60,7 +59,7 @@ namespace LSPainter.FiniteShapePainter.Operations
 
             s.Resize(Scale);
 
-            solution.DrawSection(BoudningBox);
+            solution.DrawSection(BoundingBox);
         }
     }
 }

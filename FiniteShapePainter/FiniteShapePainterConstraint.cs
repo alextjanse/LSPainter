@@ -13,7 +13,7 @@ namespace LSPainter.FiniteShapePainter
 
         public override double ApplyPenalty(FiniteShapePainterScore score)
         {
-            return score.NumberOfShapes > MaxNumberOfShapes ? Penalty : 0;
+            return score.NumberOfShapes > MaxNumberOfShapes ? Penalty * (score.NumberOfShapes - MaxNumberOfShapes) : 0;
         }
     }
 

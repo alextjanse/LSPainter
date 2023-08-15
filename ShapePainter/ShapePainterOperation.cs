@@ -30,7 +30,7 @@ namespace LSPainter.ShapePainter
 
             long blankPixelDiff = 0;
 
-            foreach ((int x, int y) in BoudningBox.PixelCoords())
+            foreach ((int x, int y) in BoundingBox.PixelCoords())
             {
                 if (Shape.IsInside(GetPixelVector(x, y)))
                 {
@@ -54,7 +54,7 @@ namespace LSPainter.ShapePainter
 
         public override void Apply(ShapePainterSolution solution)
         {
-            foreach ((int x, int y) in BoudningBox.PixelCoords())
+            foreach ((int x, int y) in BoundingBox.PixelCoords())
             {
                 if (Shape.IsInside(GetPixelVector(x, y)))
                 {

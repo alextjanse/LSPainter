@@ -1,3 +1,6 @@
+using LSPainter.FiniteShapePainter;
+using LSPainter.ShapePainter;
+
 namespace LSPainter.LSSolver
 {
     public interface ISolver<out TSolution> : IIterable
@@ -59,6 +62,13 @@ namespace LSPainter.LSSolver
             {
                 operation.Apply(Solution);
                 Score = newScore;
+
+                TScore actualScore = Checker.ScoreSolution(Solution);
+
+                if (GetScoreValue(actualScore) != newValue)
+                {
+                    throw new Exception("Operation lies about score diff");
+                }
             }
 
             // Set on an interval of 1000 iterations
