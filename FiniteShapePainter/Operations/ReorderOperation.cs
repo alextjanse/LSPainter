@@ -15,47 +15,43 @@ namespace LSPainter.FiniteShapePainter.Operations
 
         public override FiniteShapePainterScore Try(FiniteShapePainterSolution solution, FiniteShapePainterScore currentScore, FiniteShapePainterChecker checker)
         {
-            TrimToCanvas(checker);
-
-            int minX = (int)BoundingBox.MinX;
-            int minY = (int)BoundingBox.MinY;
-
-            Color[,] section = new Color[BoundingBox.SectionWidth, BoundingBox.SectionHeight];
-
-            (Shape, Color) obj1 = solution.Shapes[Index1];
-            (Shape, Color) obj2 = solution.Shapes[Index2];
+            (Shape shape1, Color color1) = solution.Shapes[Index1];
+            (Shape shape2, Color color2) = solution.Shapes[Index2];
 
             for (int i = 0; i < Index1; i++)
             {
-                (Shape, Color) obj = solution.Shapes[i];
+                (Shape shape, Color color) = solution.Shapes[i];
 
-                DrawShapeOnSection(ref section, obj);
+                Sketch.DrawShape(shape, color);
             }
 
-            DrawShapeOnSection(ref section, obj2);
+            Sketch.DrawShape(shape2, color2);
 
             for (int i = Index1 + 1; i < Index2; i++)
             {
-                (Shape, Color) obj = solution.Shapes[i];
+                (Shape shape, Color color) = solution.Shapes[i];
 
-                DrawShapeOnSection(ref section, obj);
+                Sketch.DrawShape(shape, color);
             }
 
-            DrawShapeOnSection(ref section, obj1);
+            Sketch.DrawShape(shape1, color1);
 
             for (int i = Index2 + 1; i < solution.NumberOfShapes; i++)
             {
-                (Shape, Color) obj = solution.Shapes[i];
+                (Shape shape, Color color) = solution.Shapes[i];
 
-                DrawShapeOnSection(ref section, obj);
+                Sketch.DrawShape(shape, color);
             }
-
-            (long pixelScoreDiff, long blankPixelDiff) = GetSectionScoreDiff(section, minX, minY, solution, checker);
 
             FiniteShapePainterScore newScore = (FiniteShapePainterScore)currentScore.Clone();
 
-            newScore.SquaredPixelDiff += pixelScoreDiff;
-            newScore.BlankPixels += blankPixelDiff;
+            (long newPixelScore, long newBlankPixelCount) = checker.ScoreCanvasSketch(Sketch);
+            
+            long currentPixelScore = checker.GetPixelScore(solution, Sketch.BoundingBox);
+            long currentBlankPixelCount = checker.GetBlankPixelCount(solution, Sketch.BoundingBox);
+
+            newScore.SquaredPixelDiff += newPixelScore - currentPixelScore;
+            newScore.BlankPixels += newBlankPixelCount - currentBlankPixelCount;
 
             return newScore;
         }

@@ -89,7 +89,7 @@ namespace LSPainter.LSSolver
                         new SimulatedAnnealingAlgorithm(),
                         factory,
                         new Constraint<FiniteShapePainterSolution, FiniteShapePainterScore>[] {
-                            new LimitShapesConstraint(100, 100000),
+                            new LimitShapesConstraint(1000, 1e6),
                             new BlankPixelConstraint(1000),
                         }
                     );

@@ -2,13 +2,7 @@ using LSPainter.LSSolver.Painter;
 using LSPainter.Maths;
 
 namespace LSPainter.FiniteShapePainter
-{
-    public struct TryingCanvas
-    {
-        public (int, int) CanvasCoordinates;
-        public Color[,] Canvas;
-    }
-    
+{   
     public abstract class FiniteShapePainterOperation : CanvasOperation<FiniteShapePainterSolution, FiniteShapePainterScore, FiniteShapePainterChecker>
     {
         protected FiniteShapePainterOperation(Rectangle bbox) : base(bbox)

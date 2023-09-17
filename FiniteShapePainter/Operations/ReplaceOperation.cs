@@ -4,48 +4,44 @@ namespace LSPainter.FiniteShapePainter.Operations
 {
     public class ReplaceOperation : FiniteShapePainterOperation
     {
-        public (Shape, Color) Obj { get; }
+        public Shape Shape { get; }
         public Color Color { get; }
         public int Index { get; }
 
-        public ReplaceOperation(Shape shape, Color color, Rectangle boundingBox, int index) : base(boundingBox)
+        public ReplaceOperation(Shape shape, Color color, int index, Rectangle boundingBox) : base(boundingBox)
         {
-            Obj = (shape, color);
+            Shape = shape;
+            Color = color;
             Index = index;
         }
 
         public override FiniteShapePainterScore Try(FiniteShapePainterSolution solution, FiniteShapePainterScore currentScore, FiniteShapePainterChecker checker)
         {
-            TrimToCanvas(checker);
-
-            int minX = (int)BoundingBox.MinX;
-            int minY = (int)BoundingBox.MinY;
-
-            Color[,] section = new Color[BoundingBox.SectionWidth, BoundingBox.SectionHeight];
-
             for (int i = 0; i < Index; i++)
             {
-                (Shape, Color) obj = solution.Shapes[i];
+                (Shape shape, Color color) = solution.Shapes[i];
 
-                DrawShapeOnSection(ref section, obj);
+                Sketch.DrawShape(shape, color);
             }
 
-            DrawShapeOnSection(ref section, Obj);
+            Sketch.DrawShape(Shape, Color);
 
             for (int i = Index + 1; i < solution.NumberOfShapes; i++)
             {
-                (Shape, Color) obj = solution.Shapes[i];
+                (Shape shape, Color color) = solution.Shapes[i];
 
-                DrawShapeOnSection(ref section, obj);
+                Sketch.DrawShape(shape, color);
             }
-
-            (long pixelScoreDiff, long blankPixelDiff) = GetSectionScoreDiff(section, minX, minY, solution, checker);
 
             FiniteShapePainterScore newScore = (FiniteShapePainterScore)currentScore.Clone();
 
-            newScore.NumberOfShapes++;
-            newScore.SquaredPixelDiff += pixelScoreDiff;
-            newScore.BlankPixels += blankPixelDiff;
+            (long newPixelScore, long newBlankPixelCount) = checker.ScoreCanvasSketch(Sketch);
+            
+            long currentPixelScore = checker.GetPixelScore(solution, Sketch.BoundingBox);
+            long currentBlankPixelCount = checker.GetBlankPixelCount(solution, Sketch.BoundingBox);
+
+            newScore.SquaredPixelDiff += newPixelScore - currentPixelScore;
+            newScore.BlankPixels += newBlankPixelCount - currentBlankPixelCount;
 
             return newScore;
         }
@@ -53,7 +49,7 @@ namespace LSPainter.FiniteShapePainter.Operations
         public override void Apply(FiniteShapePainterSolution solution)
         {
             solution.RemoveAt(Index);
-            solution.InsertShape(Obj, Index);
+            solution.InsertShape((Shape, Color), Index);
 
             solution.DrawSection(BoundingBox);
         }

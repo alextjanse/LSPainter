@@ -2,6 +2,7 @@ namespace LSPainter.Maths
 {
     public class Circle : Shape
     {
+        public override string ToString() => $"Circle {Origin}, r={Radius:F3}";
         public Vector Origin { get; set; }
         public double Radius { get; set; }
 

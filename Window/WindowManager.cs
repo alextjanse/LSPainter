@@ -38,7 +38,7 @@ namespace LSPainter
         Shader shader;
         ImageHandler original;
         SolverManager solverManager;
-        FrameManager frameManager;
+        PictureFrameManager pictureFrameManager;
 
         public WindowManager(WindowLayout windowLayout, ImageHandler original) :
             base
@@ -60,7 +60,7 @@ namespace LSPainter
 
             solverManager = new SolverManager(original, 1);
 
-            frameManager = new FrameManager(windowLayout, original, solverManager.EnumerateCanvases());
+            pictureFrameManager = new PictureFrameManager(windowLayout, original, solverManager.EnumerateCanvases());
 
             shader = new Shader("./Shaders/shader.vert", "./Shaders/shader.frag");
 
@@ -76,7 +76,7 @@ namespace LSPainter
             shader.Load();
             shader.Use();
 
-            frameManager.Load(shader);
+            pictureFrameManager.Load(shader);
         }
 
         protected override void OnUnload()
@@ -105,8 +105,8 @@ namespace LSPainter
 
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
-            frameManager.Update();
-            frameManager.Draw();
+            pictureFrameManager.Update();
+            pictureFrameManager.Draw();
 
             SwapBuffers();
         }

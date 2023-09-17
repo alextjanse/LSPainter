@@ -22,8 +22,10 @@ namespace LSPainter.Maths
         public static double Cross(Vector u, Vector v) => (u.X * v.Y) - (u.Y * v.X);
         public static double Determinant(Vector u, Vector v, Vector w) => (w.X - u.X) * (v.Y - u.Y) - (w.Y - u.Y) * (v.X - u.X);
 
-        public static Vector UnitX = new Vector(1, 0);
-        public static Vector UnitY = new Vector(0, 1);
+        public static Vector UnitX = new (1, 0);
+        public static Vector UnitY = new (0, 1);
+        
+        public static Vector PixelPoint(int x, int y) => new (x + 0.5, y + 0.5);
 
         public void Normalize()
         {
@@ -97,5 +99,7 @@ namespace LSPainter.Maths
         {
             return new Vector(X, Y);
         }
+
+        public override string ToString() => $"({X:F3}, {Y:F3})";
     }
 }

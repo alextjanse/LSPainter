@@ -15,39 +15,35 @@ namespace LSPainter.FiniteShapePainter.Operations
 
         public override FiniteShapePainterScore Try(FiniteShapePainterSolution solution, FiniteShapePainterScore currentScore, FiniteShapePainterChecker checker)
         {
-            TrimToCanvas(checker);
-
-            int minX = (int)BoundingBox.MinX;
-            int minY = (int)BoundingBox.MinY;
-
-            Color[,] section = new Color[BoundingBox.SectionWidth, BoundingBox.SectionHeight];
-
             for (int i = 0; i < Index; i++)
             {
-                (Shape, Color) obj = solution.Shapes[i];
+                (Shape shape, Color color) = solution.Shapes[i];
 
-                DrawShapeOnSection(ref section, obj);
+                Sketch.DrawShape(shape, color);
             }
 
             (Shape s, Color c) = solution.Shapes[Index];
 
             Color newColor = Color.Blend(c, Color);
 
-            DrawShapeOnSection(ref section, (s, newColor));
+            Sketch.DrawShape(s, newColor);
 
             for (int i = Index + 1; i < solution.NumberOfShapes; i++)
             {
-                (Shape, Color) obj = solution.Shapes[i];
+                (Shape shape, Color color) = solution.Shapes[i];
 
-                DrawShapeOnSection(ref section, obj);
+                Sketch.DrawShape(shape, color);
             }
-
-            (long pixelScoreDiff, long blankPixelDiff) = GetSectionScoreDiff(section, minX, minY, solution, checker);
 
             FiniteShapePainterScore newScore = (FiniteShapePainterScore)currentScore.Clone();
 
-            newScore.SquaredPixelDiff += pixelScoreDiff;
-            newScore.BlankPixels += blankPixelDiff;
+            (long newPixelScore, long newBlankPixelCount) = checker.ScoreCanvasSketch(Sketch);
+            
+            long currentPixelScore = checker.GetPixelScore(solution, Sketch.BoundingBox);
+            long currentBlankPixelCount = checker.GetBlankPixelCount(solution, Sketch.BoundingBox);
+
+            newScore.SquaredPixelDiff += newPixelScore - currentPixelScore;
+            newScore.BlankPixels += newBlankPixelCount - currentBlankPixelCount;
 
             return newScore;
         }

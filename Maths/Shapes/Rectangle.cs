@@ -7,7 +7,7 @@ namespace LSPainter.Maths
 
     public class Rectangle : Shape
     {
-
+        public override string ToString() => $"Rectangle ({MinX:F3}, {MinY:F3}), ({MaxX:F3}, {MaxY:F3})";
         public static Rectangle Empty => new Rectangle(double.NaN, double.NaN, double.NaN, double.NaN);
 
         public double MinX { get; private set; }

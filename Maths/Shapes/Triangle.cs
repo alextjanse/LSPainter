@@ -76,5 +76,7 @@ namespace LSPainter.Maths
         {
             return new Triangle((Vector)P1.Clone(), (Vector)P2.Clone(), (Vector)P3.Clone());
         }
+
+        public override string ToString() => $"Triangle {P1}, {P2}, {P3}";
     }
 }
