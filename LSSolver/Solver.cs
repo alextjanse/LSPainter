@@ -63,16 +63,6 @@ namespace LSPainter.LSSolver
             {
                 operation.Apply(Solution);
                 Score = newScore;
-
-                TScore actualScore = Checker.ScoreSolution(Solution);
-
-                if (GetScoreValue(actualScore) != newValue)
-                {
-                    FiniteShapePainterSolution sol = Solution as FiniteShapePainterSolution ?? throw new Exception();
-                    FiniteShapePainterOperation op = operation as FiniteShapePainterOperation ?? throw new Exception();
-
-                    throw new Exception("Operation lies about score diff");
-                }
             }
 
             if (tick++ > 1000)

@@ -2,11 +2,11 @@ using LSPainter.Maths;
 
 namespace LSPainter.FiniteShapePainter.Operations
 {
-    public class SwapOperation : FiniteShapePainterOperation
+    public class ReorderOperation : FiniteShapePainterOperation
     {
         public int SwapIndex { get; }
 
-        public SwapOperation(int index, int swapIndex, Rectangle boundingBox) : base(index, boundingBox)
+        public ReorderOperation(int index, int swapIndex, Rectangle boundingBox) : base(index, boundingBox)
         {
             SwapIndex = swapIndex;
 

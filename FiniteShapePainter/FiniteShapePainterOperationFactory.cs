@@ -30,7 +30,7 @@ namespace LSPainter.FiniteShapePainter
                 (GenerateReplaceOperation, 1f),
                 (GenerateRecolorOperation, 10f),
                 (GenerateTranslateOperation, 4f),
-                (GenerateSwapOperation, 2f),
+                (GenerateReorderOperation, 2f),
                 (GenerateResizeOperation, 4f),
             };
 
@@ -113,7 +113,7 @@ namespace LSPainter.FiniteShapePainter
             return new TranslateOperation(index, translation, boundingBox);
         }
 
-        FiniteShapePainterOperation? GenerateSwapOperation(FiniteShapePainterSolution solution)
+        FiniteShapePainterOperation? GenerateReorderOperation(FiniteShapePainterSolution solution)
         {
             if (solution.NumberOfShapes < 2) return null;
 
@@ -125,7 +125,7 @@ namespace LSPainter.FiniteShapePainter
 
             Rectangle boundingBox = TrimToCanvas(Rectangle.Union(shape1.BoundingBox, shape2.BoundingBox));
 
-            return new SwapOperation(index1, index2, boundingBox);
+            return new ReorderOperation(index1, index2, boundingBox);
         }
 
         FiniteShapePainterOperation? GenerateResizeOperation(FiniteShapePainterSolution solution)

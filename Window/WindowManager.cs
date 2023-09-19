@@ -63,8 +63,6 @@ namespace LSPainter
             pictureFrameManager = new PictureFrameManager(windowLayout, original, solverManager.EnumerateCanvases());
 
             shader = new Shader("./Shaders/shader.vert", "./Shaders/shader.frag");
-
-            DCELSolution dcel = new DCELSolution(original.Width, original.Height);
         }
 
         protected override void OnLoad()

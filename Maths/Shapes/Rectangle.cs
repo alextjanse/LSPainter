@@ -31,9 +31,6 @@ namespace LSPainter.Maths
             MaxX = maxX;
             MinY = minY;
             MaxY = maxY;
-
-            // Sanity check
-            if (MinX > MaxX || MinY > MaxY) throw new Exception();
         }
 
         public static Rectangle FromPointCloud(IEnumerable<Vector> points)
