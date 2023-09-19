@@ -34,7 +34,7 @@ namespace LSPainter.LSSolver
     /// </summary>
     public abstract class OperationFactory<TSolution, TScore, TChecker> : IUpdatable where TSolution : Solution where TScore : Score<TSolution> where TChecker : SolutionChecker<TSolution, TScore>
     {
-        public abstract Operation<TSolution, TScore, TChecker> Generate();
+        public abstract Operation<TSolution, TScore, TChecker> Generate(TSolution solution);
         public abstract void Update();
     }
 
@@ -63,7 +63,19 @@ namespace LSPainter.LSSolver
     public abstract class Constraint<TSolution, TScore> : IUpdatable where TSolution : Solution where TScore : Score<TSolution>
     {
         public double Penalty { get; set; }
+        public double Alpha { get; set; }
+        
+        public Constraint(double penalty, double alpha)
+        {
+            Penalty = penalty;
+            Alpha = alpha;
+        }
+
         public abstract double ApplyPenalty(TScore score);
-        public abstract void Update();
+        
+        public void Update()
+        {
+            Penalty *= Alpha;
+        }
     }
 }

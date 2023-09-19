@@ -30,6 +30,30 @@ namespace LSPainter
             return items[i].Item1;
         }
 
+        public static T PickRandomly<T>(IEnumerable<T> items)
+        {
+            int length = items.Count();
+
+            int index = RandomInt(length);
+
+            return items.ElementAt(index);
+        }
+
+        public static IEnumerable<T> Shuffle<T>(IEnumerable<T> items)
+        {
+            List<T> list = items.ToList();
+
+            for (int i = 0; i < list.Count; i++)
+            {
+                int j = random.Next(list.Count);
+                T temp = list[j];
+                list[j] = list[i];
+                list[i] = temp;
+            }
+
+            return list;
+        }
+
         public static double[] RandomFactors(double target, int n)
         {
             double[] output = new double[n];
@@ -88,14 +112,20 @@ namespace LSPainter
             return output;
         }
 
-        public static double Range(double lb, double ub)
+        public static double RandomDouble() => random.NextDouble();
+        public static double RandomDouble(double lb, double ub)
         {
             return lb + random.NextDouble() * (ub - lb);
         }
+        public static double RandomAngle() => random.NextDouble() * 2 * Math.PI;
 
         public static bool RandomBool(double p = 0.5)
         {
             return random.NextDouble() < p;
         }
+
+        public static int RandomInt() => random.Next();
+        public static int RandomInt(int maxValue) => random.Next(maxValue);
+        public static int RandomInt(int minValue, int maxValue) => random.Next(minValue, maxValue);
     }
 }

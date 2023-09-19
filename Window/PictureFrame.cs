@@ -4,7 +4,7 @@ using SixLabors.ImageSharp;
 
 namespace LSPainter
 {
-    public class Frame
+    public class PictureFrame
     {
         public float[] Vertices { get; }
 
@@ -14,7 +14,7 @@ namespace LSPainter
 
         Texture texture;
 
-        public Frame(Texture texture, float[] vertices, uint[] indices)
+        public PictureFrame(Texture texture, float[] vertices, uint[] indices)
         {
             this.texture = texture;
             Vertices = vertices;

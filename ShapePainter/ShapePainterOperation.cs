@@ -1,13 +1,12 @@
 using LSPainter.Maths;
 using LSPainter.LSSolver;
-using LSPainter.Maths.Shapes;
 using LSPainter.LSSolver.Painter;
 
 namespace LSPainter.ShapePainter
 {
     public abstract class ShapePainterOperation : CanvasOperation<ShapePainterSolution, ShapePainterScore, ShapePainterChecker>
     {
-        protected ShapePainterOperation(BoundingBox bbox) : base(bbox)
+        protected ShapePainterOperation(Rectangle bbox) : base(bbox)
         {
         }
     }
@@ -17,7 +16,7 @@ namespace LSPainter.ShapePainter
         public Shape Shape { get; }
         public Color Color { get; }
 
-        public PaintShapeOperation(Shape shape, Color color) :base(shape.CreateBoundingBox())
+        public PaintShapeOperation(Shape shape, Color color) :base(shape.BoundingBox)
         {
             Shape = shape;
             Color = color;
@@ -29,12 +28,17 @@ namespace LSPainter.ShapePainter
             
             ShapePainterScore newScore = (ShapePainterScore)currentScore.Clone();
 
-            foreach ((int x, int y) in BBox.AsEnumerable())
+            long blankPixelDiff = 0;
+
+            foreach ((int x, int y) in BoundingBox.PixelCoords())
             {
                 if (Shape.IsInside(GetPixelVector(x, y)))
                 {
                     Color currentColor = solution.Canvas.GetPixel(x, y);
-                    Color newColor = Color.Blend(solution.Canvas.GetPixel(x, y), Color);
+                    
+                    if (checker.PixelIsBlank(solution, x, y)) blankPixelDiff--;
+
+                    Color newColor = Color.Blend(currentColor, Color);
 
                     long currentPixelScoreDiff = checker.GetPixelScore(x, y, currentColor);
                     long newPixelScoreDiff = checker.GetPixelScore(x, y, newColor);
@@ -43,12 +47,14 @@ namespace LSPainter.ShapePainter
                 }
             }
 
+            newScore.BlankPixels += blankPixelDiff;
+
             return newScore;
         }
 
         public override void Apply(ShapePainterSolution solution)
         {
-            foreach ((int x, int y) in BBox.AsEnumerable<(int, int)>())
+            foreach ((int x, int y) in BoundingBox.PixelCoords())
             {
                 if (Shape.IsInside(GetPixelVector(x, y)))
                 {

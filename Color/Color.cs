@@ -1,11 +1,15 @@
+using System.Diagnostics.CodeAnalysis;
+using System.Numerics;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
 namespace LSPainter
 {
-    public struct Color
+    public struct Color : IEquatable<Color>
     {
         public static implicit operator Rgba32(Color c) => new Rgba32(c.R, c.G, c.B, c.A);
+        public static bool operator ==(Color a, Color b) => a.Equals(b);
+        public static bool operator !=(Color a, Color b) => !(a == b);
         public byte R { get; }
         public byte G { get; }
         public byte B { get; }
@@ -27,10 +31,11 @@ namespace LSPainter
             A = color.A;
         }
 
-        public static Color Black = new Color(0, 0, 0);
-        public static Color Red = new Color(255, 0, 0);
-        public static Color Green = new Color(0, 255, 0);
-        public static Color Blue = new Color(0, 0, 255);
+        public static Color None = new(0, 0, 0, 0);
+        public static Color Black = new (0, 0, 0);
+        public static Color Red = new (255, 0, 0);
+        public static Color Green = new (0, 255, 0);
+        public static Color Blue = new (0, 0, 255);
 
         /// <summary>
         /// Blend the two colors using alpha compositing: https://en.wikipedia.org/wiki/Alpha_compositing
@@ -67,6 +72,26 @@ namespace LSPainter
         public override string ToString()
         {
             return $"rgba({R}, {G}, {B}, {A})";
+        }
+
+        public bool Equals(Color other)
+        {
+            return (
+                R == other.R
+             && G == other.G
+             && B == other.B
+             && A == other.A
+            );
+        }
+
+        public override bool Equals([NotNullWhen(true)] object? obj)
+        {
+            return base.Equals(obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return (R, G, B, A).GetHashCode();
         }
     }
 }

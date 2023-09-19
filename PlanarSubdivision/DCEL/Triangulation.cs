@@ -516,7 +516,7 @@ namespace LSPainter.DCEL
              */
 
             LineSegment baseLine = new LineSegment(v, v1);
-            return ((Point)v2).CompareTo(baseLine) >= 0; // V2 lies right of the line from v to v1
+            return ((Vector)v2).CompareTo(baseLine) >= 0; // V2 lies right of the line from v to v1
         }
 
         /// <summary>

@@ -1,6 +1,5 @@
 using LSPainter.Maths;
 using LSPainter.LSSolver;
-using LSPainter.Maths.Shapes;
 using LSPainter.LSSolver.Painter;
 
 namespace LSPainter.ShapePainter
@@ -13,11 +12,11 @@ namespace LSPainter.ShapePainter
 
         public ShapePainterOperationFactory(int canvasWidth, int canvasHeight)
         {
-            ShapeGeneratorSettings = new ShapeGeneratorSettings(0, canvasWidth, 0, canvasHeight, 50);
+            ShapeGeneratorSettings = new ShapeGeneratorSettings(0, canvasWidth, 0, canvasHeight, 1000);
             ColorGeneratorSettings = new ColorGeneratorSettings(255 / 10);
         }
 
-        public override Operation<ShapePainterSolution, ShapePainterScore, ShapePainterChecker> Generate()
+        public override Operation<ShapePainterSolution, ShapePainterScore, ShapePainterChecker> Generate(ShapePainterSolution solution)
         {
             Shape shape = ShapeGenerator.Generate(ShapeGeneratorSettings);
             Color color = ColorGenerator.Generate(ColorGeneratorSettings);
@@ -27,7 +26,7 @@ namespace LSPainter.ShapePainter
 
         public override void Update()
         {
-            ShapeGeneratorSettings.Area *= Alpha;
+            ShapeGeneratorSettings.MaxArea *= Alpha;
 
             ColorGeneratorSettings.Alpha *= Alpha;
         }

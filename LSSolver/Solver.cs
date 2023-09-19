@@ -1,3 +1,7 @@
+using LSPainter.FiniteShapePainter;
+using LSPainter.ShapePainter;
+using OpenTK.Graphics.ES20;
+
 namespace LSPainter.LSSolver
 {
     public interface ISolver<out TSolution> : IIterable
@@ -20,7 +24,7 @@ namespace LSPainter.LSSolver
         public TSolution Solution { get; private set; }
         public TScore Score { get; private set; }
         public TChecker Checker { get; }
-        public List<Constraint<TSolution, TScore>> Constraints { get; }
+        public IEnumerable<Constraint<TSolution, TScore>> Constraints { get; }
         public ISearchAlgorithm Algorithm;
         public OperationFactory<TSolution, TScore, TChecker> OperationFactory { get; }
 
@@ -32,7 +36,7 @@ namespace LSPainter.LSSolver
             TChecker checker,
             ISearchAlgorithm algorithm,
             OperationFactory<TSolution, TScore, TChecker> factory,
-            List<Constraint<TSolution, TScore>>? constraints = null
+            IEnumerable<Constraint<TSolution, TScore>>? constraints = null
         )
         {
             Solution = startSolution;
@@ -46,7 +50,7 @@ namespace LSPainter.LSSolver
 
         public void Iterate()
         {
-            Operation<TSolution, TScore, TChecker> operation = OperationFactory.Generate();
+            Operation<TSolution, TScore, TChecker> operation = OperationFactory.Generate(Solution);
             
             // The score after the operation would be applied
             TScore newScore = operation.Try(Solution, Score, Checker);
@@ -61,7 +65,6 @@ namespace LSPainter.LSSolver
                 Score = newScore;
             }
 
-            // Set on an interval of 1000 iterations
             if (tick++ > 1000)
             {
                 UpdateParameters();

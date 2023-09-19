@@ -9,13 +9,13 @@ namespace LSPainter
         StillSolution
     }
 
-    public class FrameManager
+    public class PictureFrameManager
     {
-        Frame[,] frames;
+        public PictureFrame[,] Frames { get; }
 
-        public FrameManager(WindowLayout windowLayout, ImageHandler originalImage, IEnumerable<Canvas> paintings)
+        public PictureFrameManager(WindowLayout windowLayout, ImageHandler originalImage, IEnumerable<Canvas> paintings)
         {
-            frames = new Frame[windowLayout.Columns, windowLayout.Rows];
+            Frames = new PictureFrame[windowLayout.Columns, windowLayout.Rows];
 
             float[] xCoords = new float[windowLayout.Columns + 1];
             float[] yCoords = new float[windowLayout.Rows + 1];
@@ -51,7 +51,7 @@ namespace LSPainter
                     0, 2, 3
                 };
 
-                frames[0, 0] = new Frame(originalImage, frameVertices, frameIndices);
+                Frames[0, 0] = new PictureFrame(originalImage, frameVertices, frameIndices);
 
                 frameIndex++;
             }
@@ -81,7 +81,7 @@ namespace LSPainter
 
                 Canvas painting = paintingArray[i];
 
-                frames[xI, yI] = new Frame(painting, frameVertices, frameIndices);
+                Frames[xI, yI] = new PictureFrame(painting, frameVertices, frameIndices);
 
                 frameIndex++;
             }
@@ -89,7 +89,7 @@ namespace LSPainter
 
         public void Load(Shader shader)
         {
-            foreach (Frame frame in frames)
+            foreach (PictureFrame frame in Frames)
             {
                 frame.Load(shader);
             }
@@ -97,7 +97,7 @@ namespace LSPainter
 
         public void Update()
         {
-            foreach (Frame frame in frames)
+            foreach (PictureFrame frame in Frames)
             {
                 frame.Update();
             }
@@ -105,7 +105,7 @@ namespace LSPainter
 
         public void Draw()
         {
-            foreach (Frame frame in frames)
+            foreach (PictureFrame frame in Frames)
             {
                 frame.Draw();
             }

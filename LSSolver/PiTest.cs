@@ -68,11 +68,6 @@ namespace LSPainter.LSSolver
         }
     }
 
-    public abstract class PiConstraint : Constraint<PiSolution, PiScore>
-    {
-        
-    }
-
     public class PiOperationFactory : OperationFactory<PiSolution, PiScore, PiChecker>
     {
         public double MaxStep { get; set; }
@@ -85,9 +80,9 @@ namespace LSPainter.LSSolver
             Alpha = 0.99;
         }
 
-        public override Operation<PiSolution, PiScore, PiChecker> Generate()
+        public override Operation<PiSolution, PiScore, PiChecker> Generate(PiSolution solution)
         {
-            return new StepOperation(Randomizer.Range(-MaxStep, MaxStep));
+            return new StepOperation(Randomizer.RandomDouble(-MaxStep, MaxStep));
         }
 
         public override void Update()

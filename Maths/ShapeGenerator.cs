@@ -1,7 +1,4 @@
-using LSPainter.Maths;
-using LSPainter.Maths.Shapes;
-
-namespace LSPainter.ShapePainter
+namespace LSPainter.Maths
 {
     public class ShapeGeneratorSettings : ICloneable
     {
@@ -9,20 +6,20 @@ namespace LSPainter.ShapePainter
         public double MaxX { get; set; }
         public double MinY { get; set; }
         public double MaxY { get; set; }
-        public double Area { get; set; }
+        public double MaxArea { get; set; }
 
-        public ShapeGeneratorSettings(double minX, double maxX, double minY, double maxY, double area)
+        public ShapeGeneratorSettings(double minX, double maxX, double minY, double maxY, double maxArea)
         {
             MinX = minX;
             MaxX = maxX;
             MinY = minY;
             MaxY = maxY;
-            Area = area;
+            MaxArea = maxArea;
         }
 
         public object Clone()
         {
-            return new ShapeGeneratorSettings(MinX, MaxX, MinY, MaxY, Area);
+            return new ShapeGeneratorSettings(MinX, MaxX, MinY, MaxY, MaxArea);
         }
     }
 
@@ -41,26 +38,28 @@ namespace LSPainter.ShapePainter
             return generator(settings);
         }
 
-        static Point GeneratePoint(ShapeGeneratorSettings settings)
+        public static Vector GenerateVector(ShapeGeneratorSettings settings)
         {
-            double x = random.NextDouble() * (settings.MaxX - settings.MinX) + settings.MinX;
-            double y = random.NextDouble() * (settings.MaxY - settings.MinY) + settings.MinY;
+            double x = Randomizer.RandomDouble(settings.MinX, settings.MaxX);
+            double y = Randomizer.RandomDouble(settings.MinY, settings.MaxY);
 
-            return new Point(x, y);
+            return new Vector(x, y);
         }
 
-        static Vector GenerateUnitVector(double angle)
+        public static Vector GenerateUnitVector(double angle)
         {
             return new Vector(Math.Cos(angle), Math.Sin(angle));
         }
 
-        static LSPainter.Maths.Shapes.Triangle GenerateTriangle(ShapeGeneratorSettings settings)
+        static Triangle GenerateTriangle(ShapeGeneratorSettings settings)
         {
-            Point p1 = GeneratePoint(settings);
+            double area = GenerateArea(settings);
 
-            double gamma = Randomizer.Range(0.1f, 0.9f) * Math.PI;
+            Vector p1 = GenerateVector(settings);
+            
+            double gamma = Randomizer.RandomDouble(0.1f, 0.9f) * Math.PI;
 
-            double remainder = 2 * settings.Area / Math.Sin(gamma);
+            double remainder = 2 * area / Math.Sin(gamma);
 
             // Lengths a and b of the triangle
             double[] factors = Randomizer.RandomFactors(remainder, 2);
@@ -68,19 +67,25 @@ namespace LSPainter.ShapePainter
             double angle1 = 2 * Math.PI * random.NextDouble();
             double angle2 = angle1 - gamma;
 
-            Point p2 = p1 + factors[0] * GenerateUnitVector(angle1);
-            Point p3 = p1 + factors[1] * GenerateUnitVector(angle2);
+            Vector p2 = p1 + factors[0] * GenerateUnitVector(angle1);
+            Vector p3 = p1 + factors[1] * GenerateUnitVector(angle2);
 
-            return new LSPainter.Maths.Shapes.Triangle(p1, p2, p3);
+            return new Triangle(p1, p2, p3);
         }
 
         static Circle GenerateCircle(ShapeGeneratorSettings settings)
         {
-            Point origin = GeneratePoint(settings);
+            Vector origin = GenerateVector(settings);
+            double area = GenerateArea(settings);
 
-            double radius = Math.Sqrt(settings.Area / Math.PI);
+            double radius = Math.Sqrt(area / Math.PI);
 
             return new Circle(origin, radius);
+        }
+
+        static double GenerateArea(ShapeGeneratorSettings settings)
+        {
+            return Randomizer.RandomDouble() * settings.MaxArea;
         }
     }
 }

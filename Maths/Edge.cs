@@ -1,8 +1,10 @@
 namespace LSPainter.Maths
 {
-    public class Edge : IEquatable<Edge>
+    public class Edge : IEquatable<Edge>, IBoundable
     {
         public Vector V1, V2;
+
+        public Rectangle BoundingBox => Rectangle.FromPointCloud(new[] { V1, V2 });
 
         public Edge(Vector v1, Vector v2)
         {

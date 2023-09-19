@@ -1,6 +1,6 @@
 namespace LSPainter.Maths
 {
-    public class Vector : IComparable<LineSegment>, IEquatable<Vector>
+    public class Vector : IComparable<LineSegment>, IEquatable<Vector>, ICloneable
     {
         public double X { get; private set; }
         public double Y { get; private set; }
@@ -12,8 +12,6 @@ namespace LSPainter.Maths
             Y = y;
         }
 
-        public static implicit operator Point(Vector v) => new Point(v.X, v.Y);
-
         public static Vector operator +(Vector v) => v;
         public static Vector operator -(Vector v) => new Vector(-v.X, -v.Y);
         public static Vector operator +(Vector u, Vector v) => new Vector(u.X + v.X, u.Y + v.Y);
@@ -24,8 +22,10 @@ namespace LSPainter.Maths
         public static double Cross(Vector u, Vector v) => (u.X * v.Y) - (u.Y * v.X);
         public static double Determinant(Vector u, Vector v, Vector w) => (w.X - u.X) * (v.Y - u.Y) - (w.Y - u.Y) * (v.X - u.X);
 
-        public static Vector UnitX = new Vector(1, 0);
-        public static Vector UnitY = new Vector(0, 1);
+        public static Vector UnitX = new (1, 0);
+        public static Vector UnitY = new (0, 1);
+        
+        public static Vector PixelPoint(int x, int y) => new (x + 0.5, y + 0.5);
 
         public void Normalize()
         {
@@ -53,7 +53,26 @@ namespace LSPainter.Maths
 
         public int CompareTo(LineSegment l)
         {
-            return ((Point)this).CompareTo(l);
+            /* 
+            Check if v lies left or right of line segment l, if we look from l1 to l2. Source:
+            https://www.scratchapixel.com/lessons/3d-basic-rendering/rasterization-practical-implementation/rasterization-stage.html
+             */
+
+            double f = Vector.Determinant(l.V1, l.V2, this);
+
+            if (f < 0)
+            {
+                return -1;
+            }
+            else if (f == 0)
+            {
+                return 0;
+            }
+            else
+            {
+                // f > 0
+                return 1;
+            }
         }
 
         public static bool operator ==(Vector? u, Vector? v)
@@ -75,5 +94,12 @@ namespace LSPainter.Maths
 
             return X == other.X && Y == other.Y;
         }
+
+        public object Clone()
+        {
+            return new Vector(X, Y);
+        }
+
+        public override string ToString() => $"({X:F3}, {Y:F3})";
     }
 }
