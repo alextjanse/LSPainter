@@ -2,21 +2,21 @@ namespace LSPainter.Maths
 {
     public class Circle : Shape
     {
-        public override string ToString() => $"Circle {Origin}, r={Radius:F3}";
+        public override string ToString() => $"Circle: p={Origin}, r={Radius:F3}";
         public Vector Origin { get; set; }
         public double Radius { get; set; }
+        public override double Area => double.Pi * Radius * Radius;
 
-        public override Rectangle BoundingBox { get; protected set; }
+        public override Rectangle BoundingBox => new(Origin.X - Radius,
+                                                     Origin.X + Radius,
+                                                     Origin.Y - Radius,
+                                                     Origin.Y + Radius);
         public override Vector Centroid => Origin;
 
         public Circle(Vector origin, double radius)
         {
             Origin = origin;
             Radius = radius;
-
-            Area = Math.PI * Radius * Radius;
-
-            BoundingBox = CreateBoundingBox();
         }
 
         public override bool IsInside(Vector p)
@@ -37,17 +37,11 @@ namespace LSPainter.Maths
         public override void Translate(Vector translation)
         {
             Origin += translation;
-
-            BoundingBox = CreateBoundingBox();
         }
 
         public override void Resize(double scale)
         {
             Radius *= scale;
-
-            Area = Math.PI * Radius * Radius;
-
-            BoundingBox = CreateBoundingBox();
         }
 
         public override object Clone()

@@ -4,11 +4,9 @@ namespace LSPainter.FiniteShapePainter.Operations
 {
     public class RemoveOperation : FiniteShapePainterOperation
     {
-        public int Index { get; }
 
-        public RemoveOperation(int index, Rectangle boundingBox) : base(boundingBox)
+        public RemoveOperation(int index, Rectangle boundingBox) : base(index, boundingBox)
         {
-            Index = index;
         }
 
         public override FiniteShapePainterScore Try(FiniteShapePainterSolution solution, FiniteShapePainterScore currentScore, FiniteShapePainterChecker checker)

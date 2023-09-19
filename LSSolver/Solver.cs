@@ -1,5 +1,6 @@
 using LSPainter.FiniteShapePainter;
 using LSPainter.ShapePainter;
+using OpenTK.Graphics.ES20;
 
 namespace LSPainter.LSSolver
 {
@@ -67,11 +68,13 @@ namespace LSPainter.LSSolver
 
                 if (GetScoreValue(actualScore) != newValue)
                 {
+                    FiniteShapePainterSolution sol = Solution as FiniteShapePainterSolution ?? throw new Exception();
+                    FiniteShapePainterOperation op = operation as FiniteShapePainterOperation ?? throw new Exception();
+
                     throw new Exception("Operation lies about score diff");
                 }
             }
 
-            // Set on an interval of 1000 iterations
             if (tick++ > 1000)
             {
                 UpdateParameters();

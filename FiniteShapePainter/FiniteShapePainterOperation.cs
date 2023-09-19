@@ -1,36 +1,20 @@
+using System.Security.Cryptography.X509Certificates;
 using LSPainter.LSSolver.Painter;
 using LSPainter.Maths;
+using OpenTK.Graphics.ES20;
 
 namespace LSPainter.FiniteShapePainter
 {   
     public abstract class FiniteShapePainterOperation : CanvasOperation<FiniteShapePainterSolution, FiniteShapePainterScore, FiniteShapePainterChecker>
     {
-        protected FiniteShapePainterOperation(Rectangle bbox) : base(bbox)
+        public int Index { get; }
+
+        protected FiniteShapePainterOperation(int index, Rectangle bbox) : base(bbox)
         {
+            Index = index;
         }
 
         public abstract override FiniteShapePainterScore Try(FiniteShapePainterSolution solution, FiniteShapePainterScore currentScore, FiniteShapePainterChecker checker);
-
-        protected void DrawShapeOnSection(ref Color[,] section, (Shape, Color) obj)
-        {
-            (Shape shape, Color color) = obj;
-
-            Rectangle intersection = Rectangle.Intersect(BoundingBox, shape.BoundingBox);
-
-            if (intersection.IsEmpty) return;
-
-            (int xOffset, int yOffset) = intersection.OriginOffsets;
-
-            foreach ((int xSolution, int ySolution) in intersection.PixelCoords())
-            {
-                if (shape.IsInside(GetPixelVector(xSolution, ySolution)))
-                {
-                    int xSection = xSolution - xOffset;
-                    int ySection = ySolution - yOffset;
-                    section[xSection, ySection] = Color.Blend(section[xSection, ySection], color);
-                }
-            }
-        }
 
         protected (long pixelScoreDiff, long blankPixelDiff) GetSectionScoreDiff(Color[,] section, int xOffset, int yOffset, FiniteShapePainterSolution solution, FiniteShapePainterChecker checker)
         {

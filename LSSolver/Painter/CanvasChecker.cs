@@ -15,7 +15,7 @@ namespace LSPainter.LSSolver.Painter
         {
             long totalPixelScore = 0;
 
-            foreach ((int x, int y) in solution.Canvas.BBox.PixelCoords())
+            foreach ((int x, int y) in solution.Canvas.BoundingBox.PixelCoords())
             {
                 totalPixelScore += GetPixelScore(x, y, solution.Canvas.GetPixel(x, y));
             }
@@ -46,7 +46,7 @@ namespace LSPainter.LSSolver.Painter
         {
             long result = 0;
 
-            foreach ((int x, int y) in solution.Canvas.BBox.PixelCoords())
+            foreach ((int x, int y) in solution.Canvas.BoundingBox.PixelCoords())
             {
                 if (PixelIsBlank(solution, x, y)) result++;
             }

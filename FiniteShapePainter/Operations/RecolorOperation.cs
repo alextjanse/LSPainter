@@ -5,11 +5,9 @@ namespace LSPainter.FiniteShapePainter.Operations
     public class RecolorOperation : FiniteShapePainterOperation
     {
         public Color Color { get; }
-        public int Index { get; }
 
-        public RecolorOperation(int index, Color color, Rectangle boundingBox) : base(boundingBox)
+        public RecolorOperation(int index, Color color, Rectangle boundingBox) : base(index, boundingBox)
         {
-            Index = index;
             Color = color;
         }
 

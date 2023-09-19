@@ -7,13 +7,11 @@ namespace LSPainter.FiniteShapePainter.Operations
     {
         public Shape Shape { get; }
         public Color Color { get; }
-        public int Index { get; }
 
-        public InsertOperation(Shape shape, Color color, int index, Rectangle boundingBox) : base(boundingBox)
+        public InsertOperation(Shape shape, Color color, int index, Rectangle boundingBox) : base(index, boundingBox)
         {
             Shape = shape;
             Color = color;
-            Index = index;
         }
 
         public override FiniteShapePainterScore Try(FiniteShapePainterSolution solution, FiniteShapePainterScore currentScore, FiniteShapePainterChecker checker)

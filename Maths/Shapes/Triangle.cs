@@ -6,7 +6,8 @@ namespace LSPainter.Maths
         public Vector P2 { get; private set; }
         public Vector P3 { get; private set; }
 
-        public override Rectangle BoundingBox { get; protected set; }
+        public override double Area => Vector.Determinant(P1, P2, P3);
+        public override Rectangle BoundingBox => Rectangle.FromPointCloud(new[] { P1, P2, P3 });
         public override Vector Centroid => (P1 + P2 + P3) * (1.0 / 3.0);
 
         public Triangle(Vector p1, Vector p2, Vector p3)
@@ -14,15 +15,6 @@ namespace LSPainter.Maths
             P1 = p1;
             P2 = p2;
             P3 = p3;
-
-            Area = Vector.Determinant(P1, P2, P3);
-            BoundingBox = CreateBoundingBox();
-        }
-
-        void SetProperties()
-        {
-            Area = Vector.Determinant(P1, P2, P3);
-            BoundingBox = CreateBoundingBox();
         }
 
         public override bool IsInside(Vector p)
@@ -39,18 +31,11 @@ namespace LSPainter.Maths
             return Vector.Determinant(v1, v2, p) >= 0;
         }
 
-        Rectangle CreateBoundingBox()
-        {
-            return Rectangle.FromPointCloud(new Vector[] { P1, P2, P3 });
-        }
-
         public override void Translate(Vector translation)
         {
             P1 += translation;
             P2 += translation;
             P3 += translation;
-
-            SetProperties();
         }
 
         public override void Resize(double scale)
@@ -68,8 +53,6 @@ namespace LSPainter.Maths
             P1 = centroid + p1c;
             P2 = centroid + p2c;
             P3 = centroid + p3c;
-
-            SetProperties();
         }
 
         public override object Clone()
@@ -77,6 +60,6 @@ namespace LSPainter.Maths
             return new Triangle((Vector)P1.Clone(), (Vector)P2.Clone(), (Vector)P3.Clone());
         }
 
-        public override string ToString() => $"Triangle {P1}, {P2}, {P3}";
+        public override string ToString() => $"Triangle: p1={P1}, p2={P2}, p3={P3}";
     }
 }

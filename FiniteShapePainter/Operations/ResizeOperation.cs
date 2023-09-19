@@ -5,20 +5,14 @@ namespace LSPainter.FiniteShapePainter.Operations
     public class ResizeOperation : FiniteShapePainterOperation
     {
         public double Scale { get; }
-        public int Index { get; }
 
-        public ResizeOperation(int index, double scale, Rectangle boundingBox) : base(boundingBox)
+        public ResizeOperation(int index, double scale, Rectangle boundingBox) : base(index, boundingBox)
         {
-            Index = index;
             Scale = scale;
         }
 
         public override FiniteShapePainterScore Try(FiniteShapePainterSolution solution, FiniteShapePainterScore currentScore, FiniteShapePainterChecker checker)
         {
-            (int xOffset, int yOffset) = BoundingBox.OriginOffsets;
-
-            Color[,] section = new Color[BoundingBox.SectionWidth, BoundingBox.SectionHeight];
-
             for (int i = 0; i < Index; i++)
             {
                 (Shape shape, Color color) = solution.Shapes[i];
@@ -32,7 +26,7 @@ namespace LSPainter.FiniteShapePainter.Operations
 
             resized.Resize(Scale);
 
-            DrawShapeOnSection(ref section, (resized, c));
+            Sketch.DrawShape(resized, c);
 
             for (int i = Index + 1; i < solution.NumberOfShapes; i++)
             {
@@ -59,6 +53,11 @@ namespace LSPainter.FiniteShapePainter.Operations
             (Shape s, Color c) = solution.Shapes[Index];
 
             s.Resize(Scale);
+
+            if (!s.BoundingBox.Overlaps(solution.Canvas.BoundingBox))
+            {
+                solution.RemoveAt(Index);
+            }
 
             solution.DrawSection(BoundingBox);
         }

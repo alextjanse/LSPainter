@@ -7,7 +7,7 @@ namespace LSPainter.Maths
 
     public class Rectangle : Shape
     {
-        public override string ToString() => $"Rectangle ({MinX:F3}, {MinY:F3}), ({MaxX:F3}, {MaxY:F3})";
+        public override string ToString() => $"Rectangle: p_1=(x={MinX:F3}, y={MinY:F3}), p_2=(x={MaxX:F3}, y={MaxY:F3})";
         public static Rectangle Empty => new Rectangle(double.NaN, double.NaN, double.NaN, double.NaN);
 
         public double MinX { get; private set; }
@@ -17,26 +17,13 @@ namespace LSPainter.Maths
 
         public double Width => MaxX - MinX;
         public double Height => MaxY - MinY;
+        public override double Area => Width * Height;
 
         public bool IsEmpty => MinX + MaxX + MinY + MaxY == double.NaN;
 
-        public override Rectangle BoundingBox
-        {
-            get
-            {
-                return this;
-            }
-            protected set
-            {
-                MinX = value.MinX;
-                MaxX = value.MaxX;
-                MinY = value.MinY;
-                MaxY = value.MaxY;
-                Area = value.Area;
-            }
-        }
+        public override Rectangle BoundingBox => this;
 
-        public override Vector Centroid => new Vector(MinX + (MaxX - MinX) / 2, MinY + (MaxY - MinY) / 2);
+        public override Vector Centroid => new(MinX + Width / 2, MinY + Height / 2);
 
         public Rectangle(double minX, double maxX, double minY, double maxY)
         {
@@ -45,8 +32,8 @@ namespace LSPainter.Maths
             MinY = minY;
             MaxY = maxY;
 
-            Area = Width * Height;
-            BoundingBox = this;
+            // Sanity check
+            if (MinX > MaxX || MinY > MaxY) throw new Exception();
         }
 
         public static Rectangle FromPointCloud(IEnumerable<Vector> points)
@@ -69,17 +56,17 @@ namespace LSPainter.Maths
 
         public static Rectangle Intersect(Rectangle a, Rectangle b)
         {
-            if (a.IsEmpty || b.IsEmpty) return Rectangle.Empty;
+            if (a.IsEmpty || b.IsEmpty) return Empty;
 
-            double xMin = Math.Max(a.MinX, b.MinX);
-            double xMax = Math.Min(a.MaxX, b.MaxX);
-            double yMin = Math.Max(a.MinY, b.MinY);
-            double yMax = Math.Min(a.MaxY, b.MaxY);
+            double minX = Math.Max(a.MinX, b.MinX);
+            double maxX = Math.Min(a.MaxX, b.MaxX);
+            double minY = Math.Max(a.MinY, b.MinY);
+            double maxY = Math.Min(a.MaxY, b.MaxY);
 
             // Intersection is empty
-            if (xMin > xMax || yMin > yMax) return Rectangle.Empty;
+            if (minX > maxX || minY > maxY) return Empty;
 
-            return new Rectangle(xMin, xMax, yMin, yMax);
+            return new Rectangle(minX, maxX, minY, maxY);
         }
 
         public bool Overlaps(Rectangle other)
@@ -126,10 +113,10 @@ namespace LSPainter.Maths
 
         public void UnionWith(Rectangle other)
         {
-            double minX = Math.Min(MinX, other.MinX);
-            double maxX = Math.Max(MaxX, other.MaxX);
-            double minY = Math.Min(MinY, other.MinY);
-            double maxY = Math.Max(MaxY, other.MaxY);
+            MinX = Math.Min(MinX, other.MinX);
+            MaxX = Math.Max(MaxX, other.MaxX);
+            MinY = Math.Min(MinY, other.MinY);
+            MaxY = Math.Max(MaxY, other.MaxY);
         }
 
         public IEnumerable<(int x, int y)> PixelCoords()
@@ -184,8 +171,6 @@ namespace LSPainter.Maths
             MaxX = centroid.X + newWidth / 2;
             MinY = centroid.Y - newHeight / 2;
             MaxY = centroid.Y + newHeight / 2;
-
-            Area = newWidth * newHeight;
         }
     }
 }

@@ -11,7 +11,7 @@ namespace LSPainter
         public int Height { get; protected set; }
         public (int, int) Size => (Width, Height);
         public byte[] Data { get; protected set; }
-        public Rectangle BBox { get; }
+        public Rectangle BoundingBox { get; }
 
         public Texture(int width, int height)
         {
@@ -20,7 +20,7 @@ namespace LSPainter
 
             Data = new byte[4 * Width * Height];
 
-            BBox = new Rectangle(0, Width, 0, Height);
+            BoundingBox = new Rectangle(0, Width, 0, Height);
         }
 
         public void Load()

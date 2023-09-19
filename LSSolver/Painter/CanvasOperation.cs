@@ -20,7 +20,7 @@ namespace LSPainter.LSSolver.Painter
 
         protected void TrimToCanvas(TChecker checker)
         {
-            BoundingBox = Rectangle.Intersect(BoundingBox, checker.OriginalImage.BBox);
+            BoundingBox = Rectangle.Intersect(BoundingBox, checker.OriginalImage.BoundingBox);
         }
     }
 }
