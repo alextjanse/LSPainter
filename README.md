@@ -1,19 +1,13 @@
 # LSPainter
-Hi there! I'm Alex and I've made a local search solver that paints a copy of a given image. This is my second version; the first version can be found here: [MonaLSa](https://github.com/alextjanse/MonaLSa). That version was written in Javascript, so not the best choice to write a local search solver in, but I wanted to practice my Javascript. Now I've written the project in C#, using OpenTK as display port. I've also decided to make my own drawing library, for fun and also for more control.
 
-## What is local search?
-In computing science, we try to find an exact solutions to problems. Think for instance of finding the shortest path from A to B, making correct school schedules for all the students and teachers, or finding the best placement of emergency alarms so everyone can hear them. Some of these problems are quite easy to solve and we can design an algorithm that solves them optimally.
+Hi there! I’m Alex and I’ve made a local search painter. It’s a local search solver that tries to copy a given image using its own “brushes”. The simplest version just keeps generating random shapes, determining if the canvas would look more like the original with the shape or not, and drawing accordingly. Bit by bit, a resemblance emerges from the infinite randomness, and a copy is born.
 
-However, there are also a lot of problems that are too hard to solve. There are just too many variables that are all depedent on each other. In these cases we could try to enumerate all possible solutions and find the optimal solution that way, but there are usually too many possible solutions. In the [Knapsack problem](https://en.wikipedia.org/wiki/Knapsack_problem) with $n$ items, there are $2^n$ possible solution. This number grows too fast: $2^4 = 16, 2^8 = 256, 2^{16} = 65536$. We need to come up with a smarter way.
+I’m also trying other “art styles” by designing different solution types. For instance, a limited number of shapes, so you have to find the best combination. Or a [planar subdivision](https://en.wikipedia.org/wiki/Planar_straight-line_graph) of the canvas (in the making), giving it a whole different look. There is a lot more I want to do with this project, much more to explore!
 
-Introducing local search. The idea is that we have a solution space, where two solutions are called neighbors if they are similar to each other. For instance, a knapsack with a set of items and its neighbor with the same items plus or minus one item. We can compare these two solutions and see which one is better. From there, we can look at its neighbors and do the same. This way, you walk through the solution space from solution to solution, trying to approach an optimal solution. Local search doesn't promise an optimal solution, but usually you don't need an optimal solution to your problem. If you need to find a schedule that fits in a certain time span, it matters more that we find a feasible solution instead of the optimum.
+This project is my first big project, so I may not have the best structure. I’m trying to redesign parts from time to time and I’m always open to suggestions on how to do so. What this project is most about is the Fun™ computing science bits I did in it. I’ve made my own maths library, as well as some data structures and algorithms. I’m also trying to figure out new stuff in C#, it’s a pretty fun language to learn.
 
-## Local search model model
-I define a canvas as a solution to this "problem". The score of a solution is the difference to the original image, i.e., the total difference between each color channel (RGB) of each pixel. As neighbors, I have the current solution with a random shape drawn on it in a random color. When deciding on changing to the neighbor, we have to use a penalty when a pixel worsens. For now, it's just a random factor, but I'll have to redesign it in the future.
+## TODOs
 
-## Ideas and todos
-- Alternate the color generator. Try to come up with a color palette to choose from. We could keep track of colors that worked in previous iterations and use that data to generate a new color.
-- Setup the simulated annealing parameters. Needs adjustment (now just selected some random parameters), and also could be nice to make the solver run in different phases: start with large shapes for global colors, use small shapes later for detailing.
-- Add brushes and strokes. Would be cool to make a painting with only strokes, just like a real painter would.
-- Make multiple solvers run in parallel. You can make a generational solver this way: have n solvers run independently, and after k iterations take the best solution, copy it to the other solvers and start a new generation.
-- Make the solver work with larger images. Right now, we store everything in a $4 \times w \times h$ byte array, but this easily gets too large to store on the GPU as texture. Split the painting up in several portions, so we can make a texture for each portion.
+ - **Planar subdivision** - make operations for the solution
+ - **Parameter fine-tuner** - find the best parameters to solve a problem faster
+ - **Write documenation** - I want to make the project more presentable
