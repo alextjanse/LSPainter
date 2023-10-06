@@ -1,3 +1,5 @@
+![LSPainter - Mona Lisa](https://github.com/alextjanse/LSPainter/blob/master/LSPainter%20-%20Mona%20Lisa.png?raw=true)
+
 # LSPainter
 
 Hi there! I’m Alex and I’ve made a local search painter. It’s a local search solver that tries to copy a given image using its own “brushes”. The simplest version just keeps generating random shapes, determining if the canvas would look more like the original with the shape or not, and drawing accordingly. Bit by bit, a resemblance emerges from the infinite randomness, and a copy is born.
