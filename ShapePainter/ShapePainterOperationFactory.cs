@@ -12,8 +12,8 @@ namespace LSPainter.ShapePainter
 
         public ShapePainterOperationFactory(int canvasWidth, int canvasHeight)
         {
-            ShapeGeneratorSettings = new ShapeGeneratorSettings(0, canvasWidth, 0, canvasHeight, 1000);
-            ColorGeneratorSettings = new ColorGeneratorSettings(255 / 10);
+            ShapeGeneratorSettings = new ShapeGeneratorSettings(0, canvasWidth, 0, canvasHeight, 200);
+            ColorGeneratorSettings = new ColorGeneratorSettings(50);
         }
 
         public override Operation<ShapePainterSolution, ShapePainterScore, ShapePainterChecker> Generate(ShapePainterSolution solution)

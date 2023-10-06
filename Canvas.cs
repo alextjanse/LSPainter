@@ -10,7 +10,7 @@ namespace LSPainter
 
         public Canvas(int width, int height) : base(width, height)
         {
-            image = new Image<Rgba32>(Width, Height, Color.None);
+            image = new Image<Rgba32>(Width, Height, Color.Black);
 
             image.CopyPixelDataTo(Data);
         }

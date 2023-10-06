@@ -9,14 +9,11 @@ namespace LSPainter.FiniteShapePainter
     {
         public ShapeGeneratorSettings ShapeGeneratorSettings { get; }
         public ColorGeneratorSettings ColorGeneratorSettings { get; }
-        public ColorPalette ColorPalette { get; }
         
         public double Alpha = 1;
 
-        public FiniteShapePainterOperationFactory(int canvasWidth, int canvasHeight, ColorPalette colorPalette) : base(canvasWidth, canvasHeight)
+        public FiniteShapePainterOperationFactory(int canvasWidth, int canvasHeight) : base(canvasWidth, canvasHeight)
         {
-            ColorPalette = colorPalette;
-
             ShapeGeneratorSettings = new ShapeGeneratorSettings(0, canvasWidth, 0, canvasHeight, 400);
             ColorGeneratorSettings = new ColorGeneratorSettings(50);
         }
@@ -50,7 +47,7 @@ namespace LSPainter.FiniteShapePainter
         {
             Shape shape = ShapeGenerator.Generate(ShapeGeneratorSettings);
             Color color = ColorGenerator.Generate(ColorGeneratorSettings);
-            // Color color = Randomizer.PickRandomly<Color>(ColorPalette.Colors);
+            
             int index = Randomizer.RandomInt(solution.NumberOfShapes);
 
             return new InsertOperation(shape, color, index, TrimToCanvas(shape.BoundingBox));
@@ -72,7 +69,7 @@ namespace LSPainter.FiniteShapePainter
 
             Shape shape = ShapeGenerator.Generate(ShapeGeneratorSettings);
             Color color = ColorGenerator.Generate(ColorGeneratorSettings);
-            // Color color = Randomizer.PickRandomly<Color>(ColorPalette.Colors);
+            
             int index = Randomizer.RandomInt(solution.NumberOfShapes);
 
             (Shape currentShape, Color currentColor) = solution.Shapes[index];
