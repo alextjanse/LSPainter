@@ -1,34 +1,49 @@
 using LSPainter.Maths;
 using LSPainter.LSSolver;
-using LSPainter.LSSolver.Painter;
 
 namespace LSPainter.ShapePainter
 {
     public class ShapePainterOperationFactory : OperationFactory<ShapePainterSolution, ShapePainterScore, ShapePainterChecker>
     {
-        public ShapeGeneratorSettings ShapeGeneratorSettings { get; }
-        public ColorGeneratorSettings ColorGeneratorSettings { get; }
+        public ShapeGenerator ShapeGenerator { get; }
+        public ColorGenerator ColorGenerator { get; }
         public double Alpha = 1;
 
         public ShapePainterOperationFactory(int canvasWidth, int canvasHeight)
         {
-            ShapeGeneratorSettings = new ShapeGeneratorSettings(0, canvasWidth, 0, canvasHeight, 200);
-            ColorGeneratorSettings = new ColorGeneratorSettings(50);
+            RangeParameter xRange = new RangeParameter(0, canvasWidth);
+            RangeParameter yRange = new RangeParameter(0, canvasHeight);
+            AverageValueParameter area = new AverageValueParameter(500, 400);
+
+            var shapeOptions = new OptionsParameter<Shape.Type>(
+                new (Shape.Type, double)[]
+                {
+                    (Shape.Type.Circle,     1.0),
+                    (Shape.Type.Triangle,   1.0)
+                }
+            );
+
+            ShapeGeneratorSettings shapeSettings = new ShapeGeneratorSettings(xRange, yRange, area, shapeOptions);
+            ShapeGenerator = new ShapeGenerator(shapeSettings);
+
+            ColorGeneratorSettings colorSettings = new ColorGeneratorSettings(
+                new RangeParameter(0, 255)
+            );
+
+            ColorGenerator = new ColorGenerator(colorSettings);
         }
 
         public override Operation<ShapePainterSolution, ShapePainterScore, ShapePainterChecker> Generate(ShapePainterSolution solution)
         {
-            Shape shape = ShapeGenerator.Generate(ShapeGeneratorSettings);
-            Color color = ColorGenerator.Generate(ColorGeneratorSettings);
+            Shape shape = ShapeGenerator.Generate();
+            Color color = ColorGenerator.Generate();
 
             return new PaintShapeOperation(shape, color);
         }
 
         public override void Update()
         {
-            ShapeGeneratorSettings.MaxArea *= Alpha;
-
-            ColorGeneratorSettings.Alpha *= Alpha;
+            
         }
     }
 }

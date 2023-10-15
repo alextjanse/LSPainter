@@ -2,90 +2,88 @@ namespace LSPainter.Maths
 {
     public class ShapeGeneratorSettings : ICloneable
     {
-        public double MinX { get; set; }
-        public double MaxX { get; set; }
-        public double MinY { get; set; }
-        public double MaxY { get; set; }
-        public double MaxArea { get; set; }
+        public RangeParameter XRange { get; set; }
+        public RangeParameter YRange { get; set; }
+        public AverageValueParameter Area { get; set; }
 
-        public ShapeGeneratorSettings(double minX, double maxX, double minY, double maxY, double maxArea)
+        public OptionsParameter<Shape.Type> ShapeTypes { get; set; }
+
+        public ShapeGeneratorSettings(RangeParameter xRange, RangeParameter yRange, AverageValueParameter area, OptionsParameter<Shape.Type> shapeTypes)
         {
-            MinX = minX;
-            MaxX = maxX;
-            MinY = minY;
-            MaxY = maxY;
-            MaxArea = maxArea;
+            XRange = xRange;
+            YRange = yRange;
+            Area = area;
+            ShapeTypes = shapeTypes;
         }
 
         public object Clone()
         {
-            return new ShapeGeneratorSettings(MinX, MaxX, MinY, MaxY, MaxArea);
+            return new ShapeGeneratorSettings(XRange, YRange, Area, ShapeTypes);
         }
     }
 
     public class ShapeGenerator
     {
-        static (Func<ShapeGeneratorSettings, Shape>, float)[] generators = new (Func<ShapeGeneratorSettings, Shape>, float)[]
-        {
-            (GenerateCircle, 0.5f),
-            (GenerateTriangle, 0.5f),
-        };
+        public ShapeGeneratorSettings Settings { get; set; }
 
-        static Random random = new Random();
-        public static Shape Generate(ShapeGeneratorSettings settings)
+        public ShapeGenerator(ShapeGeneratorSettings settings)
         {
-            Func<ShapeGeneratorSettings, Shape> generator = Randomizer.PickRandomly(generators);
-            return generator(settings);
+            Settings = settings;
         }
 
-        public static Vector GenerateVector(ShapeGeneratorSettings settings)
+        public Shape Generate()
         {
-            double x = Randomizer.RandomDouble(settings.MinX, settings.MaxX);
-            double y = Randomizer.RandomDouble(settings.MinY, settings.MaxY);
+            return Settings.ShapeTypes.PickValue() switch
+            {
+                Shape.Type.Triangle => GenerateTriangle(),
+                Shape.Type.Circle => GenerateCircle(),
+                _ => throw new Exception("Unknown shape type"),
+            };
+        }
 
+        Vector PickPointOnCanvas()
+        {
+            double x = Settings.XRange.PickValue();
+            double y = Settings.YRange.PickValue();
+            
             return new Vector(x, y);
         }
 
-        public static Vector GenerateUnitVector(double angle)
+        double PickArea()
         {
-            return new Vector(Math.Cos(angle), Math.Sin(angle));
+            return Settings.Area.PickValue();
         }
 
-        static Triangle GenerateTriangle(ShapeGeneratorSettings settings)
+        Triangle GenerateTriangle()
         {
-            double area = GenerateArea(settings);
+            double area = PickArea();
 
-            Vector p1 = GenerateVector(settings);
+            Vector p1 = PickPointOnCanvas();
             
-            double gamma = Randomizer.RandomDouble(0.1f, 0.9f) * Math.PI;
+            double gamma = Randomizer.RandomDouble(0.1, 0.9) * Math.PI;
 
             double remainder = 2 * area / Math.Sin(gamma);
 
             // Lengths a and b of the triangle
             double[] factors = Randomizer.RandomFactors(remainder, 2);
 
-            double angle1 = 2 * Math.PI * random.NextDouble();
+            double angle1 = 2 * Math.PI * Randomizer.RandomDouble();
             double angle2 = angle1 - gamma;
 
-            Vector p2 = p1 + factors[0] * GenerateUnitVector(angle1);
-            Vector p3 = p1 + factors[1] * GenerateUnitVector(angle2);
+            Vector p2 = p1 + factors[0] * Vector.UnitVector(angle1);
+            Vector p3 = p1 + factors[1] * Vector.UnitVector(angle2);
 
             return new Triangle(p1, p2, p3);
         }
 
-        static Circle GenerateCircle(ShapeGeneratorSettings settings)
+        Circle GenerateCircle()
         {
-            Vector origin = GenerateVector(settings);
-            double area = GenerateArea(settings);
+            Vector origin = PickPointOnCanvas();
+            double area = PickArea();
 
             double radius = Math.Sqrt(area / Math.PI);
 
             return new Circle(origin, radius);
-        }
-
-        static double GenerateArea(ShapeGeneratorSettings settings)
-        {
-            return Randomizer.RandomDouble() * settings.MaxArea;
         }
     }
 }

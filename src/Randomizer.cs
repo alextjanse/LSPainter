@@ -1,8 +1,11 @@
+using System.Reflection.Metadata;
+using LSPainter.Maths;
+
 namespace LSPainter
 {
     public class Randomizer
     {
-        static Random random = new Random();
+        public static Random Random = new Random();
 
         public static T PickRandomly<T>((T, float)[] items)
         {
@@ -13,7 +16,7 @@ namespace LSPainter
                 sum += p;
             }
 
-            float x = random.NextSingle() * sum;
+            float x = Random.NextSingle() * sum;
 
             int i = -1;
 
@@ -45,10 +48,8 @@ namespace LSPainter
 
             for (int i = 0; i < list.Count; i++)
             {
-                int j = random.Next(list.Count);
-                T temp = list[j];
-                list[j] = list[i];
-                list[i] = temp;
+                int j = Random.Next(list.Count);
+                (list[i], list[j]) = (list[j], list[i]);
             }
 
             return list;
@@ -62,7 +63,7 @@ namespace LSPainter
 
             for (int i = 0; i < n; i++)
             {
-                double f = random.NextDouble();
+                double f = Random.NextDouble();
                 output[i] = f;
                 product *= f;
             }
@@ -97,7 +98,7 @@ namespace LSPainter
 
             for (int i = 0; i < n; i++)
             {
-                float f = random.NextSingle();
+                float f = Random.NextSingle();
                 output[i] = f;
                 total += f;
             }
@@ -112,20 +113,30 @@ namespace LSPainter
             return output;
         }
 
-        public static double RandomDouble() => random.NextDouble();
-        public static double RandomDouble(double lb, double ub)
+        public static double RandomDouble() => Random.NextDouble();
+
+        public static double RandomDouble(double lb, double ub) => lb + Random.NextDouble() * (ub - lb);
+
+        public static double UniformDistributed(double mean = 0, double sd = 1)
         {
-            return lb + random.NextDouble() * (ub - lb);
+            double u1 = RandomDouble();
+            double u2 = RandomDouble();
+
+            // Box-Muller transform - https://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform
+            double z0 = Math.Sqrt(-2.0 * Math.Log(u1)) * Math.Cos(2.0 * Math.PI * u2);
+
+            return mean + z0 * sd;
         }
-        public static double RandomAngle() => random.NextDouble() * 2 * Math.PI;
+
+        public static double RandomAngle(double maxAngle = 2 * Math.PI) => Random.NextDouble() * maxAngle;
 
         public static bool RandomBool(double p = 0.5)
         {
-            return random.NextDouble() < p;
+            return Random.NextDouble() < p;
         }
 
-        public static int RandomInt() => random.Next();
-        public static int RandomInt(int maxValue) => random.Next(maxValue);
-        public static int RandomInt(int minValue, int maxValue) => random.Next(minValue, maxValue);
+        public static int RandomInt() => Random.Next();
+        public static int RandomInt(int maxValue) => Random.Next(maxValue);
+        public static int RandomInt(int minValue, int maxValue) => Random.Next(minValue, maxValue);
     }
 }

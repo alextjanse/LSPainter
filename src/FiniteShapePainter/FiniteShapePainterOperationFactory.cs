@@ -7,35 +7,56 @@ namespace LSPainter.FiniteShapePainter
 {
     public class FiniteShapePainterOperationFactory : CanvasOperationFactory<FiniteShapePainterSolution, FiniteShapePainterScore, FiniteShapePainterChecker>
     {
-        public ShapeGeneratorSettings ShapeGeneratorSettings { get; }
-        public ColorGeneratorSettings ColorGeneratorSettings { get; }
+        public ShapeGenerator ShapeGenerator { get; }
+        public ColorGenerator ColorGenerator { get; }
+        public OptionsParameter<Func<FiniteShapePainterSolution, FiniteShapePainterOperation?>> NeighbourGenerators { get; }
         
         public double Alpha = 1;
 
         public FiniteShapePainterOperationFactory(int canvasWidth, int canvasHeight) : base(canvasWidth, canvasHeight)
         {
-            ShapeGeneratorSettings = new ShapeGeneratorSettings(0, canvasWidth, 0, canvasHeight, 400);
-            ColorGeneratorSettings = new ColorGeneratorSettings(50);
+            RangeParameter xRange = new RangeParameter(0, canvasWidth);
+            RangeParameter yRange = new RangeParameter(0, canvasHeight);
+            AverageValueParameter area = new AverageValueParameter(500, 400);
+
+            var shapeOptions = new OptionsParameter<Shape.Type>(
+                new (Shape.Type, double)[]
+                {
+                    (Shape.Type.Circle,     1.0),
+                    (Shape.Type.Triangle,   1.0)
+                }
+            );
+
+            ShapeGeneratorSettings shapeSettings = new ShapeGeneratorSettings(xRange, yRange, area, shapeOptions);
+            ShapeGenerator = new ShapeGenerator(shapeSettings);
+
+            ColorGeneratorSettings colorSettings = new ColorGeneratorSettings(
+                new RangeParameter(0, 255)
+            );
+
+            ColorGenerator = new ColorGenerator(colorSettings);
+
+            NeighbourGenerators = new OptionsParameter<Func<FiniteShapePainterSolution, FiniteShapePainterOperation?>>(
+                new (Func<FiniteShapePainterSolution, FiniteShapePainterOperation?>, double)[]
+                {
+                    (GenerateInsertOperation,       1.0),
+                    (GenerateRemoveOperation,       1.0),
+                    (GenerateReplaceOperation,      1.0),
+                    (GenerateRecolorOperation,      1.0),
+                    (GenerateTranslateOperation,    1.0),
+                    (GenerateReorderOperation,      1.0),
+                    (GenerateResizeOperation,       1.0)
+                }
+            );
         }
 
         public override Operation<FiniteShapePainterSolution, FiniteShapePainterScore, FiniteShapePainterChecker> Generate(FiniteShapePainterSolution solution)
         {
-            (Func<FiniteShapePainterSolution, FiniteShapePainterOperation?>, float)[] generators = new (Func<FiniteShapePainterSolution, FiniteShapePainterOperation?>, float)[]
-            {
-                (GenerateInsertOperation, 4f),
-                (GenerateRemoveOperation, 1f),
-                (GenerateReplaceOperation, 1f),
-                (GenerateRecolorOperation, 10f),
-                (GenerateTranslateOperation, 4f),
-                (GenerateReorderOperation, 2f),
-                (GenerateResizeOperation, 4f),
-            };
-
             FiniteShapePainterOperation? operation = null;
 
             while (operation == null)
             {
-                var generator = Randomizer.PickRandomly(generators);
+                var generator = NeighbourGenerators.PickValue();
                 
                 operation = generator(solution);
             }
@@ -45,8 +66,8 @@ namespace LSPainter.FiniteShapePainter
 
         FiniteShapePainterOperation? GenerateInsertOperation(FiniteShapePainterSolution solution)
         {
-            Shape shape = ShapeGenerator.Generate(ShapeGeneratorSettings);
-            Color color = ColorGenerator.Generate(ColorGeneratorSettings);
+            Shape shape = ShapeGenerator.Generate();
+            Color color = ColorGenerator.Generate();
             
             int index = Randomizer.RandomInt(solution.NumberOfShapes);
 
@@ -67,8 +88,8 @@ namespace LSPainter.FiniteShapePainter
         {
             if (solution.NumberOfShapes == 0) return null;
 
-            Shape shape = ShapeGenerator.Generate(ShapeGeneratorSettings);
-            Color color = ColorGenerator.Generate(ColorGeneratorSettings);
+            Shape shape = ShapeGenerator.Generate();
+            Color color = ColorGenerator.Generate();
             
             int index = Randomizer.RandomInt(solution.NumberOfShapes);
 
@@ -85,7 +106,7 @@ namespace LSPainter.FiniteShapePainter
 
             int index = Randomizer.RandomInt(solution.NumberOfShapes);
             (Shape shape, _) = solution.Shapes[index];
-            Color blendColor = ColorGenerator.Generate(ColorGeneratorSettings);
+            Color blendColor = ColorGenerator.Generate();
 
             return new RecolorOperation(index, blendColor, TrimToCanvas(shape.BoundingBox));
         }
@@ -101,7 +122,7 @@ namespace LSPainter.FiniteShapePainter
             double angle = Randomizer.RandomAngle();
             double magnitude = Randomizer.RandomDouble(0, 100);
 
-            Vector translation = ShapeGenerator.GenerateUnitVector(angle) * magnitude;
+            Vector translation = Vector.UnitVector(angle) * magnitude;
 
             Rectangle newBoundingBox = (Rectangle)s.BoundingBox.Clone();
             newBoundingBox.Translate(translation);
@@ -117,8 +138,8 @@ namespace LSPainter.FiniteShapePainter
             int index1 = Randomizer.RandomInt(solution.NumberOfShapes - 1);
             int index2 = Randomizer.RandomInt(index1 + 1, solution.NumberOfShapes);
 
-            (Shape shape1, Color color1) = solution.Shapes[index1];
-            (Shape shape2, Color color2) = solution.Shapes[index2];
+            (Shape shape1, _) = solution.Shapes[index1];
+            (Shape shape2, _) = solution.Shapes[index2];
 
             Rectangle boundingBox = TrimToCanvas(Rectangle.Union(shape1.BoundingBox, shape2.BoundingBox));
 
@@ -144,8 +165,6 @@ namespace LSPainter.FiniteShapePainter
 
         public override void Update()
         {
-            ShapeGeneratorSettings.MaxArea *= Alpha;
-            ColorGeneratorSettings.Alpha *= Alpha;
         }
     }
 }

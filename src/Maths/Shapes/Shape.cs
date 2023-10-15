@@ -2,6 +2,8 @@ namespace LSPainter.Maths
 {
     public abstract class Shape : IBoundable, ICloneable
     {
+        public enum Type { Circle, Triangle };
+
         public abstract Rectangle BoundingBox { get; }
         public abstract Vector Centroid { get; }
 

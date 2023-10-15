@@ -26,6 +26,7 @@ namespace LSPainter.Maths
         public static Vector UnitY = new (0, 1);
         
         public static Vector PixelPoint(int x, int y) => new (x + 0.5, y + 0.5);
+        public static Vector UnitVector(double angle) => new(Math.Cos(angle), Math.Sin(angle));
 
         public void Normalize()
         {

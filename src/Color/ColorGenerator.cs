@@ -1,10 +1,13 @@
+using LSPainter.Maths;
+using OpenTK.Graphics.ES11;
+
 namespace LSPainter
 {
     public class ColorGeneratorSettings : ICloneable
     {
-        public double Alpha { get; set; }
+        public IParameter<double> Alpha { get; set; }
 
-        public ColorGeneratorSettings(double alpha)
+        public ColorGeneratorSettings(IParameter<double> alpha)
         {
             Alpha = alpha;
         }
@@ -17,18 +20,23 @@ namespace LSPainter
 
     public class ColorGenerator
     {
-        static Random random = new Random();
+        public ColorGeneratorSettings Settings { get; set; }
 
-        public static Color Generate(ColorGeneratorSettings settings)
+        public ColorGenerator(ColorGeneratorSettings settings)
+        {
+            Settings = settings;
+        }
+
+        public Color Generate()
         {
             byte[] bytes = new byte[4];
-            random.NextBytes(bytes);
+            Randomizer.Random.NextBytes(bytes);
 
             return new Color(
                 bytes[0],
                 bytes[1],
                 bytes[2],
-                (byte)settings.Alpha
+                (byte)Settings.Alpha.PickValue()
             );
         }
     }
