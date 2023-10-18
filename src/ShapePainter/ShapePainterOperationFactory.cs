@@ -13,9 +13,9 @@ namespace LSPainter.ShapePainter
         {
             RangeParameter xRange = new RangeParameter(0, canvasWidth);
             RangeParameter yRange = new RangeParameter(0, canvasHeight);
-            AverageValueParameter area = new AverageValueParameter(500, 400);
+            RandomValueParameter area = new RandomValueParameter(500, 400, 0);
 
-            var shapeOptions = new OptionsParameter<Shape.Type>(
+            var shapeOptions = new SelectionParameter<Shape.Type>(
                 new (Shape.Type, double)[]
                 {
                     (Shape.Type.Circle,     1.0),

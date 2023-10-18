@@ -1,4 +1,4 @@
-namespace LSPainter.Maths
+namespace LSPainter.LSSolver
 {
     public interface IParameter<T>
     {
@@ -37,11 +37,11 @@ namespace LSPainter.Maths
         }
     }
     
-    public class OptionsParameter<T> : IParameter<T>
+    public class SelectionParameter<T> : IParameter<T>
     {
         private (T item, double chance)[] options;
 
-        public OptionsParameter(T[] options, double[]? chances = null)
+        public SelectionParameter(T[] options, double[]? chances = null)
         {
             if (chances is null)
             {
@@ -52,7 +52,7 @@ namespace LSPainter.Maths
             this.options = options.Zip(chances).ToArray();
         }
 
-        public OptionsParameter(IEnumerable<(T, double)> options)
+        public SelectionParameter(IEnumerable<(T, double)> options)
         {
             this.options = options.ToArray();
         }
@@ -74,20 +74,26 @@ namespace LSPainter.Maths
         }
     }
 
-    public class AverageValueParameter : IParameter<double>
+    public class RandomValueParameter : IParameter<double>
     {
         public double Mean { get; set; }
         public double SD { get; set; }
+        public double Lowerbound { get; set; }
+        public double Upperbound { get; set; }
 
-        public AverageValueParameter(double mean, double sd)
+        public RandomValueParameter(double mean, double sd, double lowerbound = double.NegativeInfinity, double upperbound = double.PositiveInfinity)
         {
             Mean = mean;
             SD = sd;
+            Lowerbound = lowerbound;
+            Upperbound = upperbound;
         }
 
         public double PickValue()
         {
-            return Math.Max(Mean - SD, Math.Min(Mean + SD, Randomizer.UniformDistributed(Mean, SD)));
+            double x = Randomizer.RandomDoubleND(Mean, SD);
+
+            return Math.Max(Lowerbound, Math.Min(Upperbound, x));
         }
     }
 }

@@ -1,11 +1,6 @@
-using LSPainter.FiniteShapePainter;
-using LSPainter.ShapePainter;
-using OpenTK.Graphics.ES20;
-
 namespace LSPainter.LSSolver
 {
-    public interface ISolver<out TSolution> : IIterable
-        where TSolution : ISolution
+    public interface ISolver<out TSolution> : IIterable where TSolution : ISolution
     {
         TSolution Solution { get; }
     }

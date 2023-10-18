@@ -9,7 +9,7 @@ namespace LSPainter.FiniteShapePainter
     {
         public ShapeGenerator ShapeGenerator { get; }
         public ColorGenerator ColorGenerator { get; }
-        public OptionsParameter<Func<FiniteShapePainterSolution, FiniteShapePainterOperation?>> NeighbourGenerators { get; }
+        public SelectionParameter<Func<FiniteShapePainterSolution, FiniteShapePainterOperation?>> NeighbourGenerators { get; }
         
         public double Alpha = 1;
 
@@ -17,9 +17,9 @@ namespace LSPainter.FiniteShapePainter
         {
             RangeParameter xRange = new RangeParameter(0, canvasWidth);
             RangeParameter yRange = new RangeParameter(0, canvasHeight);
-            AverageValueParameter area = new AverageValueParameter(500, 400);
+            RandomValueParameter area = new RandomValueParameter(500, 400, 10);
 
-            var shapeOptions = new OptionsParameter<Shape.Type>(
+            var shapeOptions = new SelectionParameter<Shape.Type>(
                 new (Shape.Type, double)[]
                 {
                     (Shape.Type.Circle,     1.0),
@@ -36,7 +36,7 @@ namespace LSPainter.FiniteShapePainter
 
             ColorGenerator = new ColorGenerator(colorSettings);
 
-            NeighbourGenerators = new OptionsParameter<Func<FiniteShapePainterSolution, FiniteShapePainterOperation?>>(
+            NeighbourGenerators = new SelectionParameter<Func<FiniteShapePainterSolution, FiniteShapePainterOperation?>>(
                 new (Func<FiniteShapePainterSolution, FiniteShapePainterOperation?>, double)[]
                 {
                     (GenerateInsertOperation,       1.0),

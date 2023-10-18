@@ -1,14 +1,16 @@
+using LSPainter.LSSolver;
+
 namespace LSPainter.Maths
 {
     public class ShapeGeneratorSettings : ICloneable
     {
         public RangeParameter XRange { get; set; }
         public RangeParameter YRange { get; set; }
-        public AverageValueParameter Area { get; set; }
+        public RandomValueParameter Area { get; set; }
 
-        public OptionsParameter<Shape.Type> ShapeTypes { get; set; }
+        public SelectionParameter<Shape.Type> ShapeTypes { get; set; }
 
-        public ShapeGeneratorSettings(RangeParameter xRange, RangeParameter yRange, AverageValueParameter area, OptionsParameter<Shape.Type> shapeTypes)
+        public ShapeGeneratorSettings(RangeParameter xRange, RangeParameter yRange, RandomValueParameter area, SelectionParameter<Shape.Type> shapeTypes)
         {
             XRange = xRange;
             YRange = yRange;

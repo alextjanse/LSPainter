@@ -1,5 +1,4 @@
-using LSPainter.Maths;
-using OpenTK.Graphics.ES11;
+using LSPainter.LSSolver;
 
 namespace LSPainter
 {

@@ -117,7 +117,7 @@ namespace LSPainter
 
         public static double RandomDouble(double lb, double ub) => lb + Random.NextDouble() * (ub - lb);
 
-        public static double UniformDistributed(double mean = 0, double sd = 1)
+        public static double RandomDoubleND(double mean = 0, double sd = 1)
         {
             double u1 = RandomDouble();
             double u2 = RandomDouble();

@@ -1,8 +1,3 @@
-using LSPainter.ShapePainter;
-using LSPainter.LSSolver;
-using LSPainter.LSSolver.Painter;
-using System.Threading;
-
 namespace LSPainter.LSSolver
 {
     public class SolverManager

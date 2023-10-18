@@ -1,4 +1,3 @@
-using LSPainter.LSSolver.Painter;
 using LSPainter.ShapePainter;
 using LSPainter.FiniteShapePainter;
 
