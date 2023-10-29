@@ -62,7 +62,7 @@ namespace LSPainter
 
             pictureFrameManager = new PictureFrameManager(windowLayout, original, solverManager.EnumerateCanvases());
 
-            shader = new Shader("./src/Shaders/shader.vert", "./src/Shaders/shader.frag");
+            shader = new Shader("Shaders/shader.vert", "Shaders/shader.frag");
         }
 
         protected override void OnLoad()

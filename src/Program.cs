@@ -10,7 +10,7 @@ namespace LSPainter
     {
         private static void Main()
         {
-            string file_path = "./Images/mona_lisa.jpeg";
+            string file_path = "Images/mona_lisa.jpeg";
 
             ImageHandler image = ImageHandler.FromFile("Mona Lisa", file_path);
 
